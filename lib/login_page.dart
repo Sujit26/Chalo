@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'phone_number.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -30,6 +31,15 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    /// Navigates to the [RiderHome].
+    void _navigateToConverter(BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                NumberPage()),
+      );
+    }
     Widget createBody() {
       return Container(
         color: mainColor,
@@ -51,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: InkWell(
                       onTap: () {
                         print('Facebook Clicked');
+                        _navigateToConverter(context);
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -88,7 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                     child: InkWell(
                       onTap: () {
-                        print('Google clicked');
+                        print('Google Clicked');
+                        _navigateToConverter(context);
                       },
                       child: Container(
                         decoration: BoxDecoration(
