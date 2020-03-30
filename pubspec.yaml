@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  font_awesome_flutter: 8.8.1
   flutter:
     sdk: flutter
 
@@ -34,6 +35,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:     
+    - assets/images/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

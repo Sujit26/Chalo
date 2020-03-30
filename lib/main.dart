@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'rider_home.dart';
+import 'login_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Unit Converter',
-      home: RiderHome(),
+      home: LoginPage(),
     );
   }
 }
