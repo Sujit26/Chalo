@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'otp_page.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -27,13 +26,33 @@ class NumberPage extends StatefulWidget {
 }
 
 class _NumberPageState extends State<NumberPage> {
+  String phone = "";
+  var _showValidationError = false;
+
+  _updatePhone(String s) {
+    _validError(false);
+    setState(() {
+      phone = s;
+    });
+  }
+
+  _validError(var b) {
+    setState(() {
+      _showValidationError = b;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Navigates to the [RiderHome].
     void _navigateToConverter(BuildContext context) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => OtpPage()),
+        MaterialPageRoute(
+          builder: (context) => OtpPage(
+            phone: phone,
+          ),
+        ),
       );
     }
 
@@ -56,11 +75,11 @@ class _NumberPageState extends State<NumberPage> {
                     filled: true,
                     fillColor: borderColor.withOpacity(0.5),
                     labelText: 'Phone',
-                    // errorText: _showValidationError ? 'Invalid number entered' : null,
+                    errorText:
+                        _showValidationError ? 'Invalid number entered' : null,
                   ),
                   keyboardType: TextInputType.number,
-
-                  // onChanged: _updateInputValue,
+                  onChanged: _updatePhone,
                 ),
               ),
               Positioned(
@@ -72,10 +91,14 @@ class _NumberPageState extends State<NumberPage> {
                       child: Text(
                           'By continuing you may recive an SMS for verification. Message and data rates may apply.'),
                     ),
-                    GestureDetector(
-                      onTap: (){
-                        _navigateToConverter(context);
-                      },
+                    InkWell(
+                      onTap: phone.length == 10
+                          ? () {
+                              _navigateToConverter(context);
+                            }
+                          : () {
+                              _validError(true);
+                            },
                       child: Container(
                         padding: const EdgeInsets.all(13.0),
                         decoration: BoxDecoration(

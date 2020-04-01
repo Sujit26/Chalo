@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/login_page.dart';
+import 'package:shared_transport/widgets/sidebar.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -11,11 +13,6 @@ Color hexToColor(String code) {
   return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
 }
 
-Color mainColor = hexToColor("#708690");
-Color buttonColor = hexToColor("#A65A7B");
-Color bgColor = hexToColor("#F7FAFB");
-Color borderColor = hexToColor("#EBEBEB");
-
 class RiderHome extends StatefulWidget {
   final String name = 'Rider';
   final Color color = mainColor;
@@ -27,18 +24,6 @@ class RiderHome extends StatefulWidget {
 class _RiderHomeState extends State<RiderHome> {
   @override
   Widget build(BuildContext context) {
-    // Here is just a placeholder for a list of mock units
-    // final unitWidgets = widget.units.map((Unit unit) {
-    //   return DropdownMenuItem<String>(
-    //     value: unit.name,
-    //     child: Container(
-    //       child: Text(
-    //         unit.name,
-    //         softWrap: true,
-    //       ),
-    //     ),
-    //   );
-    // });
     DateTime selectedDate = DateTime.now();
 
     Future<Null> _selectDate(BuildContext context) async {
@@ -285,26 +270,18 @@ class _RiderHomeState extends State<RiderHome> {
       ],
     ));
 
-
     Widget createBody() {
       return Container(
         child: DefaultTabController(
           length: 2,
           child: Scaffold(
+            drawer: NavDrawer(),
             appBar: AppBar(
-              leading: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.menu,
-                  color: Colors.white,
-                  size: 24.0,
-                  semanticLabel: 'SideBar',
-                ),
-              ),
+              elevation: 0,
               title: Text(
                 widget.name,
                 style: TextStyle(
-                  fontSize: 28.0,
+                  fontSize: 25.0,
                 ),
               ),
               bottom: TabBar(
@@ -317,7 +294,7 @@ class _RiderHomeState extends State<RiderHome> {
                 ],
               ),
               centerTitle: true,
-              backgroundColor: widget.color,
+              backgroundColor: mainColor,
             ),
             body: Container(
               color: bgColor,

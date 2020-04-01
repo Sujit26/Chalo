@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'rider_home.dart';
 import 'login_page.dart';
 
 void main() => runApp(MyApp());
