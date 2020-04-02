@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/dl_upload.dart';
+import 'package:shared_transport/live_photo_upload.dart';
 import 'package:shared_transport/login_page.dart';
+import 'package:shared_transport/sd_upload.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -54,11 +57,10 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                   child: InkWell(
                     onTap: () => {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => ProfileVerificationPage()),
-                      // )
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DLUploadPage()),
+                      )
                     },
                     child: Row(
                       children: <Widget>[
@@ -106,11 +108,11 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                     children: <Widget>[
                       InkWell(
                         onTap: () => {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => ProfileVerificationPage()),
-                          // )
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SDUploadPage()),
+                          )
                         },
                         child: Row(
                           children: <Widget>[
@@ -145,11 +147,11 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                       ),
                       InkWell(
                         onTap: () => {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => ProfileVerificationPage()),
-                          // )
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LivePhotoUploadPage()),
+                          )
                         },
                         child: Row(
                           children: <Widget>[

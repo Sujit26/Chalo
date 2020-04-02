@@ -109,7 +109,10 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Icon(Icons.access_time,color: Colors.white,),
+            new Icon(
+              Icons.access_time,
+              color: Colors.white,
+            ),
             new SizedBox(
               width: 5.0,
             ),
@@ -361,12 +364,13 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   }
 
 // Navigator
-    void _navigateToConverter(BuildContext context) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => RiderHome()),
-      );
-    }
+  void _navigateToConverter(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (BuildContext context) => RiderHome()),
+      ModalRoute.withName(''),
+    );
+  }
 
   // Current digit
   void _setCurrentDigit(int i) {
@@ -387,7 +391,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
             _fourthDigit.toString();
 
         // Verify otp here.
-        if(otp == '1111')
+        if (otp == '1111')
           _navigateToConverter(context);
         else
           clearOtp();
