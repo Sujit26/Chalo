@@ -5,15 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/rider_home.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class OtpPage extends StatefulWidget {
   final String phone;
   final String newPhone;
+  final WebSocketChannel channel;
   final bool isGuestCheckOut;
 
   const OtpPage({
     Key key,
     @required this.phone,
+    @required this.channel,
     this.newPhone = "",
     this.isGuestCheckOut,
   }) : super(key: key);
@@ -391,6 +394,8 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
             _fourthDigit.toString();
 
         // Verify otp here.
+        widget.channel.sink.add({'type': 'otp', 'info': otp}.toString());
+
         if (otp == '1111')
           _navigateToConverter(context);
         else
@@ -419,7 +424,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
 
 class OtpTimer extends StatelessWidget {
   final AnimationController controller;
-  double fontSize;
+  final double fontSize;
   Color timeColor = Colors.black;
 
   OtpTimer(this.controller, this.fontSize, this.timeColor);

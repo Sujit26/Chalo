@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'otp_page.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -20,6 +21,9 @@ Color borderColor = hexToColor("#EBEBEB");
 class NumberPage extends StatefulWidget {
   final String name = 'Rider';
   final Color color = mainColor;
+  final WebSocketChannel channel;
+
+  NumberPage({Key key, @required this.channel}) : super(key: key);
 
   @override
   _NumberPageState createState() => _NumberPageState();
@@ -46,12 +50,14 @@ class _NumberPageState extends State<NumberPage> {
   Widget build(BuildContext context) {
     /// Navigates to the [RiderHome].
     void _navigateToConverter(BuildContext context) {
+      widget.channel.sink.add({
+        'type': 'login_number',
+        'info': phone,
+      }.toString());
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => OtpPage(
-            phone: phone,
-          ),
+          builder: (context) => OtpPage(phone: phone, channel: widget.channel),
         ),
       );
     }
