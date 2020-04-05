@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:http/http.dart';
+import 'package:shared_transport/login_page.dart';
 import 'otp_page.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -21,9 +24,6 @@ Color borderColor = hexToColor("#EBEBEB");
 class NumberPage extends StatefulWidget {
   final String name = 'Rider';
   final Color color = mainColor;
-  final WebSocketChannel channel;
-
-  NumberPage({Key key, @required this.channel}) : super(key: key);
 
   @override
   _NumberPageState createState() => _NumberPageState();
@@ -46,22 +46,30 @@ class _NumberPageState extends State<NumberPage> {
     });
   }
 
+  _makePostRequest() async {
+    var data = {
+      'phone': phone,
+    };
+    final response = await post(serverURL + 'phone/',
+        headers: {"Content-type": "application/json"}, body: jsonEncode(data));
+    if (response.statusCode == 200)
+      _navigateToConverter(context);
+    else
+      _validError(true);
+  }
+
+  /// Navigates to the [RiderHome].
+  void _navigateToConverter(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OtpPage(phone: phone),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    /// Navigates to the [RiderHome].
-    void _navigateToConverter(BuildContext context) {
-      widget.channel.sink.add({
-        'type': 'login_number',
-        'info': phone,
-      }.toString());
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OtpPage(phone: phone, channel: widget.channel),
-        ),
-      );
-    }
-
     Widget createBody() {
       return Container(
         color: mainColor,
@@ -100,7 +108,7 @@ class _NumberPageState extends State<NumberPage> {
                     InkWell(
                       onTap: phone.length == 10
                           ? () {
-                              _navigateToConverter(context);
+                              _makePostRequest();
                             }
                           : () {
                               _validError(true);

@@ -1,22 +1,21 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/rider_home.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class OtpPage extends StatefulWidget {
   final String phone;
   final String newPhone;
-  final WebSocketChannel channel;
   final bool isGuestCheckOut;
 
   const OtpPage({
     Key key,
     @required this.phone,
-    @required this.channel,
     this.newPhone = "",
     this.isGuestCheckOut,
   }) : super(key: key);
@@ -366,13 +365,22 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
     );
   }
 
-// Navigator
+  // Navigator
   void _navigateToConverter(BuildContext context) {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (BuildContext context) => RiderHome()),
       ModalRoute.withName(''),
     );
+  }
+
+  _makePostRequest(data) async {
+    final response = await post(serverURL + 'otp/',
+        headers: {"Content-type": "application/json"}, body: jsonEncode(data));
+    if (response.statusCode == 200)
+      _navigateToConverter(context);
+    else
+      clearOtp();
   }
 
   // Current digit
@@ -394,12 +402,8 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
             _fourthDigit.toString();
 
         // Verify otp here.
-        widget.channel.sink.add({'type': 'otp', 'info': otp}.toString());
-
-        if (otp == '1111')
-          _navigateToConverter(context);
-        else
-          clearOtp();
+        var data = {'phone': widget.phone, 'otp': otp};
+        _makePostRequest(data);
       }
     });
   }

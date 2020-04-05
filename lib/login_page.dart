@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:http/http.dart';
 import 'phone_number.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -23,6 +22,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
+String serverURL = 'http://localhost:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -33,32 +33,44 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  WebSocketChannel channel;
   var _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    channel = new IOWebSocketChannel.connect("ws://172.20.10.10:3002/");
-    channel.stream.listen((data) {
-      data = jsonDecode(data);
-      if (data['type'] == 'server' && data['info'] == 'Connection successful')
+    _makeGetRequest();
+  }
+
+  _makeGetRequest() async {
+    final response = await get(serverURL);
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      if (jsonData['type'] == 'server' &&
+          jsonData['info'] == 'Connection successful')
         setState(() {
           _isLoading = false;
         });
-    });
+    }
+  }
+
+  _makePostRequest(data) async {
+    final response = await post(serverURL,
+        headers: {"Content-type": "application/json"}, body: jsonEncode(data));
+    if (response.statusCode == 200) {
+      _navigateToConverter(context);
+    }
+  }
+
+  /// Navigates to the [RiderHome].
+  void _navigateToConverter(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NumberPage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Navigates to the [RiderHome].
-    void _navigateToConverter(BuildContext context) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => NumberPage(channel: channel)),
-      );
-    }
-
     Widget createBody() {
       return Container(
         color: mainColor,
@@ -84,12 +96,11 @@ class _LoginPageState extends State<LoginPage> {
                               const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                           child: InkWell(
                             onTap: () {
-                              print('Facebook Clicked');
-                              channel.sink.add({
+                              var data = {
                                 'type': 'login_method',
                                 'info': 'facebook',
-                              }.toString());
-                              _navigateToConverter(context);
+                              };
+                              _makePostRequest(data);
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -128,12 +139,11 @@ class _LoginPageState extends State<LoginPage> {
                               const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                           child: InkWell(
                             onTap: () {
-                              print('Google Clicked');
-                              channel.sink.add({
+                              var data = {
                                 'type': 'login_method',
                                 'info': 'Google',
-                              }.toString());
-                              _navigateToConverter(context);
+                              };
+                              _makePostRequest(data);
                             },
                             child: Container(
                               decoration: BoxDecoration(
