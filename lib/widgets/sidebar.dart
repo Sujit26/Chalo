@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/help_and_support.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/my_trips.dart';
@@ -7,7 +8,39 @@ import 'package:shared_transport/profile.dart';
 import 'package:shared_transport/profile_verification.dart';
 import 'package:shared_transport/rating.dart';
 
-class NavDrawer extends StatelessWidget {
+class NavDrawer extends StatefulWidget {
+  @override
+  _NavDrawerState createState() => _NavDrawerState();
+}
+
+class _NavDrawerState extends State<NavDrawer> {
+  var _photoUrl =
+      'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
+  var _name;
+  var _email = 'johnaron999@gmail.com';
+  var _phone = '0987654321';
+
+  @override
+  void initState() {
+    super.initState();
+    setInitialValues();
+  }
+
+  setInitialValues() async {
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    setState(() {
+      _photoUrl = prefs.getString('photoUrl');
+      _name = prefs.getString("name");
+      _email = prefs.getString("email");
+      _phone = prefs.getString("phone");
+
+      if (_name == null) _name = 'Carl Aron';
+      if (_email == null) _email = 'johnaron999@gmail.com';
+      if (_phone == null) _phone = '0987654321';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget ratingBar = InkWell(
@@ -84,21 +117,21 @@ class NavDrawer extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                     child: Text(
-                      'Carl Aron',
+                      _name,
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                     child: Text(
-                      'johnaron999@gmail.com',
+                      _email,
                       style: TextStyle(color: Colors.white54, fontSize: 12),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                     child: Text(
-                      '0987654321',
+                      _phone,
                       style: TextStyle(color: Colors.white54, fontSize: 12),
                     ),
                   ),

@@ -17,7 +17,4 @@ dependencies: \
   /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/ios/Flutter/Flutter.framework/Headers/FlutterCodecs.h \
   /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/ios/Flutter/Flutter.framework/Headers/FlutterMacros.h \
   /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/ios/Flutter/Flutter.framework/Headers/FlutterAppDelegate.h \
-  /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/ios/Flutter/Flutter.framework/Headers/Flutter.h \
-  /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/build/ios/Debug-iphonesimulator/google_sign_in/google_sign_in.framework/Headers/FLTGoogleSignInPlugin.h \
-  /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/build/ios/Debug-iphonesimulator/google_sign_in/google_sign_in.framework/Modules/module.modulemap \
-  /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/build/ios/Debug-iphonesimulator/google_sign_in/google_sign_in.framework/Headers/google_sign_in-umbrella.h
+  /Users/paradox/Desktop/Development/flutter/Shared\ Together/Shared\ Together/ios/Flutter/Flutter.framework/Headers/Flutter.h

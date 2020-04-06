@@ -9,13 +9,13 @@ import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/rider_home.dart';
 
 class OtpPage extends StatefulWidget {
-  final String phone;
+  final userData;
   final String newPhone;
   final bool isGuestCheckOut;
 
   const OtpPage({
     Key key,
-    @required this.phone,
+    @required this.userData,
     this.newPhone = "",
     this.isGuestCheckOut,
   }) : super(key: key);
@@ -67,7 +67,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   /// Return "Phone" label
   get _getPhoneLabel {
     return new Text(
-      "Please enter the OTP sent to\n+91 " + widget.phone + ".",
+      "Please enter the OTP sent to\n+91 " + widget.userData['phone'] + ".",
       textAlign: TextAlign.center,
       style: new TextStyle(
           fontSize: 15.0, color: Colors.white, fontWeight: FontWeight.w600),
@@ -377,9 +377,10 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   _makePostRequest(data) async {
     final response = await post(serverURL + 'otp/',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
-    if (response.statusCode == 200)
+    if (response.statusCode == 200) {
+      print(response.body);
       _navigateToConverter(context);
-    else
+    } else
       clearOtp();
   }
 
@@ -402,7 +403,13 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
             _fourthDigit.toString();
 
         // Verify otp here.
-        var data = {'phone': widget.phone, 'otp': otp};
+        var data = {
+          'name': widget.userData['name'],
+          'email': widget.userData['email'],
+          'photoUrl': widget.userData['photoUrl'],
+          'phone': widget.userData['phone'],
+          'otp': otp,
+        };
         _makePostRequest(data);
       }
     });

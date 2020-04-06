@@ -1,5 +1,5 @@
 version: "Apple Swift version 5.1.3 (swiftlang-1100.0.282.1 clang-1100.0.33.15)"
 options: "b0dd4cd510b888f610d8eb348c55e772"
-build_time: [1586169555, 989598000]
+build_time: [1586178594, 673566000]
 inputs:
-  "/Users/paradox/Desktop/Development/flutter/Shared Together/Shared Together/ios/Runner/AppDelegate.swift": [1585948829, 418709601]
+  "/Users/paradox/Desktop/Development/flutter/Shared Together/Shared Together/ios/Runner/AppDelegate.swift": [1586173815, 130326827]

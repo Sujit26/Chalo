@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/profile_verification.dart';
 
@@ -22,10 +23,36 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  var _name = '';
-  var _email = '';
+  var _photoUrl = '';
   var _gender;
-  var _phone = '';
+
+  // TextField Controllers
+  TextEditingController _nameController;
+  TextEditingController _emailController;
+  TextEditingController _phoneController;
+
+  @override
+  void initState() {
+    super.initState();
+    setInitialValues();
+  }
+
+  setInitialValues() async {
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    var _name = prefs.getString("name");
+    var _email = prefs.getString("email");
+    var _phone = prefs.getString("phone");
+    setState(() {
+      _photoUrl = prefs.getString('photoUrl');
+      _nameController = TextEditingController(
+          text: _name == null ? '' : prefs.getString("name"));
+      _emailController = TextEditingController(
+          text: _email == null ? '' : prefs.getString("email"));
+      _phoneController = TextEditingController(
+          text: _phone == null ? '' : prefs.getString("phone"));
+    });
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -41,9 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(
-                        'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'))),
+                    fit: BoxFit.fill, image: NetworkImage(_photoUrl))),
           ),
         ),
       ],
@@ -126,7 +151,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           errorText: _validName(),
                         ),
                         keyboardType: TextInputType.text,
-                        onChanged: _updateNameValue,
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                        textCapitalization: TextCapitalization.words,
+                        controller: _nameController,
                       ),
                     ),
                   ),
@@ -141,8 +169,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           labelText: 'Email',
                           errorText: _validEmail(),
                         ),
-                        keyboardType: TextInputType.text,
-                        onChanged: _updateEmailValue,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                        controller: _emailController,
                       ),
                     ),
                   ),
@@ -185,7 +215,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           errorText: _validPhone(),
                         ),
                         keyboardType: TextInputType.phone,
-                        onChanged: _updatePhoneValue,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                        controller: _phoneController,
                       ),
                     ),
                   ),
@@ -245,10 +277,10 @@ class _ProfilePageState extends State<ProfilePage> {
             child: InkWell(
               onTap: () {
                 print('Save!!!');
-                print('Name: ' + _name);
-                print('Email: ' + _email);
+                print('Name: ' + _nameController.text);
+                print('Email: ' + _emailController.text);
                 print('Gender: ' + _gender.toString());
-                print('Phone: ' + _phone);
+                print('Phone: ' + _phoneController.text);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -279,7 +311,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   String _validName() {
-    return _name.length < 3 ? 'Name must be more than 2 charater' : null;
+    return _nameController.text.length < 3
+        ? 'Name must be more than 2 charater'
+        : null;
   }
 
   String _validEmail() {
@@ -287,7 +321,9 @@ class _ProfilePageState extends State<ProfilePage> {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
 
-    return regex.hasMatch(_email) ? null : 'Invalid Email entered';
+    return regex.hasMatch(_emailController.text)
+        ? null
+        : 'Invalid Email entered';
   }
 
   String _validGender() {
@@ -295,30 +331,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   String _validPhone() {
-    return _phone.length == 10 ? null : 'Invalid phone number entered';
-  }
-
-  void _updateNameValue(String value) {
-    setState(() {
-      _name = value;
-    });
-  }
-
-  void _updateEmailValue(String value) {
-    setState(() {
-      _email = value;
-    });
+    return _phoneController.text.length == 10
+        ? null
+        : 'Invalid phone number entered';
   }
 
   void _updateGenderValue(String value) {
     setState(() {
       _gender = value;
-    });
-  }
-
-  void _updatePhoneValue(String value) {
-    setState(() {
-      _phone = value;
     });
   }
 }

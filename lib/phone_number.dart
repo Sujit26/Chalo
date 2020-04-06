@@ -54,22 +54,25 @@ class _NumberPageState extends State<NumberPage> {
 
   _makePostRequest() async {
     var data = {
+      'name': widget.userData['name'],
+      'email': widget.userData['email'],
+      'photoUrl': widget.userData['photoUrl'],
       'phone': phone,
     };
     final response = await post(serverURL + 'phone/',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200)
-      _navigateToConverter(context);
+      _navigateToConverter(context, data);
     else
       _validError(true);
   }
 
   /// Navigates to the [RiderHome].
-  void _navigateToConverter(BuildContext context) {
+  void _navigateToConverter(BuildContext context, data) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => OtpPage(phone: phone),
+        builder: (context) => OtpPage(userData: data),
       ),
     );
   }

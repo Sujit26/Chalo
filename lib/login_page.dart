@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/rider_home.dart';
 import 'phone_number.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -24,7 +26,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://192.168.43.209:3002/';
+String serverURL = 'http://172.20.10.10:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -37,22 +39,25 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var _isLoading = true;
 
+  // To login with google
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   @override
   void initState() {
     super.initState();
-    googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      var data = {
-        'name': account.displayName,
-        'email': account.email,
-        'photoUrl': account.photoUrl
-      };
-      print(data);
-      _makePostRequest(data);
-    });
-    googleSignIn.signInSilently();
+    if (!_isLoading) {
+      googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+        var data = {
+          'name': account.displayName,
+          'email': account.email,
+          'photoUrl': account.photoUrl
+        };
+        print(data);
+        _makePostRequest(data);
+      });
+      googleSignIn.signInSilently();
+    }
     _makeGetRequest();
   }
 
@@ -72,12 +77,32 @@ class _LoginPageState extends State<LoginPage> {
     final response = await post(serverURL,
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
-      _navigateToConverter(context, data);
+      var jsonData = json.decode(response.body);
+      if (jsonData['msg'] == 'LoggedIn') {
+        // To save user
+        var _prefs = SharedPreferences.getInstance();
+        final SharedPreferences prefs = await _prefs;
+        prefs.setString("name", data['name']);
+        prefs.setString("email", data['email']);
+        prefs.setString("photoUrl", data['photoUrl']);
+
+        _navigateToRiderHome(context);
+      } else
+        _navigateToNumberPage(context, data);
     }
   }
 
   /// Navigates to the [RiderHome].
-  void _navigateToConverter(BuildContext context, data) {
+  void _navigateToRiderHome(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (BuildContext context) => RiderHome()),
+      ModalRoute.withName(''),
+    );
+  }
+
+  /// Navigates to the [NumberPage].
+  void _navigateToNumberPage(BuildContext context, data) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => NumberPage(userData: data)),
@@ -148,10 +173,6 @@ class _LoginPageState extends State<LoginPage> {
                               const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                           child: InkWell(
                             onTap: () {
-                              var data = {
-                                'type': 'login_method',
-                                'info': 'Google',
-                              };
                               signInWithGoogle();
                             },
                             child: Container(

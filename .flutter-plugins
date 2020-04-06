@@ -5,3 +5,6 @@ firebase_core=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-
 firebase_core_web=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.1.1+2/
 google_sign_in=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in-4.4.0/
 google_sign_in_web=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_web-0.8.4/
+shared_preferences=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.5.6+3/
+shared_preferences_macos=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_macos-0.0.1+6/
+shared_preferences_web=/Library/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_web-0.1.2+4/
