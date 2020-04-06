@@ -24,6 +24,12 @@ Color borderColor = hexToColor("#EBEBEB");
 class NumberPage extends StatefulWidget {
   final String name = 'Rider';
   final Color color = mainColor;
+  final userData;
+
+  NumberPage({
+    Key key,
+    @required this.userData,
+  }) : super(key: key);
 
   @override
   _NumberPageState createState() => _NumberPageState();
