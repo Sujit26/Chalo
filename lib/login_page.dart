@@ -26,7 +26,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://172.20.10.10:3002/';
+String serverURL = 'http://192.168.43.149:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -66,10 +66,30 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       if (jsonData['type'] == 'server' &&
-          jsonData['info'] == 'Connection successful')
-        setState(() {
-          _isLoading = false;
-        });
+          jsonData['info'] == 'Connection successful') {
+        WidgetsFlutterBinding.ensureInitialized();
+        var _prefs = SharedPreferences.getInstance();
+        final SharedPreferences prefs = await _prefs;
+        if (prefs.containsKey('login')) {
+          if (prefs.getBool('login')) {
+            var data = {
+              'name': prefs.getString('name'),
+              'email': prefs.getString('email'),
+              'photoUrl': prefs.getString('photoUrl')
+            };
+            print(data);
+            _makePostRequest(data);
+          } else {
+            setState(() {
+              _isLoading = false;
+            });
+          }
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -79,9 +99,11 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       if (jsonData['msg'] == 'LoggedIn') {
+        print(jsonData['user']);
         // To save user
         var _prefs = SharedPreferences.getInstance();
         final SharedPreferences prefs = await _prefs;
+        prefs.setBool("login", true);
         prefs.setString("name", data['name']);
         prefs.setString("email", data['email']);
         prefs.setString("photoUrl", data['photoUrl']);

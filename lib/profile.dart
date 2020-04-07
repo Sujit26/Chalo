@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/profile_verification.dart';
@@ -23,7 +24,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  var _photoUrl = '';
+  var _photoUrl;
   var _gender;
 
   // TextField Controllers
@@ -44,7 +45,9 @@ class _ProfilePageState extends State<ProfilePage> {
     var _email = prefs.getString("email");
     var _phone = prefs.getString("phone");
     setState(() {
-      _photoUrl = prefs.getString('photoUrl');
+      _photoUrl = prefs.getString('photoUrl') == null
+          ? 'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'
+          : prefs.getString('photoUrl');
       _nameController = TextEditingController(
           text: _name == null ? '' : prefs.getString("name"));
       _emailController = TextEditingController(
@@ -86,6 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   leading: Icon(Icons.exit_to_app, color: Colors.red),
                   title: Text('Logout', style: TextStyle(color: Colors.red)),
                   onTap: () => {
+                    logout(),
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
@@ -340,5 +344,17 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _gender = value;
     });
+  }
+
+  logout() async {
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    prefs.setBool('login', false);
+    prefs.remove('name');
+    prefs.remove('email');
+    prefs.remove('phone');
+    // To logout with google
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    if (await googleSignIn.isSignedIn()) googleSignIn.signOut();
   }
 }

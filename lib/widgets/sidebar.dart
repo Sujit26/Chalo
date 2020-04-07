@@ -14,11 +14,10 @@ class NavDrawer extends StatefulWidget {
 }
 
 class _NavDrawerState extends State<NavDrawer> {
-  var _photoUrl =
-      'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
+  var _photoUrl;
   var _name;
-  var _email = 'johnaron999@gmail.com';
-  var _phone = '0987654321';
+  var _email;
+  var _phone;
 
   @override
   void initState() {
@@ -35,6 +34,9 @@ class _NavDrawerState extends State<NavDrawer> {
       _email = prefs.getString("email");
       _phone = prefs.getString("phone");
 
+      if (_photoUrl == null)
+        _photoUrl =
+            'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
       if (_name == null) _name = 'Carl Aron';
       if (_email == null) _email = 'johnaron999@gmail.com';
       if (_phone == null) _phone = '0987654321';
@@ -103,9 +105,7 @@ class _NavDrawerState extends State<NavDrawer> {
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(
-                        'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'))),
+                    fit: BoxFit.fill, image: NetworkImage(_photoUrl))),
           ),
           Flexible(
             child: Padding(
