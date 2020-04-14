@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/profile_verification.dart';
@@ -26,6 +29,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   var _photoUrl;
   var _gender;
+  var _token;
+  var _isSaving = false;
 
   // TextField Controllers
   TextEditingController _nameController;
@@ -48,12 +53,14 @@ class _ProfilePageState extends State<ProfilePage> {
       _photoUrl = prefs.getString('photoUrl') == null
           ? 'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'
           : prefs.getString('photoUrl');
+      _gender = prefs.containsKey('gender') ? prefs.getString('gender') : null;
       _nameController = TextEditingController(
           text: _name == null ? '' : prefs.getString("name"));
       _emailController = TextEditingController(
           text: _email == null ? '' : prefs.getString("email"));
       _phoneController = TextEditingController(
           text: _phone == null ? '' : prefs.getString("phone"));
+      _token = prefs.getString("token");
     });
   }
 
@@ -177,6 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         textInputAction: TextInputAction.next,
                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                         controller: _emailController,
+                        enabled: false,
                       ),
                     ),
                   ),
@@ -222,6 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                         controller: _phoneController,
+                        enabled: false,
                       ),
                     ),
                   ),
@@ -279,23 +288,45 @@ class _ProfilePageState extends State<ProfilePage> {
           bottomSheet: Container(
             color: buttonColor,
             child: InkWell(
-              onTap: () {
-                print('Save!!!');
-                print('Name: ' + _nameController.text);
-                print('Email: ' + _emailController.text);
-                print('Gender: ' + _gender.toString());
-                print('Phone: ' + _phoneController.text);
-              },
+              onTap: _isSaving
+                  ? null
+                  : () {
+                      setState(() {
+                        _isSaving = true;
+                      });
+                      print('Saving!!!');
+                      print('Name: ' + _nameController.text);
+                      print('Gender: ' + _gender.toString());
+                      var data = {
+                        'email': _emailController.text,
+                        'name': _nameController.text,
+                        'gender': _gender.toString(),
+                        'token': _token
+                      };
+                      _makePostRequest(data);
+                    },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Text(
-                      'SAVE',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                  ),
+                  _isSaving
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 7.5),
+                          child: SizedBox(
+                            child: CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
+                            height: 35.0,
+                            width: 35.0,
+                          ),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Text(
+                            'SAVE',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -312,6 +343,20 @@ class _ProfilePageState extends State<ProfilePage> {
         child: createBody(),
       ),
     );
+  }
+
+  _makePostRequest(data) async {
+    final response = await post(serverURL + 'profile/update',
+        headers: {"Content-type": "application/json"}, body: jsonEncode(data));
+    if (response.statusCode == 200) {
+      print('Profile Updated!');
+      setState(() {
+        _isSaving = false;
+      });
+    } else {
+      print('Error, Try Again!');
+      print(response.body);
+    }
   }
 
   String _validName() {

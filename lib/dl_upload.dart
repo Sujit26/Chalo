@@ -8,10 +8,6 @@ import 'package:shared_transport/login_page.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-Color hexToColor(String code) {
-  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
-}
-
 class DLUploadPage extends StatefulWidget {
   final String name = 'Driving License';
   final Color color = mainColor;
@@ -21,9 +17,10 @@ class DLUploadPage extends StatefulWidget {
 }
 
 class _DLUploadPageState extends State<DLUploadPage> {
-  int nop = 1;
+  int nop = 0;
   var approveText = 'APPROVED';
   var approveColor = Colors.green;
+  var _isSaving = false;
 
   get _selectedPic {
     return Padding(
@@ -199,17 +196,36 @@ class _DLUploadPageState extends State<DLUploadPage> {
           ),
           bottomSheet: Container(
             color: buttonColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ),
-              ],
+            child: InkWell(
+              onTap: (){
+                setState(() {
+                  _isSaving = !_isSaving;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _isSaving
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 7.5),
+                          child: SizedBox(
+                            child: CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
+                            height: 35.0,
+                            width: 35.0,
+                          ),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Text(
+                            'Continue',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
+                ],
+              ),
             ),
           ),
         ),

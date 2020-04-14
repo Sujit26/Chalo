@@ -24,6 +24,7 @@ class _LivePhotoUploadPageState extends State<LivePhotoUploadPage> {
   int nop = 1;
   var approveText = 'APPROVED';
   var approveColor = Colors.green;
+  var _isSaving = false;
 
   get _selectedPic {
     return Padding(
@@ -160,17 +161,36 @@ class _LivePhotoUploadPageState extends State<LivePhotoUploadPage> {
           ),
           bottomSheet: Container(
             color: buttonColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ),
-              ],
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _isSaving = !_isSaving;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _isSaving
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 7.5),
+                          child: SizedBox(
+                            child: CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
+                            height: 35.0,
+                            width: 35.0,
+                          ),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Text(
+                            'Continue',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
+                ],
+              ),
             ),
           ),
         ),

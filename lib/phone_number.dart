@@ -57,6 +57,7 @@ class _NumberPageState extends State<NumberPage> {
       'name': widget.userData['name'],
       'email': widget.userData['email'],
       'photoUrl': widget.userData['photoUrl'],
+      'token': widget.userData['token'],
       'phone': phone,
     };
     final response = await post(serverURL + 'phone/',

@@ -18,6 +18,7 @@ class _NavDrawerState extends State<NavDrawer> {
   var _name;
   var _email;
   var _phone;
+  var _avgRating;
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _NavDrawerState extends State<NavDrawer> {
       _name = prefs.getString("name");
       _email = prefs.getString("email");
       _phone = prefs.getString("phone");
+      _avgRating = prefs.getDouble("avgRating");
 
       if (_photoUrl == null)
         _photoUrl =
@@ -41,6 +43,23 @@ class _NavDrawerState extends State<NavDrawer> {
       if (_email == null) _email = 'johnaron999@gmail.com';
       if (_phone == null) _phone = '0987654321';
     });
+  }
+
+  Widget _starFilling(double fill) {
+    return fill >= 1.0
+        ? Icon(
+            Icons.star,
+            color: Colors.white,
+          )
+        : fill > 0
+            ? Icon(
+                Icons.star_half,
+                color: Colors.white,
+              )
+            : Icon(
+                Icons.star_border,
+                color: Colors.white,
+              );
   }
 
   @override
@@ -58,32 +77,17 @@ class _NavDrawerState extends State<NavDrawer> {
         child: Wrap(
           children: <Widget>[
             Text(
-              '4.5',
+              _avgRating.toString(),
               style: TextStyle(color: Colors.white, fontSize: 22),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Icon(
-                Icons.star,
-                color: Colors.white,
-              ),
+              child: _starFilling(_avgRating),
             ),
-            Icon(
-              Icons.star,
-              color: Colors.white,
-            ),
-            Icon(
-              Icons.star,
-              color: Colors.white,
-            ),
-            Icon(
-              Icons.star,
-              color: Colors.white,
-            ),
-            Icon(
-              Icons.star_half,
-              color: Colors.white,
-            ),
+            _starFilling(_avgRating - 1.0),
+            _starFilling(_avgRating - 2.0),
+            _starFilling(_avgRating - 3.0),
+            _starFilling(_avgRating - 4.0),
           ],
         ),
       ),

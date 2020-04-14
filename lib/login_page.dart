@@ -26,7 +26,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://192.168.43.149:3002/';
+String serverURL = 'http://192.168.43.209:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -46,18 +46,18 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if (!_isLoading) {
-      googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-        var data = {
-          'name': account.displayName,
-          'email': account.email,
-          'photoUrl': account.photoUrl
-        };
-        print(data);
-        _makePostRequest(data);
-      });
-      googleSignIn.signInSilently();
-    }
+    // if (!_isLoading) {
+    //   googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+    //     var data = {
+    //       'name': account.displayName,
+    //       'email': account.email,
+    //       'photoUrl': account.photoUrl
+    //     };
+    //     print(data);
+    //     _makePostRequest(data);
+    //   });
+    //   googleSignIn.signInSilently();
+    // }
     _makeGetRequest();
   }
 
@@ -71,19 +71,28 @@ class _LoginPageState extends State<LoginPage> {
         var _prefs = SharedPreferences.getInstance();
         final SharedPreferences prefs = await _prefs;
         if (prefs.containsKey('login')) {
-          if (prefs.getBool('login')) {
-            var data = {
-              'name': prefs.getString('name'),
-              'email': prefs.getString('email'),
-              'photoUrl': prefs.getString('photoUrl')
-            };
-            print(data);
-            _makePostRequest(data);
-          } else {
-            setState(() {
-              _isLoading = false;
-            });
-          }
+          // Getting firebase user token for the server
+          final FirebaseUser currentUser = await _auth.currentUser();
+          currentUser.getIdToken().then((idToken) {
+            prefs.setString('token', idToken.token);
+            if (prefs.getBool('login')) {
+              var data = {
+                'token': prefs.getString('token'),
+                'name': prefs.getString('name'),
+                'email': prefs.getString('email'),
+                'photoUrl': prefs.getString('photoUrl'),
+                'phone': prefs.getString("phone"),
+                'gender': prefs.getString("gender"),
+                'rating': prefs.getString("rating")
+              };
+              print(data['email']);
+              _makePostRequest(data);
+            } else {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          });
         } else {
           setState(() {
             _isLoading = false;
@@ -93,24 +102,53 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  double getAvgRating(ratings) {
+    var avg = ((1 * ratings['1'] +
+            2 * ratings['2'] +
+            3 * ratings['3'] +
+            4 * ratings['4'] +
+            5 * ratings['5']) /
+        (ratings['1'] +
+            ratings['2'] +
+            ratings['3'] +
+            ratings['4'] +
+            ratings['5']));
+    avg = num.parse(avg.toStringAsFixed(1));
+    return avg;
+  }
+
   _makePostRequest(data) async {
     final response = await post(serverURL,
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       if (jsonData['msg'] == 'LoggedIn') {
-        print(jsonData['user']);
+        data = jsonData['user'];
         // To save user
         var _prefs = SharedPreferences.getInstance();
         final SharedPreferences prefs = await _prefs;
         prefs.setBool("login", true);
+        prefs.setString("token", jsonData['token']);
         prefs.setString("name", data['name']);
         prefs.setString("email", data['email']);
         prefs.setString("photoUrl", data['photoUrl']);
+        prefs.setString("phone", data['phone']);
+        prefs.setString("gender", data['gender']);
+        prefs.setString("verification", data['verification']);
+        prefs.setInt("rating1", data['rating']['1']);
+        prefs.setInt("rating2", data['rating']['2']);
+        prefs.setInt("rating3", data['rating']['3']);
+        prefs.setInt("rating4", data['rating']['4']);
+        prefs.setInt("rating5", data['rating']['5']);
+        prefs.setDouble("avgRating", getAvgRating(data['rating']));
 
         _navigateToRiderHome(context);
       } else
         _navigateToNumberPage(context, data);
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -138,7 +176,9 @@ class _LoginPageState extends State<LoginPage> {
         color: mainColor,
         child: _isLoading
             ? Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
               )
             : Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -250,13 +290,22 @@ class _LoginPageState extends State<LoginPage> {
   Future<String> signInWithGoogle() async {
     if (googleSignIn.currentUser != null) {
       GoogleSignInAccount account = googleSignIn.currentUser;
-      var data = {
-        'name': account.displayName,
-        'email': account.email,
-        'photoUrl': account.photoUrl
-      };
-      print(data);
-      _makePostRequest(data);
+
+      // Getting firebase user token for the server
+      final FirebaseUser currentUser = await _auth.currentUser();
+      currentUser.getIdToken().then((idToken) {
+        var data = {
+          'name': account.displayName,
+          'email': account.email,
+          'photoUrl': account.photoUrl,
+          'platform': 'ios',
+          'token': idToken.token
+        };
+        print(data['email']);
+        _makePostRequest(data);
+      }, onError: (Object error) {
+        print('error in fetching firebase user id token. error=$error');
+      });
     } else {
       try {
         final GoogleSignInAccount googleSignInAccount =

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/dl_upload.dart';
 import 'package:shared_transport/live_photo_upload.dart';
 import 'package:shared_transport/login_page.dart';
@@ -25,6 +26,23 @@ class ProfileVerificationPage extends StatefulWidget {
 }
 
 class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
+  var _verification = '0';
+
+  @override
+  void initState() {
+    super.initState();
+    _setVerification();
+  }
+
+  _setVerification() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    setState(() {
+      _verification = prefs.getString('verification');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget appBar = AppBar(
@@ -50,7 +68,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(width: 1, color: Colors.grey),
+                    border: Border.all(width: 1, color: Colors.black12),
                     borderRadius: BorderRadius.all(const Radius.circular(5.0)),
                   ),
                   padding:
@@ -99,7 +117,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(width: 1, color: Colors.grey),
+                    border: Border.all(width: 1, color: Colors.black12),
                     borderRadius: BorderRadius.all(const Radius.circular(5.0)),
                   ),
                   padding:
@@ -203,7 +221,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                         color: Colors.white,
                       ),
                       child: Text(
-                        '100%',
+                        _verification + '%',
                         style: TextStyle(
                           color: Colors.black45,
                           fontSize: 48,

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login_page.dart';
 import 'package:shared_transport/rider_home.dart';
 
@@ -379,6 +380,20 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       print(response.body);
+      var jsonData = json.decode(response.body);
+      data = jsonData['user'];
+      // To save user
+      var _prefs = SharedPreferences.getInstance();
+      final SharedPreferences prefs = await _prefs;
+      prefs.setBool("login", true);
+      prefs.setString("token", jsonData['token']);
+      prefs.setString("name", data['name']);
+      prefs.setString("email", data['email']);
+      prefs.setString("photoUrl", data['photoUrl']);
+      prefs.setString("phone", data['phone']);
+      prefs.setString("gender", data['gender']);
+      prefs.setString("verification", data['verification']);
+
       _navigateToConverter(context);
     } else
       clearOtp();
@@ -408,8 +423,10 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
           'email': widget.userData['email'],
           'photoUrl': widget.userData['photoUrl'],
           'phone': widget.userData['phone'],
+          'token': widget.userData['token'],
           'otp': otp,
         };
+
         _makePostRequest(data);
       }
     });
