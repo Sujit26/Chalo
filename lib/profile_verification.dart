@@ -110,7 +110,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                       ],
                     ),
                   ),
-                ),
+                ), 
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
