@@ -11,7 +11,6 @@ import 'package:shared_transport/empty_state.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-var __user = UserRating();
 
 class MyTripsPage extends StatefulWidget {
   final String name = 'My Trips';
@@ -22,15 +21,12 @@ class MyTripsPage extends StatefulWidget {
 }
 
 class _MyTripsPageState extends State<MyTripsPage> {
-  @override
   List<UserForm> users1 = []; // Current ride detail
   List<UserForm> users2 = []; // past ride details
   List<UserForm> users3 = []; // Upcoming ride detail
 
-
-
   Widget build(BuildContext context) {
-    final current_ride = Scaffold(
+    final currentRide = Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -44,16 +40,16 @@ class _MyTripsPageState extends State<MyTripsPage> {
         ),
         child: users1.length <= 0
             ? Center(
-          child: EmptyState(
-            title: 'Oops',
-            message: 'Add Ride by tapping add button below',
-          ),
-        )
+                child: EmptyState(
+                  title: 'Oops',
+                  message: 'Add Ride by tapping add button below',
+                ),
+              )
             : ListView.builder(
-          addAutomaticKeepAlives: true,
-          itemCount: users1.length,
-          itemBuilder: (_, i) => users1[i],
-        ),
+                addAutomaticKeepAlives: true,
+                itemCount: users1.length,
+                itemBuilder: (_, i) => users1[i],
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -61,7 +57,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
         foregroundColor: Colors.white,
       ),
     );
-    final previous_ride = Scaffold(
+    final previousRide = Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -75,16 +71,16 @@ class _MyTripsPageState extends State<MyTripsPage> {
         ),
         child: users2.length <= 0
             ? Center(
-          child: EmptyState(
-            title: 'Oops',
-            message: 'Add Ride by tapping add button below',
-          ),
-        )
+                child: EmptyState(
+                  title: 'Oops',
+                  message: 'Add Ride by tapping add button below',
+                ),
+              )
             : ListView.builder(
-          addAutomaticKeepAlives: true,
-          itemCount: users2.length,
-          itemBuilder: (_, i) => users2[i],
-        ),
+                addAutomaticKeepAlives: true,
+                itemCount: users2.length,
+                itemBuilder: (_, i) => users2[i],
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -92,7 +88,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
         foregroundColor: Colors.white,
       ),
     );
-    final upcoming_ride = Scaffold(
+    final upcomingRide = Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -106,41 +102,22 @@ class _MyTripsPageState extends State<MyTripsPage> {
         ),
         child: users3.length <= 0
             ? Center(
-          child: EmptyState(
-            title: 'Oops',
-            message: 'Add Ride by tapping add button below',
-          ),
-        )
+                child: EmptyState(
+                  title: 'Oops',
+                  message: 'Add Ride by tapping add button below',
+                ),
+              )
             : ListView.builder(
-          addAutomaticKeepAlives: true,
-          itemCount: users3.length,
-          itemBuilder: (_, i) => users3[i],
-        ),
+                addAutomaticKeepAlives: true,
+                itemCount: users3.length,
+                itemBuilder: (_, i) => users3[i],
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: addUpcomingRide,
         foregroundColor: Colors.white,
       ),
-    );
-
-    Widget appBar = AppBar(
-      elevation: 0,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: Text('Save'),
-          textColor: Colors.white,
-          onPressed: onSave,
-        )
-      ],
-      centerTitle: true,
-      backgroundColor: mainColor,
     );
 
     Widget createBody() {
@@ -179,9 +156,9 @@ class _MyTripsPageState extends State<MyTripsPage> {
               color: bgColor,
               child: TabBarView(
                 children: [
-                  current_ride,
-                  previous_ride,
-                  upcoming_ride,
+                  currentRide,
+                  previousRide,
+                  upcomingRide,
                 ],
               ),
             ),
@@ -221,7 +198,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
   addCurrentRide() {
     print('Add Form');
     setState(() {
-      var _user = new UserRating();
+      var _user = new UserRating(email: '', emailFrom: '', date: '', ratingComments: '', ratingStars: '');
       users1.add(UserForm(
         user: _user,
 //        onDelete: () => onDelete(_user),
@@ -232,7 +209,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
   addPastRide() {
     print('Add Form');
     setState(() {
-      var _user = new UserRating();
+      var _user = new UserRating(email: '', emailFrom: '', date: '', ratingComments: '', ratingStars: '');
       users2.add(UserForm(
         user: _user,
 //        onDelete: () => onDelete(_user),
@@ -243,7 +220,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
   addUpcomingRide() {
     print('Add Form');
     setState(() {
-      var _user = new UserRating();
+      var _user = new UserRating(email: '', emailFrom: '', date: '', ratingComments: '', ratingStars: '');
       users3.add(UserForm(
         user: _user,
 //        onDelete: () => onDelete(_user),
