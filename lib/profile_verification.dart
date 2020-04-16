@@ -39,7 +39,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
     setState(() {
-      _verification = prefs.getString('verification');
+      _verification = prefs.getString('approveStatus');
     });
   }
 
@@ -110,7 +110,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                       ],
                     ),
                   ),
-                ), 
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -230,7 +230,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                 ),
               ),
               Text(
-                'Approved',
+                'Verified',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: buttonColor,

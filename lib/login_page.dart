@@ -26,7 +26,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://192.168.43.209:3002/';
+String serverURL = 'http://172.20.10.10:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -103,16 +103,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   double getAvgRating(ratings) {
+    var total = ratings['1'] +
+        ratings['2'] +
+        ratings['3'] +
+        ratings['4'] +
+        ratings['5'];
+
     var avg = ((1 * ratings['1'] +
-            2 * ratings['2'] +
-            3 * ratings['3'] +
-            4 * ratings['4'] +
-            5 * ratings['5']) /
-        (ratings['1'] +
-            ratings['2'] +
-            ratings['3'] +
-            ratings['4'] +
-            ratings['5']));
+                    2 * ratings['2'] +
+                    3 * ratings['3'] +
+                    4 * ratings['4'] +
+                    5 * ratings['5']) /
+                total ==
+            0
+        ? 1
+        : total);
     avg = num.parse(avg.toStringAsFixed(1));
     return avg;
   }
@@ -134,7 +139,10 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setString("photoUrl", data['photoUrl']);
         prefs.setString("phone", data['phone']);
         prefs.setString("gender", data['gender']);
-        prefs.setString("verification", data['verification']);
+        prefs.setString("approveStatus", data['verification']['approved']);
+        prefs.setString("dlStatus", data['verification']['dl']);
+        prefs.setString("sdStatus", data['verification']['sd']);
+        prefs.setString("photoStatus", data['verification']['photo']);
         prefs.setInt("rating1", data['rating']['1']);
         prefs.setInt("rating2", data['rating']['2']);
         prefs.setInt("rating3", data['rating']['3']);

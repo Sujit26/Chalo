@@ -27,15 +27,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  var _photoUrl;
+  var _photoUrl =
+      'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
   var _gender;
   var _token;
   var _isSaving = false;
 
   // TextField Controllers
-  TextEditingController _nameController;
-  TextEditingController _emailController;
-  TextEditingController _phoneController;
+  TextEditingController _nameController = TextEditingController(text: '');
+  TextEditingController _emailController = TextEditingController(text: '');
+  TextEditingController _phoneController = TextEditingController(text: '');
 
   @override
   void initState() {
@@ -349,6 +350,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final response = await post(serverURL + 'profile/update',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
+      // TODO: Change data in local storage
       print('Profile Updated!');
       setState(() {
         _isSaving = false;
@@ -394,10 +396,8 @@ class _ProfilePageState extends State<ProfilePage> {
   logout() async {
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
+    prefs.clear();
     prefs.setBool('login', false);
-    prefs.remove('name');
-    prefs.remove('email');
-    prefs.remove('phone');
     // To logout with google
     final GoogleSignIn googleSignIn = GoogleSignIn();
     if (await googleSignIn.isSignedIn()) googleSignIn.signOut();

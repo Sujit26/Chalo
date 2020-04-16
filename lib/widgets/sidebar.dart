@@ -14,11 +14,11 @@ class NavDrawer extends StatefulWidget {
 }
 
 class _NavDrawerState extends State<NavDrawer> {
-  var _photoUrl;
-  var _name;
-  var _email;
-  var _phone;
-  var _avgRating;
+  var _photoUrl = 'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
+  var _name = 'John Don';
+  var _email ='example@email.com';
+  var _phone = '0987654321';
+  var _avgRating = 0.0;
 
   @override
   void initState() {

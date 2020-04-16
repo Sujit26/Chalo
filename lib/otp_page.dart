@@ -375,11 +375,30 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
     );
   }
 
+  double getAvgRating(ratings) {
+    var total = ratings['1'] +
+        ratings['2'] +
+        ratings['3'] +
+        ratings['4'] +
+        ratings['5'];
+
+    var avg = ((1 * ratings['1'] +
+                    2 * ratings['2'] +
+                    3 * ratings['3'] +
+                    4 * ratings['4'] +
+                    5 * ratings['5']) /
+                total ==
+            0
+        ? 1
+        : total);
+    avg = num.parse(avg.toStringAsFixed(1));
+    return avg;
+  }
+
   _makePostRequest(data) async {
     final response = await post(serverURL + 'otp/',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
-      print(response.body);
       var jsonData = json.decode(response.body);
       data = jsonData['user'];
       // To save user
@@ -392,7 +411,16 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
       prefs.setString("photoUrl", data['photoUrl']);
       prefs.setString("phone", data['phone']);
       prefs.setString("gender", data['gender']);
-      prefs.setString("verification", data['verification']);
+      prefs.setString("approveStatus", data['verification']['approved']);
+      prefs.setString("dlStatus", data['verification']['dl']);
+      prefs.setString("sdStatus", data['verification']['sd']);
+      prefs.setString("photoStatus", data['verification']['photo']);
+      prefs.setInt("rating1", data['rating']['1']);
+      prefs.setInt("rating2", data['rating']['2']);
+      prefs.setInt("rating3", data['rating']['3']);
+      prefs.setInt("rating4", data['rating']['4']);
+      prefs.setInt("rating5", data['rating']['5']);
+      prefs.setDouble("avgRating", getAvgRating(data['rating']));
 
       _navigateToConverter(context);
     } else
