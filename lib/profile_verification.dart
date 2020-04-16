@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/dl_upload.dart';
-import 'package:shared_transport/live_photo_upload.dart';
+import 'package:shared_transport/docs_upload_page.dart';
 import 'package:shared_transport/login_page.dart';
-import 'package:shared_transport/sd_upload.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -27,6 +25,8 @@ class ProfileVerificationPage extends StatefulWidget {
 
 class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
   var _verification = '0';
+  var _prefs;
+  SharedPreferences prefs;
 
   @override
   void initState() {
@@ -36,8 +36,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
 
   _setVerification() async {
     WidgetsFlutterBinding.ensureInitialized();
-    var _prefs = SharedPreferences.getInstance();
-    final SharedPreferences prefs = await _prefs;
+    _prefs = SharedPreferences.getInstance();
+    prefs = await _prefs;
     setState(() {
       _verification = prefs.getString('approveStatus');
     });
@@ -56,6 +56,34 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
       centerTitle: true,
       backgroundColor: mainColor,
     );
+
+    Widget getStatusIcon(status) {
+      if (status == 'Upload')
+        return Icon(
+          Icons.cloud_upload,
+          color: Colors.blue[300],
+        );
+      else if (status == 'Approved')
+        return Icon(
+          Icons.check_circle,
+          color: Colors.green[300],
+        );
+      else if (status == 'Rejected')
+        return Icon(
+          Icons.cancel,
+          color: Colors.red[300],
+        );
+      else if (status == 'Pending')
+        return Icon(
+          Icons.watch_later,
+          color: Colors.amber[300],
+        );
+      else
+        return Icon(
+          Icons.not_interested,
+          color: Colors.black,
+        );
+    }
 
     Widget profileVerificationBody = ListView(
       children: <Widget>[
@@ -77,7 +105,10 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                     onTap: () => {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => DLUploadPage()),
+                        MaterialPageRoute(
+                            builder: (context) => DocsUploadPage(
+                                  name: 'dl',
+                                )),
                       )
                     },
                     child: Row(
@@ -106,7 +137,10 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                               fontSize: 18,
                             ),
                           ),
-                        )
+                        ),
+                        Spacer(),
+                        getStatusIcon(
+                            prefs != null ? prefs.getString('dlStatus') : ''),
                       ],
                     ),
                   ),
@@ -129,7 +163,9 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SDUploadPage()),
+                                builder: (context) => DocsUploadPage(
+                                      name: 'sd',
+                                    )),
                           )
                         },
                         child: Row(
@@ -153,13 +189,17 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 30),
                               child: Text(
-                                'Secondary Document',
+                                'Second Document',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                 ),
                               ),
-                            )
+                            ),
+                            Spacer(),
+                            getStatusIcon(prefs != null
+                                ? prefs.getString('sdStatus')
+                                : ''),
                           ],
                         ),
                       ),
@@ -168,7 +208,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LivePhotoUploadPage()),
+                                builder: (context) =>
+                                    DocsUploadPage(name: 'lp')),
                           )
                         },
                         child: Row(
@@ -198,7 +239,11 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                                   fontSize: 18,
                                 ),
                               ),
-                            )
+                            ),
+                            Spacer(),
+                            getStatusIcon(prefs != null
+                                ? prefs.getString('lpStatus')
+                                : ''),
                           ],
                         ),
                       ),

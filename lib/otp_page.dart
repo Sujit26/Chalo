@@ -414,7 +414,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
       prefs.setString("approveStatus", data['verification']['approved']);
       prefs.setString("dlStatus", data['verification']['dl']);
       prefs.setString("sdStatus", data['verification']['sd']);
-      prefs.setString("photoStatus", data['verification']['photo']);
+      prefs.setString("lpStatus", data['verification']['photo']);
       prefs.setInt("rating1", data['rating']['1']);
       prefs.setInt("rating2", data['rating']['2']);
       prefs.setInt("rating3", data['rating']['3']);

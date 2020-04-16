@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,20 +17,24 @@ import 'package:shared_transport/login_page.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-class DLUploadPage extends StatefulWidget {
-  final String name = 'Driving License';
+class DocsUploadPage extends StatefulWidget {
+  final String name;
   final Color color = mainColor;
 
+  DocsUploadPage({
+    Key key,
+    @required this.name,
+  }) : super(key: key);
+
   @override
-  _DLUploadPageState createState() => _DLUploadPageState();
+  _DocsUploadPageState createState() => _DocsUploadPageState();
 }
 
-class _DLUploadPageState extends State<DLUploadPage> {
+class _DocsUploadPageState extends State<DocsUploadPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<State> _keySaving = new GlobalKey<State>();
 
   var approveText = 'APPROVED';
-  var approveColor = Colors.green;
+  var approveColor = Colors.green[300];
   var _isSaving = false;
   var _images = [];
   var _selectedPicNum = 0;
@@ -49,9 +51,10 @@ class _DLUploadPageState extends State<DLUploadPage> {
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
 
-    final response = await get(serverURL + 'profile/dl', headers: {
+    final response = await get(serverURL + 'profile/docs', headers: {
       'token': prefs.getString('token'),
       'email': prefs.getString('email'),
+      'data': widget.name,
     });
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -64,8 +67,8 @@ class _DLUploadPageState extends State<DLUploadPage> {
         final buffer1 = byteData.buffer;
         Directory tempDir = await getTemporaryDirectory();
         String tempPath1 = tempDir.path;
-        var filePath1 = tempPath1 +
-            '/file_01.tmp'; // file_01.tmp is dump file, can be anything
+        var filePath1 =
+            tempPath1 + '/${widget.name}File_31.tmp'; // this is a dump file
         File(filePath1).writeAsBytes(buffer1.asUint8List(
             byteData.offsetInBytes, byteData.lengthInBytes));
         setState(() {
@@ -80,8 +83,8 @@ class _DLUploadPageState extends State<DLUploadPage> {
         final buffer2 = byteData.buffer;
         Directory tempDir = await getTemporaryDirectory();
         String tempPath2 = tempDir.path;
-        var filePath2 = tempPath2 +
-            '/file_02.tmp'; // file_01.tmp is dump file, can be anything
+        var filePath2 =
+            tempPath2 + '/${widget.name}File_32.tmp'; // this is a dump file
         File(filePath2).writeAsBytes(buffer2.asUint8List(
             byteData.offsetInBytes, byteData.lengthInBytes));
         setState(() {
@@ -89,7 +92,7 @@ class _DLUploadPageState extends State<DLUploadPage> {
         });
       }
       setState(() {
-        approveText = prefs.getString('dlStatus');
+        approveText = prefs.getString('${widget.name}Status');
         approveColor = getTextColor(approveText);
         _isLoading = false;
       });
@@ -109,27 +112,31 @@ class _DLUploadPageState extends State<DLUploadPage> {
       'token': prefs.getString('token'),
       'image1': image1,
       'image2': image2,
+      'data': widget.name,
     };
 
-    final response = await post(serverURL + 'profile/dl',
+    final response = await post(serverURL + 'profile/docs',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
 
-    // final response = await get(serverURL + 'profile/dl', headers: {
-    //   'token': prefs.getString('token'),
-    //   'email': prefs.getString('email'),
-    // });
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       setState(() {
         _isSaving = false;
+        approveText = 'Pending';
+        approveColor = getTextColor('Pending');
       });
       Navigator.pop(context);
 
       var _prefs = SharedPreferences.getInstance();
       final SharedPreferences prefs = await _prefs;
-      prefs.setString('dlStatus', 'Pending');
-      prefs.setString('approveStatus',
-          (int.parse(prefs.getString('approveStatus')) + 25).toString());
+      prefs.setString('${widget.name}Status', 'Pending');
+      var percentageInc = widget.name == 'dl'
+          ? 25
+          : widget.name == 'sd' ? 13 : widget.name == 'lp' ? 12 : 0;
+      prefs.setString(
+          'approveStatus',
+          (int.parse(prefs.getString('approveStatus')) + percentageInc)
+              .toString());
     } else {
       Navigator.pop(context);
       setState(() {
@@ -146,25 +153,19 @@ class _DLUploadPageState extends State<DLUploadPage> {
         ),
       );
     }
-    // onTap: () {
-    //   setState(() {
-    //     _isSaving = false;
-    //   });
-    //   Navigator.pop(context);
-    // },
   }
 
-  MaterialColor getTextColor(text) {
+  Color getTextColor(text) {
     if (text == 'Upload')
-      return Colors.blue;
+      return Colors.blue[300];
     else if (text == 'Pending')
-      return Colors.amber;
+      return Colors.amber[300];
     else if (text == 'Approved')
-      return Colors.green;
+      return Colors.green[300];
     else if (text == 'Rejected')
-      return Colors.red;
+      return Colors.red[300];
     else
-      return Colors.blue;
+      return Colors.blue[300];
   }
 
   get _selectedPic {
@@ -359,9 +360,10 @@ class _DLUploadPageState extends State<DLUploadPage> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                  border: Border.all(width: 2, color: Colors.white),
-                  shape: BoxShape.circle,
-                  color: buttonColor),
+                border: Border.all(width: 2, color: Colors.white),
+                shape: BoxShape.circle,
+                color: buttonColor,
+              ),
               child: Icon(
                 Icons.add,
                 color: Colors.white,
@@ -387,7 +389,11 @@ class _DLUploadPageState extends State<DLUploadPage> {
     Widget appBar = AppBar(
       elevation: 0,
       title: Text(
-        widget.name,
+        widget.name == 'dl'
+            ? 'Driving Licence'
+            : widget.name == 'sd'
+                ? 'Secondary Document'
+                : widget.name == 'lp' ? 'Live Photo' : '',
         style: TextStyle(
           fontSize: 25.0,
         ),
@@ -396,7 +402,129 @@ class _DLUploadPageState extends State<DLUploadPage> {
       backgroundColor: mainColor,
     );
 
-    Widget dlUploadBody = _isLoading
+    Widget getGuidlines() {
+      return widget.name == 'sd'
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Text(
+                    '- Name, Date of Birth, Document Number should be clearly visible',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Text(
+                    '- Complete address (including house number, street, building, name, locality etc) should be clearly visible',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Text(
+                    '- Both FRONT and BACK of the document must be uploaded',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Text(
+                    '- Blurry image of licence will not be accepted',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Text(
+                    '- Document already registered with us will not be accepted',
+                  ),
+                ),
+              ],
+            )
+          : widget.name == 'dl'
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Text(
+                        '- Name, Date of Birth, Driver Licence Number, Expiry Date and Vehicle class should be clearly visible',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Text(
+                        '- Both FRONT and BACK of the licence must be uploaded',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Text(
+                        '- Colour photocopy, laminated version or blurry image of licence will not be accepted',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Text(
+                        '- Licence alreay registered with us will not be accepted',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      child: Text(
+                        '- Any discrepancy in information will cause booking cancellation',
+                      ),
+                    ),
+                  ],
+                )
+              : widget.name == 'lp'
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          child: Text(
+                            '- A live photo of your face needs to be taken',
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          child: Text(
+                            '- Photo should be taken in full-face view directly facing the camera',
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          child: Text(
+                            '- Keep a neutral facial expression and both eyes open',
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          child: Text(
+                            '- Do not wear a hat, head covering, sunglasses, headphones, earphones or similar items',
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 60),
+                          child: Text(
+                            '- Only YOUR face should be in the photo',
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                          child: Text(
+                            '- PAGE NOT VALID',
+                          ),
+                        ),
+                      ],
+                    );
+    }
+
+    Widget uploadBody = _isLoading
         ? Center(
             child: CircularProgressIndicator(
             valueColor: new AlwaysStoppedAnimation<Color>(buttonColor),
@@ -419,35 +547,8 @@ class _DLUploadPageState extends State<DLUploadPage> {
                         textAlign: TextAlign.center,
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                        child: Text(
-                          '- Name, Date of Birth, Driver Licence Number, Expiry Date and Vehicle class should be clearly visible',
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                        child: Text(
-                          '- Both FRONT and BACK of the licence must be uploaded',
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                        child: Text(
-                          '- Colour photocopy, laminated version or blurry image of licence will not be accepted',
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                        child: Text(
-                          '- Licence alreay registered with us will not be accepted',
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 60),
-                        child: Text(
-                          '- Any discrepancy in information will cause booking cancellation',
-                        ),
-                      ),
+                          padding: const EdgeInsets.only(bottom: 60),
+                          child: getGuidlines())
                     ],
                   ),
                 ),
@@ -461,7 +562,7 @@ class _DLUploadPageState extends State<DLUploadPage> {
           appBar: appBar,
           body: Container(
             color: bgColor,
-            child: dlUploadBody,
+            child: uploadBody,
           ),
           bottomSheet: !_isLoading
               ? Container(
@@ -513,7 +614,7 @@ class _DLUploadPageState extends State<DLUploadPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           child: Text(
-                            'Continue',
+                            'Save',
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),
