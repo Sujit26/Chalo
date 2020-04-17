@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login_page.dart';
+import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/rider_home.dart';
 
 class OtpPage extends StatefulWidget {
@@ -481,7 +481,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
 class OtpTimer extends StatelessWidget {
   final AnimationController controller;
   final double fontSize;
-  Color timeColor = Colors.black;
+  final Color timeColor;
 
   OtpTimer(this.controller, this.fontSize, this.timeColor);
 

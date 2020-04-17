@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/login_page.dart';
-import 'package:shared_transport/rating_info.dart';
+import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/rating/rating_info.dart';
 
 class RatingForm extends StatelessWidget {
   final UserRating user;

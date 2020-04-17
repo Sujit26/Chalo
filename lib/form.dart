@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/rating_info.dart';
+import 'package:shared_transport/rating/rating_info.dart';
 
 typedef OnDelete();
 
@@ -37,12 +37,6 @@ class _UserFormState extends State<UserForm> {
                 title: Text('User Details'),
                 backgroundColor: Theme.of(context).accentColor,
                 centerTitle: true,
-//                actions: <Widget>[
-//                  IconButton(
-//                    icon: Icon(Icons.delete),
-//                    onPressed: widget.onDelete,
-//                  )
-//                ],
               ),
               Padding(
                 padding: EdgeInsets.only(left: 16, right: 16, top: 16),
@@ -54,7 +48,6 @@ class _UserFormState extends State<UserForm> {
                     labelText: 'From',
                     hintText: 'From Place',
                     icon: Icon(Icons.map),
-
                   ),
                 ),
               ),
@@ -65,7 +58,6 @@ class _UserFormState extends State<UserForm> {
                     labelText: 'To',
                     hintText: 'To place',
                     icon: Icon(Icons.map),
-
                   ),
                 ),
               ),

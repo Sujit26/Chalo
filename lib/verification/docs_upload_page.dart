@@ -8,7 +8,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login_page.dart';
+import 'package:shared_transport/login/login_page.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///

@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login_page.dart';
-import 'package:shared_transport/rating_info.dart';
-import 'package:shared_transport/empty_state.dart';
-import 'package:shared_transport/rating_form.dart';
+import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/rating/rating_info.dart';
+import 'package:shared_transport/widgets/empty_state.dart';
+import 'package:shared_transport/rating/rating_form.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -55,8 +55,10 @@ class _RatingPageState extends State<RatingPage> {
       var jsonData = json.decode(response.body);
       if (prefs.containsKey('login')) {
         if (prefs.getBool('login')) {
-          jsonData['rating'].forEach((rating) => onAddForm(rating));
-          _isLoading = false;
+          setState(() {
+            jsonData['rating'].forEach((rating) => onAddForm(rating));
+            _isLoading = false;
+          });
         }
       }
     }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/docs_upload_page.dart';
-import 'package:shared_transport/login_page.dart';
+import 'package:shared_transport/verification/docs_upload_page.dart';
+import 'package:shared_transport/login/login_page.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///

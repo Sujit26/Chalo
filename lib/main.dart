@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'login_page.dart';
+import 'package:shared_transport/login/login_page.dart';
 
 // TODO: open ios/Runner.xcworkspace to open xcode
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Unit Converter',
+      title: 'Main',
       home: LoginPage(),
     );
   }

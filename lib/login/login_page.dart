@@ -295,7 +295,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<String> signInWithGoogle() async {
+  signInWithGoogle() async {
     if (googleSignIn.currentUser != null) {
       GoogleSignInAccount account = googleSignIn.currentUser;
 

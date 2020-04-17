@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login_page.dart';
-import 'package:shared_transport/profile_verification.dart';
+import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/verification/profile_verification.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -296,8 +296,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         _isSaving = true;
                       });
                       print('Saving!!!');
-                      print('Name: ' + _nameController.text);
-                      print('Gender: ' + _gender.toString());
                       var data = {
                         'email': _emailController.text,
                         'name': _nameController.text,

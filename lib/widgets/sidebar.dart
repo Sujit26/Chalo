@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/help_and_support.dart';
-import 'package:shared_transport/login_page.dart';
+import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/my_trips.dart';
 import 'package:shared_transport/policies.dart';
 import 'package:shared_transport/profile.dart';
-import 'package:shared_transport/profile_verification.dart';
-import 'package:shared_transport/rating.dart';
+import 'package:shared_transport/verification/profile_verification.dart';
+import 'package:shared_transport/rating/rating.dart';
 
 class NavDrawer extends StatefulWidget {
   @override

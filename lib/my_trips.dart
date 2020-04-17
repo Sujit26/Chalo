@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/rating_info.dart';
+import 'package:shared_transport/rating/rating_info.dart';
 import 'package:shared_transport/form.dart';
-import 'package:shared_transport/login_page.dart';
-import 'package:shared_transport/empty_state.dart';
+import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/widgets/empty_state.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
