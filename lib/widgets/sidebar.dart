@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/driver_pages/driver_home.dart';
+import 'package:shared_transport/driver_pages/my_vehicle.dart';
 import 'package:shared_transport/help_and_support.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/my_trips.dart';
@@ -14,11 +16,13 @@ class NavDrawer extends StatefulWidget {
 }
 
 class _NavDrawerState extends State<NavDrawer> {
-  var _photoUrl = 'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
+  var _photoUrl =
+      'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80';
   var _name = 'John Don';
-  var _email ='example@email.com';
+  var _email = 'example@email.com';
   var _phone = '0987654321';
   var _avgRating = 0.0;
+  var _approveStatus = '0';
 
   @override
   void initState() {
@@ -35,6 +39,7 @@ class _NavDrawerState extends State<NavDrawer> {
       _email = prefs.getString("email");
       _phone = prefs.getString("phone");
       _avgRating = prefs.getDouble("avgRating");
+      _approveStatus = prefs.getString("approveStatus");
 
       if (_photoUrl == null)
         _photoUrl =
@@ -146,6 +151,7 @@ class _NavDrawerState extends State<NavDrawer> {
         ],
       ),
     );
+
     Widget drawerHeader = Container(
       height: 173,
       child: DrawerHeader(
@@ -183,6 +189,28 @@ class _NavDrawerState extends State<NavDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MyTripsPage()),
+                )
+              },
+            ),
+            ListTile(
+              leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.all(const Radius.circular(100.0)),
+                    color: mainColor,
+                  ),
+                  child: Icon(
+                    Icons.directions_car,
+                    color: Colors.white,
+                    size: 15,
+                  )),
+              title: Text('My Vehicles'),
+              onTap: () => {
+                Navigator.of(context).pop(),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => VehiclePage()),
                 )
               },
             ),
@@ -255,31 +283,48 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
           ],
         ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-          child: InkWell(
-            onTap: () {
-              print('Facebook Clicked');
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: buttonColor, width: 2),
-                  borderRadius: BorderRadius.all(const Radius.circular(40.0))),
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Text(
-                  'Driver',
-                  style: TextStyle(
-                    color: buttonColor,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+        bottomNavigationBar: _approveStatus == '100'
+            ? Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                child: InkWell(
+                  onTap: () => {
+                    Navigator.of(context).pop(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DriverHome()),
+                    )
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: buttonColor, width: 2),
+                        borderRadius:
+                            BorderRadius.all(const Radius.circular(40.0))),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        'Drive',
+                        style: TextStyle(
+                          color: buttonColor,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
+              )
+            : Wrap(
+                children: <Widget>[
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    child: Text(
+                        'To drive with us complete the verification process.'),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -19,7 +19,7 @@ class EmptyState extends StatelessWidget {
             Text(title, style: Theme.of(context).textTheme.headline),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text(message),
+              child: Text(message, textAlign: TextAlign.center,),
             ),
           ],
         ),

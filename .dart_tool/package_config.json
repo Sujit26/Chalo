@@ -20,6 +20,12 @@
       "languageVersion": "2.0"
     },
     {
+      "name": "autocomplete_textfield",
+      "rootUri": "file:///Library/flutter/.pub-cache/hosted/pub.dartlang.org/autocomplete_textfield-1.7.3",
+      "packageUri": "lib/",
+      "languageVersion": "1.19"
+    },
+    {
       "name": "boolean_selector",
       "rootUri": "file:///Library/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-1.0.5",
       "packageUri": "lib/",
@@ -338,7 +344,7 @@
       "languageVersion": "2.2"
     }
   ],
-  "generated": "2020-04-16T16:17:20.153647Z",
+  "generated": "2020-04-20T23:09:16.288767Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

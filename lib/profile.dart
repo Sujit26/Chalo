@@ -14,10 +14,6 @@ import 'package:shared_transport/verification/profile_verification.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-Color hexToColor(String code) {
-  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
-}
-
 class ProfilePage extends StatefulWidget {
   final String name = 'Profile';
   final Color color = mainColor;
@@ -193,23 +189,23 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                      child: new InputDecorator(
+                      child: InputDecorator(
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           labelText: 'Gender',
                           errorText: _validGender(),
                         ),
                         isEmpty: _gender == null,
-                        child: new DropdownButton<String>(
+                        child: DropdownButton<String>(
                           value: _gender,
                           isExpanded: true,
                           isDense: true,
                           onChanged: _updateGenderValue,
                           items:
                               ['Male', 'Female', 'Other'].map((String value) {
-                            return new DropdownMenuItem<String>(
+                            return DropdownMenuItem<String>(
                               value: value,
-                              child: new Text(value),
+                              child: Text(value),
                             );
                           }).toList(),
                         ),
@@ -236,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 40),
+                    padding: const EdgeInsets.only(bottom: 60),
                     child: Container(
                       color: Colors.white,
                       child: Padding(
@@ -312,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(vertical: 7.5),
                           child: SizedBox(
                             child: CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
+                              valueColor: AlwaysStoppedAnimation<Color>(
                                   Colors.white),
                             ),
                             height: 35.0,

@@ -10,10 +10,6 @@ import 'package:shared_transport/login/login_page.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-Color hexToColor(String code) {
-  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
-}
-
 class ProfileVerificationPage extends StatefulWidget {
   final String name = 'Profile Verification';
   final Color color = mainColor;
@@ -282,6 +278,9 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                   fontSize: 18,
                 ),
               ),
+              SizedBox(height: 10),
+              Divider(),
+              Text('To drive with us complete the verification process.'),
             ],
           ),
         ),
