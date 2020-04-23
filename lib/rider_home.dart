@@ -234,7 +234,7 @@ class _RiderHomeState extends State<RiderHome> {
                     padding: EdgeInsets.fromLTRB(30.0, 17.0, 30.0, 17.0),
                     onPressed: () {},
                     child: Text(
-                      "Search",
+                      'Search',
                       style: TextStyle(fontSize: 20.0),
                     ),
                   ),

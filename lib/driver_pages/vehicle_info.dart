@@ -18,4 +18,13 @@ class Vehicle {
     @required this.type,
     @required this.index,
   });
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'modelName': modelName,
+        'seats': seats,
+        'number': number,
+        'pic': pic,
+        'type': type,
+        'index': index,
+      };
 }

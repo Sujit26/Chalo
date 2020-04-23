@@ -74,11 +74,16 @@ class _RatingPageState extends State<RatingPage> {
         prefs.getInt("rating5");
     setState(() {
       _avgRating = prefs.getDouble("avgRating");
-      _rating1 = (prefs.getInt("rating1") / total == 0 ? 1 : total).toDouble();
-      _rating2 = (prefs.getInt("rating2") / total == 0 ? 1 : total).toDouble();
-      _rating3 = (prefs.getInt("rating3") / total == 0 ? 1 : total).toDouble();
-      _rating4 = (prefs.getInt("rating4") / total == 0 ? 1 : total).toDouble();
-      _rating5 = (prefs.getInt("rating5") / total == 0 ? 1 : total).toDouble();
+      _rating1 =
+          (prefs.getInt("rating1") / (total == 0 ? 1 : total)).toDouble();
+      _rating2 =
+          (prefs.getInt("rating2") / (total == 0 ? 1 : total)).toDouble();
+      _rating3 =
+          (prefs.getInt("rating3") / (total == 0 ? 1 : total)).toDouble();
+      _rating4 =
+          (prefs.getInt("rating4") / (total == 0 ? 1 : total)).toDouble();
+      _rating5 =
+          (prefs.getInt("rating5") / (total == 0 ? 1 : total)).toDouble();
       _total = total;
     });
   }

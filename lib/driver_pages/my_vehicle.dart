@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/driver_pages/add_vehicle.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:shared_transport/widgets/custom_dialog.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 import 'package:shared_transport/driver_pages/vehicle_form.dart';
 
@@ -71,28 +72,32 @@ class _VehiclePageState extends State<VehiclePage> {
         showDialog(
           barrierDismissible: false,
           context: context,
-          builder: (context) => AlertDialog(
-            title: Row(
-              children: <Widget>[Text('Invalid Request')],
-            ),
-            content: Text(
-                'This incident will be reported.\nYou will be redireted to the login page.'),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => LoginPage()),
-                    ModalRoute.withName(''),
-                  );
-                },
-                child: Text(
-                  'Ok',
-                  style: TextStyle(color: Colors.red),
-                ),
+          builder: (context) => CustomDialog(
+            icon: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Icon(
+                Icons.error_outline,
+                size: 40,
+                color: buttonColor,
               ),
-            ],
+            ),
+            title: 'Invalid Request',
+            description:
+                'This incident will be reported.\nYou will be redireted to the login page.',
+            buttons: FlatButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => LoginPage()),
+                  ModalRoute.withName(''),
+                );
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(color: buttonColor, fontSize: 20),
+              ),
+            ),
           ),
         );
       }
@@ -146,7 +151,11 @@ class _VehiclePageState extends State<VehiclePage> {
                   ),
                 ),
               ),
-              Flexible(child: AddVehicleBody(vehicle: data, edit: false,)),
+              Flexible(
+                  child: AddVehicleBody(
+                vehicle: data,
+                edit: false,
+              )),
             ],
           ),
         );

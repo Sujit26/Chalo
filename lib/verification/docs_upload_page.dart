@@ -3,12 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/widgets/custom_dialog.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -143,13 +145,28 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
         _isSaving = false;
       });
       showDialog(
+        barrierDismissible: true,
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(
-            'Error',
-            style: TextStyle(color: Colors.red),
+        builder: (context) => CustomDialog(
+          icon: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Icon(
+              Icons.error_outline,
+              size: 40,
+              color: buttonColor,
+            ),
           ),
-          content: Text(jsonData['msg']),
+          title: 'Error',
+          description: jsonData['msg'],
+          buttons: FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(color: buttonColor, fontSize: 20),
+            ),
+          ),
         ),
       );
     }
@@ -292,31 +309,45 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
             onLongPress: () {
               if (approveText == 'Upload' || approveText == 'Rejected') {
                 showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (context) => AlertDialog(
-                          title: Row(
-                            children: <Widget>[Text('Replace?')],
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) => CustomDialog(
+                    icon: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Icon(
+                        FontAwesomeIcons.questionCircle,
+                        size: 40,
+                        color: buttonColor,
+                      ),
+                    ),
+                    title: 'Replace',
+                    description: 'Are you sure you want to replace the image?',
+                    buttons: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              showImageOptions(index: n);
+                            },
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
-                          actions: <Widget>[
-                            FlatButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                showImageOptions(index: n);
-                              },
-                              child: Text(
-                                'Yes',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ),
-                            FlatButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('No'),
-                            ),
-                          ],
-                        ));
+                        ),
+                        Expanded(
+                          child: FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('No'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               } else {
                 showMessageSnackbar('Document verification is $approveText');
               }
@@ -596,13 +627,30 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                                   ));
                         } else {
                           showDialog(
+                            barrierDismissible: true,
                             context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text(
-                                'Error',
-                                style: TextStyle(color: Colors.red),
+                            builder: (context) => CustomDialog(
+                              icon: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: Icon(
+                                  Icons.error_outline,
+                                  size: 40,
+                                  color: buttonColor,
+                                ),
                               ),
-                              content: Text('Upload both back and front side.'),
+                              title: 'Error',
+                              description: 'Upload both back and front side.',
+                              buttons: FlatButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'OK',
+                                  style: TextStyle(
+                                      color: buttonColor, fontSize: 20),
+                                ),
+                              ),
                             ),
                           );
                         }
