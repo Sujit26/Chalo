@@ -224,10 +224,11 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                           direction: Axis.horizontal,
                           children: <Widget>[
                             IconButton(
-                              icon: Icon(Icons.add),
+                              icon: Icon(Icons.remove),
                               onPressed: () {
                                 setState(() {
-                                  _n += 5;
+                                  _n > 0 ? _n -= 5 : _n;
+                                  if (_n == 0) _isDistance = false;
                                 });
                               },
                             ),
@@ -239,14 +240,13 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.remove),
+                              icon: Icon(Icons.add),
                               onPressed: () {
                                 setState(() {
-                                  _n > 0 ? _n -= 5 : _n;
-                                  if (_n == 0) _isDistance = false;
+                                  _n += 5;
                                 });
                               },
-                            )
+                            ),
                           ],
                         ),
                 ],
@@ -283,10 +283,11 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                           direction: Axis.horizontal,
                           children: <Widget>[
                             IconButton(
-                              icon: Icon(Icons.add),
+                              icon: Icon(Icons.remove),
                               onPressed: () {
                                 setState(() {
-                                  _n += 15;
+                                  _n > 0 ? _n -= 15 : _n;
+                                  if (_n == 0) _isDuration = false;
                                 });
                               },
                             ),
@@ -298,14 +299,13 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.remove),
+                              icon: Icon(Icons.add),
                               onPressed: () {
                                 setState(() {
-                                  _n > 0 ? _n -= 15 : _n;
-                                  if (_n == 0) _isDuration = false;
+                                  _n += 15;
                                 });
                               },
-                            )
+                            ),
                           ],
                         ),
                 ],
@@ -325,8 +325,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                               height: 16,
                               width: 16,
                               child: CircularProgressIndicator(
-                                valueColor: 
-                                AlwaysStoppedAnimation<Color>(
+                                valueColor: AlwaysStoppedAnimation<Color>(
                                   Colors.white,
                                 ),
                                 strokeWidth: 2,

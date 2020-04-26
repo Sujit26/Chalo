@@ -35,7 +35,7 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
+// TODO: doc compress before upload and improve location suggestion and my vehicle pics
 class _LoginPageState extends State<LoginPage> {
   var _isLoading = true;
 
