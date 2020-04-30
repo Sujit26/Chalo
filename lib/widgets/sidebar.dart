@@ -4,7 +4,7 @@ import 'package:shared_transport/driver_pages/driver_home.dart';
 import 'package:shared_transport/driver_pages/my_vehicle.dart';
 import 'package:shared_transport/help_and_support.dart';
 import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/my_trips.dart';
+import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/policies.dart';
 import 'package:shared_transport/profile.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
@@ -192,28 +192,30 @@ class _NavDrawerState extends State<NavDrawer> {
                 )
               },
             ),
-            ListTile(
-              leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.all(const Radius.circular(100.0)),
-                    color: mainColor,
-                  ),
-                  child: Icon(
-                    Icons.directions_car,
-                    color: Colors.white,
-                    size: 15,
-                  )),
-              title: Text('My Vehicles'),
-              onTap: () => {
-                Navigator.of(context).pop(),
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => VehiclePage()),
-                )
-              },
-            ),
+            _approveStatus == '100'
+                ? ListTile(
+                    leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.all(const Radius.circular(100.0)),
+                          color: mainColor,
+                        ),
+                        child: Icon(
+                          Icons.directions_car,
+                          color: Colors.white,
+                          size: 15,
+                        )),
+                    title: Text('My Vehicles'),
+                    onTap: () => {
+                      Navigator.of(context).pop(),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => VehiclePage()),
+                      )
+                    },
+                  )
+                : Container(),
             ListTile(
               leading: Container(
                   padding: const EdgeInsets.all(8),

@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/driver_pages/vehicle_info.dart';
-import 'package:shared_transport/loacation.dart';
+import 'package:shared_transport/widgets/loacation.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/drive_card.dart';
 import 'package:shared_transport/ride_search/ride_model.dart';

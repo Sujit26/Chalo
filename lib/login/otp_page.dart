@@ -8,6 +8,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/rider_home.dart';
+import 'package:shared_transport/widgets/bottom_navigation.dart';
 
 class OtpPage extends StatefulWidget {
   final userData;
@@ -370,7 +371,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   void _navigateToConverter(BuildContext context) {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => RiderHome()),
+      MaterialPageRoute(builder: (BuildContext context) => MyHomePage()),
       ModalRoute.withName(''),
     );
   }

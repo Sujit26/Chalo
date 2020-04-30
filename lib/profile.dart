@@ -112,7 +112,13 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     Widget appBar = AppBar(
-      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      elevation: 2,
       title: Text(
         widget.name,
         style: TextStyle(
@@ -133,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
             )),
       ],
       centerTitle: true,
-      backgroundColor: mainColor,
+      backgroundColor: buttonColor,
     );
 
     Widget profileBody = Row(
@@ -308,8 +314,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(vertical: 7.5),
                           child: SizedBox(
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                             height: 35.0,
                             width: 35.0,

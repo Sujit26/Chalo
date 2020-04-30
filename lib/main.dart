@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Main',
+      title: 'Chalo',
       home: LoginPage(),
     );
   }

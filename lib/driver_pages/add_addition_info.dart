@@ -31,7 +31,6 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
     final response = await post(serverURL + 'driver/add',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
       setState(() {
         _isSaving = false;
       });
@@ -56,12 +55,8 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
               'Thank you for driving with us.\n\nYou will be notified when someone request to ride with you.',
           buttons: FlatButton(
             onPressed: () {
-              // find a better way
               Navigator.pop(context);
-              Navigator.pop(context);
-              Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (builder) => DriverHome()));
+              Navigator.pop(context, 'clear');
             },
             child: Text(
               'OK',
@@ -227,7 +222,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                               icon: Icon(Icons.remove),
                               onPressed: () {
                                 setState(() {
-                                  _n > 0 ? _n -= 5 : _n;
+                                  _n -= _n > 0 ? 5 : 0;
                                   if (_n == 0) _isDistance = false;
                                 });
                               },
@@ -286,7 +281,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                               icon: Icon(Icons.remove),
                               onPressed: () {
                                 setState(() {
-                                  _n > 0 ? _n -= 15 : _n;
+                                  _n -= _n > 0 ? 15 : 0;
                                   if (_n == 0) _isDuration = false;
                                 });
                               },

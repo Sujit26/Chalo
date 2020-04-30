@@ -7,8 +7,7 @@ import 'dart:math' as math;
 class DriveCard extends StatelessWidget {
   final RideModel ride;
 
-  DriveCard({Key key, @required this.ride})
-      : super(key: key);
+  DriveCard({Key key, @required this.ride}) : super(key: key);
 
   void _navigateToConverter(BuildContext context) {
     Navigator.push(
@@ -81,13 +80,13 @@ class DriveCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(16),
-      child: Material(
-        elevation: 1,
-        clipBehavior: Clip.antiAlias,
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: <Widget>[
-            Container(
+      child: Stack(
+        children: <Widget>[
+          Material(
+            elevation: 1,
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
               height: 250,
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
               color: Colors.white,
@@ -296,17 +295,17 @@ class DriveCard extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              left: 50,
-              right: 50,
-              top: -20,
-              child: CircleAvatar(
-                backgroundColor: bgColor,
-                radius: 20,
-              ),
+          ),
+          Positioned(
+            left: 50,
+            right: 50,
+            top: -20,
+            child: CircleAvatar(
+              backgroundColor: bgColor,
+              radius: 20,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

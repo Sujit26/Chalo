@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/rider_home.dart';
+import 'package:shared_transport/widgets/bottom_navigation.dart';
 import 'phone_number.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -26,7 +27,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://192.168.43.209:3002/';
+String serverURL = 'http://172.20.10.10:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -35,7 +36,8 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-// TODO: doc compress before upload and improve location suggestion and my vehicle pics
+
+// TODO: doc compress before upload and improve location suggestion and my vehicle pics and sidebar otp page getting out of view and show message when unable to connect to server
 class _LoginPageState extends State<LoginPage> {
   var _isLoading = true;
 
@@ -164,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
   void _navigateToRiderHome(BuildContext context) {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => RiderHome()),
+      MaterialPageRoute(builder: (BuildContext context) => MyHomePage()),
       ModalRoute.withName(''),
     );
   }
@@ -307,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
           'email': account.email,
           'photoUrl': account.photoUrl,
           'platform': 'ios',
-          'token': idToken.token
+          'token': idToken.token,
         };
         print(data['email']);
         _makePostRequest(data);

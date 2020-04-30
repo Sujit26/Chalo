@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/driver_pages/vehicle_info.dart';
-import 'package:shared_transport/loacation.dart';
+import 'package:shared_transport/widgets/loacation.dart';
 
 class User {
   String name;
@@ -15,7 +15,7 @@ class User {
     @required this.email,
     @required this.rating,
     @required this.pic,
-    @required this.nod,
+    this.nod,
     this.phone,
   });
 }
