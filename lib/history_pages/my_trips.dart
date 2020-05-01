@@ -106,20 +106,13 @@ class _MyTripsPageState extends State<MyTripsPage> {
           length: 3,
           child: Scaffold(
             appBar: AppBar(
-              elevation: 0,
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.notifications_none),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (build) => NotificationPage(),
-                      ),
-                    );
-                  },
-                )
-              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              elevation: 2,
               title: Text(
                 widget.name,
                 style: TextStyle(
@@ -130,15 +123,14 @@ class _MyTripsPageState extends State<MyTripsPage> {
                 indicatorColor: Colors.white,
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.black38,
-                indicator: CircleTabIndicator(color: buttonColor, radius: 3),
+                indicator: CircleTabIndicator(color: Colors.white, radius: 3),
                 tabs: <Widget>[
                   Tab(text: 'COMPLETED'),
                   Tab(text: 'UPCOMING'),
                   Tab(text: 'CANCELLED'),
                 ],
               ),
-              centerTitle: true,
-              backgroundColor: mainColor,
+              backgroundColor: buttonColor,
             ),
             body: Container(
               color: bgColor,

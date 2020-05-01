@@ -99,7 +99,85 @@ class _DriveDetailsState extends State<DriveDetails> {
 
   @override
   Widget build(BuildContext context) {
-    Widget appBar = Container(
+    Widget appBar = Material(
+      elevation: 2,
+      color: buttonColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        height: 95,
+        padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+          leading: Container(
+            width: 20,
+            height: 100,
+            alignment: Alignment.topLeft,
+            child: Icon(
+              Icons.navigate_before,
+              size: 40,
+              color: Colors.white,
+            ),
+          ),
+          title: Row(
+            textBaseline: TextBaseline.alphabetic,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            children: <Widget>[
+              Text(
+                "10 April ",
+                style: TextStyle(
+                    fontSize: 30,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "5:00 pm",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          subtitle: Text(
+            "Trip to driver's destination",
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
+          trailing: Container(
+            margin: const EdgeInsets.only(right: 10, top: 5),
+            width: 50,
+            height: 40,
+            child: MaterialButton(
+              padding: const EdgeInsets.all(0),
+              color: Colors.white,
+              onPressed: () {
+                print('send sos');
+              },
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                'SOS',
+                style: TextStyle(
+                  color: buttonColor,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Widget appBar1 = Container(
       width: MediaQuery.of(context).size.width,
       height: 100,
       decoration: BoxDecoration(
@@ -113,87 +191,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         margin: EdgeInsets.fromLTRB(10, 30, 0, 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              Icons.navigate_before,
-              size: 40,
-              color: Colors.white,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      textBaseline: TextBaseline.alphabetic,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      children: <Widget>[
-                        Text(
-                          "10 April ",
-                          style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "5:00 pm",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    Spacer(),
-                    Text(
-                      "Trip to driver's destination",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Spacer(flex: 3),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: Center(
-                child: InkWell(
-                  onTap: () {
-                    print('send sos');
-                  },
-                  child: Container(
-                    width: 51,
-                    height: 40,
-                    child: MaterialButton(
-                      padding: const EdgeInsets.all(0),
-                      color: Colors.white,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (build) => MyHomePage()));
-                      },
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        'SOS',
-                        style: TextStyle(
-                          color: buttonColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          children: [],
         ),
       ),
     );

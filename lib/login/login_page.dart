@@ -27,7 +27,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://172.20.10.10:3002/';
+String serverURL = 'http://192.168.43.209:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                 'photoUrl': prefs.getString('photoUrl'),
                 'phone': prefs.getString("phone"),
                 'gender': prefs.getString("gender"),
-                'rating': prefs.getString("rating")
+                'rating': prefs.getString("rating"),
               };
               print(data['email']);
               _makePostRequest(data);
@@ -184,24 +184,26 @@ class _LoginPageState extends State<LoginPage> {
     Widget createBody() {
       return Container(
         color: mainColor,
-        child: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Stack(children: <Widget>[
-                  Positioned(
-                      child: Align(
-                    alignment: FractionalOffset.center,
-                    child: Image.asset('assets/images/logo.png'),
-                  )),
-                  Positioned(
-                      child: Align(
-                    alignment: FractionalOffset.bottomCenter,
-                    child: Wrap(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Stack(children: <Widget>[
+            Positioned(
+                child: Align(
+              alignment: FractionalOffset.center,
+              child: Image.asset('assets/images/logo.png'),
+            )),
+            Positioned(
+                child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: _isLoading
+                  ? Padding(
+                    padding: const EdgeInsets.only(bottom: 150.0),
+                    child: CircularProgressIndicator(
+                        valueColor:
+                            new AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                  )
+                  : Wrap(
                       children: <Widget>[
                         Padding(
                           padding:
@@ -281,9 +283,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                  )),
-                ]),
-              ),
+            )),
+          ]),
+        ),
       );
     }
 

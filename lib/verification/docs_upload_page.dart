@@ -418,7 +418,14 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
     }
 
     Widget appBar = AppBar(
-      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      elevation: 2,
+      titleSpacing: 0,
       title: Text(
         widget.name == 'dl'
             ? 'Driving Licence'
@@ -429,8 +436,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
           fontSize: 25.0,
         ),
       ),
-      centerTitle: true,
-      backgroundColor: mainColor,
+      backgroundColor: buttonColor,
     );
 
     Widget getGuidlines() {

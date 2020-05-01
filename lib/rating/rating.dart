@@ -91,15 +91,21 @@ class _RatingPageState extends State<RatingPage> {
   @override
   Widget build(BuildContext context) {
     Widget appBar = AppBar(
-      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      elevation: 2,
+      titleSpacing: 0,
       title: Text(
         widget.name,
         style: TextStyle(
           fontSize: 25.0,
         ),
       ),
-      centerTitle: true,
-      backgroundColor: mainColor,
+      backgroundColor: buttonColor,
     );
 
     Widget _ratingBar(int stars, double percentage) {

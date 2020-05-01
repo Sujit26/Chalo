@@ -199,6 +199,10 @@ class _DriverHomeState extends State<DriverHome> {
           ),
         );
       }
+    } else {
+      setState(() {
+        _verifiedDriver = false;
+      });
     }
   }
 
@@ -1037,7 +1041,7 @@ class _DriverHomeState extends State<DriverHome> {
               child: Image(
                   color: buttonColor,
                   image: NetworkImage(
-                      'https://lh3.googleusercontent.com/proxy/hSfjRH6Yi5auQJnsyiHaycdqwWyWwMshqMmg5_ev4GSx3x0eWi3EsM1DsWWnejPxqAxQ7PDwbTC3b1vBPMs_jEPlEoMF9Rixsw-Xohke04Dry3CIkWYXmP4mEgEM7h_szA')),
+                      'http://icon-library.com/images/verified-icon-png/verified-icon-png-29.jpg')),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),

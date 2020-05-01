@@ -170,30 +170,38 @@ class _VehiclePageState extends State<VehiclePage> {
   @override
   Widget build(BuildContext context) {
     Widget appBar = AppBar(
-      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      elevation: 2,
+      backgroundColor: buttonColor,
       title: Text(
         widget.name,
         style: TextStyle(
           fontSize: 25.0,
         ),
       ),
+      actions: <Widget>[
+        _isLoading
+            ? Container()
+            : FlatButton(
+                child: Text('ADD'),
+                onPressed: () {
+                  _showAddForm();
+                },
+                textColor: Colors.white,
+              ),
+      ],
       centerTitle: true,
-      backgroundColor: mainColor,
     );
 
     Widget createBody() {
       return Container(
         child: Scaffold(
           appBar: appBar,
-          floatingActionButton: _isLoading
-              ? null
-              : FloatingActionButton(
-                  child: Icon(Icons.add),
-                  onPressed: () {
-                    _showAddForm();
-                  },
-                  foregroundColor: Colors.white,
-                ),
           body: Container(
             decoration: BoxDecoration(
               color: bgColor,

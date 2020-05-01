@@ -273,64 +273,50 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
 
   @override
   Widget build(BuildContext context) {
-    Widget appBar = Container(
-      width: MediaQuery.of(context).size.width,
-      height: 100,
-      decoration: BoxDecoration(
-        color: buttonColor,
+    Widget appBar = Material(
+      elevation: 2,
+      color: buttonColor,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Container(
-        margin: EdgeInsets.fromLTRB(10, 30, 0, 0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
+        height: 95,
+        padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+          leading: Container(
+            width: 20,
+            height: 100,
+            alignment: Alignment.topLeft,
+            child: Icon(
               Icons.navigate_before,
               size: 40,
               color: Colors.white,
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'Trip Summary',
-                      style: TextStyle(
-                          fontSize: 30,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Spacer(),
-                    Text(
-                      DateTime.utc(
-                                int.parse(widget.ride.rideInfo.driveDate
-                                    .split('/')[2]),
-                                int.parse(widget.ride.rideInfo.driveDate
-                                    .split('/')[1]),
-                                int.parse(widget.ride.rideInfo.driveDate
-                                    .split('/')[0]),
-                              ).compareTo(DateTime.now()) ==
-                              1
-                          ? 'Upcoming ride'
-                          : 'Completed ride',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Spacer(flex: 3),
-                  ],
-                ),
-              ),
+          ),
+          title: Text(
+            'Trip Summary',
+            style: TextStyle(
+                fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            DateTime.utc(
+                      int.parse(widget.ride.rideInfo.driveDate.split('/')[2]),
+                      int.parse(widget.ride.rideInfo.driveDate.split('/')[1]),
+                      int.parse(widget.ride.rideInfo.driveDate.split('/')[0]),
+                    ).compareTo(DateTime.now()) ==
+                    1
+                ? 'Upcoming ride'
+                : 'Completed ride',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
             ),
-          ],
+          ),
         ),
       ),
     );

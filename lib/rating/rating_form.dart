@@ -30,13 +30,13 @@ class RatingForm extends StatelessWidget {
       child: Material(
         elevation: 1,
         clipBehavior: Clip.antiAlias,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             AppBar(
               title: Text('User Rating'),
-              backgroundColor: mainColor,
+              backgroundColor: buttonColor,
               centerTitle: false,
               automaticallyImplyLeading: false,
               elevation: 0,

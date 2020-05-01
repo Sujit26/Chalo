@@ -56,6 +56,7 @@ class NotificationPage extends StatefulWidget {
       ),
     ],
   );
+  final name = 'Notifications';
 
   NotificationPage({Key key}) : super(key: key);
   @override
@@ -277,75 +278,37 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget appBar = Container(
-      width: MediaQuery.of(context).size.width,
-      height: 100,
-      decoration: BoxDecoration(
-        color: buttonColor,
+    Widget appBar = AppBar(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
       ),
-      child: Container(
-        margin: EdgeInsets.fromLTRB(10, 30, 0, 0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              Icons.navigate_before,
-              size: 40,
-              color: Colors.white,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Notification",
-                      style: TextStyle(
-                          fontSize: 30,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Spacer(),
-                    Text(
-                      "Ride Requests",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Spacer(flex: 3),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+      elevation: 2,
+      titleSpacing: 0,
+      title: Text(
+        widget.name,
+        style: TextStyle(fontSize: 25.0),
       ),
+      backgroundColor: buttonColor,
     );
-
-    Widget body = Container(
-      padding: const EdgeInsets.only(top: 90),
-      child: ListView(
-        children: <Widget>[
-          _notification(),
-          _notification(),
-          _notification(),
-          _notification(),
-          _notification(),
-          _notification(),
-          _notification(),
-          _notification(),
-        ],
-      ),
+    
+    Widget body = ListView(
+      children: <Widget>[
+        _notification(),
+        _notification(),
+        _notification(),
+        _notification(),
+        _notification(),
+        _notification(),
+        _notification(),
+        _notification(),
+      ],
     );
 
     return Scaffold(
+      appBar: appBar,
       backgroundColor: bgColor,
       body: GestureDetector(
         onTap: () {
@@ -354,12 +317,7 @@ class _NotificationPageState extends State<NotificationPage> {
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: Stack(
-            children: <Widget>[
-              body,
-              appBar,
-            ],
-          ),
+          child: body,
         ),
       ),
     );

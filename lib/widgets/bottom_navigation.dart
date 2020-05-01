@@ -5,6 +5,7 @@ import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/profile.dart';
 import 'package:shared_transport/rider_home.dart';
+import 'package:shared_transport/widgets/home_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -21,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget child;
     switch (_currentTab) {
       case 0:
-        child = FlutterLogo();
+        child = HomePage();
         break;
       case 1:
         child = DriverHome();
