@@ -6,7 +6,7 @@ import 'package:shared_transport/login/login_page.dart';
 class BookingPage extends StatefulWidget {
   final String name = 'Book';
   final Color color = mainColor;
-  final RideModel ride;
+  final ride;
   BookingPage({Key key, @required this.ride}) : super(key: key);
 
   @override
@@ -14,11 +14,18 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
+  RideModel drive;
+  @override
+  void initState() {
+    super.initState();
+    drive = widget.ride['ride'];
+  }
+
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(drive.driveDate.split('/')[2]),
+      int.parse(drive.driveDate.split('/')[1]),
+      int.parse(drive.driveDate.split('/')[0]),
     ).weekday;
     var days = [
       'Monday',
@@ -34,9 +41,9 @@ class _BookingPageState extends State<BookingPage> {
 
   String getMonthOfYear(date) {
     int mNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(drive.driveDate.split('/')[2]),
+      int.parse(drive.driveDate.split('/')[1]),
+      int.parse(drive.driveDate.split('/')[0]),
     ).month;
     var months = [
       'January',
@@ -77,7 +84,7 @@ class _BookingPageState extends State<BookingPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          widget.ride.from.name.split(',')[0],
+                          drive.from.name.split(',')[0],
                           style: TextStyle(color: Colors.white, fontSize: 22.0),
                         ),
                         Padding(
@@ -95,7 +102,7 @@ class _BookingPageState extends State<BookingPage> {
                           ),
                         ),
                         Text(
-                          widget.ride.to.name.split(',')[0],
+                          drive.to.name.split(',')[0],
                           style: TextStyle(color: Colors.white, fontSize: 22.0),
                         ),
                       ],
@@ -109,16 +116,17 @@ class _BookingPageState extends State<BookingPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            widget.ride.driveDate.split('/')[0],
+                            drive.driveDate.split('/')[0],
                             style:
                                 TextStyle(color: Colors.white, fontSize: 20.0),
                           ),
                           Text(
-                            widget.ride.driveDate.split('/')[0] == '01'
+                            drive.driveDate.split('/')[0] == '01'
                                 ? 'st'
-                                : widget.ride.driveDate.split('/')[0] == '02'
+                                : drive.driveDate.split('/')[0] == '02'
                                     ? 'nd'
-                                    : widget.ride.driveDate.split('/')[0] == '03'
+                                    : drive.driveDate.split('/')[0] ==
+                                            '03'
                                         ? 'rd'
                                         : 'th',
                             style: TextStyle(color: Colors.white),
@@ -128,7 +136,7 @@ class _BookingPageState extends State<BookingPage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(
-                          '${getMonthOfYear(widget.ride.driveDate)}, ${getDayOfWeek(widget.ride.driveDate)}',
+                          '${getMonthOfYear(drive.driveDate)}, ${getDayOfWeek(drive.driveDate)}',
                           style: TextStyle(color: Colors.white, fontSize: 15),
                         ),
                       ),

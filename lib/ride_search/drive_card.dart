@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/new_ride.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
 import 'dart:math' as math;
 
 class DriveCard extends StatelessWidget {
-  final RideModel ride;
+  final ride;
 
   DriveCard({Key key, @required this.ride}) : super(key: key);
 
@@ -18,9 +17,9 @@ class DriveCard extends StatelessWidget {
 
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
-      int.parse(ride.driveDate.split('/')[2]),
-      int.parse(ride.driveDate.split('/')[1]),
-      int.parse(ride.driveDate.split('/')[0]),
+      int.parse(ride['ride'].driveDate.split('/')[2]),
+      int.parse(ride['ride'].driveDate.split('/')[1]),
+      int.parse(ride['ride'].driveDate.split('/')[0]),
     ).weekday;
     var days = [
       'Monday',
@@ -36,9 +35,9 @@ class DriveCard extends StatelessWidget {
 
   String getMonthOfYear(date) {
     int mNum = DateTime.utc(
-      int.parse(ride.driveDate.split('/')[2]),
-      int.parse(ride.driveDate.split('/')[1]),
-      int.parse(ride.driveDate.split('/')[0]),
+      int.parse(ride['ride'].driveDate.split('/')[2]),
+      int.parse(ride['ride'].driveDate.split('/')[1]),
+      int.parse(ride['ride'].driveDate.split('/')[0]),
     ).month;
     var months = [
       'January',
@@ -81,6 +80,7 @@ class DriveCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16),
       child: Stack(
+        overflow: Overflow.visible,
         children: <Widget>[
           Material(
             elevation: 1,
@@ -104,20 +104,20 @@ class DriveCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  ride.driveDate.split('/')[0],
+                                  ride['ride'].driveDate.split('/')[0],
                                   style: TextStyle(fontSize: 25),
                                 ),
-                                Text(ride.driveDate.split('/')[0] == '01'
+                                Text(ride['ride'].driveDate.split('/')[0] == '01'
                                     ? 'st'
-                                    : ride.driveDate.split('/')[0] == '02'
+                                    : ride['ride'].driveDate.split('/')[0] == '02'
                                         ? 'nd'
-                                        : ride.driveDate.split('/')[0] == '03'
+                                        : ride['ride'].driveDate.split('/')[0] == '03'
                                             ? 'rd'
                                             : 'th'),
                               ],
                             ),
                             Text(
-                                '${getMonthOfYear(ride.driveDate)}, ${getDayOfWeek(ride.driveDate)}'),
+                                '${getMonthOfYear(ride['ride'].driveDate)}, ${getDayOfWeek(ride['ride'].driveDate)}'),
                           ],
                         ),
                         Spacer(),
@@ -125,11 +125,11 @@ class DriveCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             Text(
-                              '${ride.vehicle.name} ${ride.vehicle.modelName}',
+                              '${ride['ride'].vehicle.name} ${ride['ride'].vehicle.modelName}',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
-                            Text('${ride.slots} Seats | ${ride.vehicle.type}'),
+                            Text('${ride['ride'].slots} Seats | ${ride['ride'].vehicle.type}'),
                           ],
                         ),
                       ],
@@ -173,9 +173,9 @@ class DriveCard extends StatelessWidget {
                                   child: Text(
                                     TimeOfDay(
                                       hour: int.parse(
-                                          ride.fromTime.split(':')[0]),
+                                          ride['ride'].fromTime.split(':')[0]),
                                       minute: int.parse(
-                                          ride.fromTime.split(':')[1]),
+                                          ride['ride'].fromTime.split(':')[1]),
                                     ).format(context),
                                   ),
                                 ),
@@ -187,9 +187,9 @@ class DriveCard extends StatelessWidget {
                                   child: Text(
                                     TimeOfDay(
                                       hour:
-                                          int.parse(ride.toTime.split(':')[0]),
+                                          int.parse(ride['ride'].toTime.split(':')[0]),
                                       minute:
-                                          int.parse(ride.toTime.split(':')[1]),
+                                          int.parse(ride['ride'].toTime.split(':')[1]),
                                     ).format(context),
                                   ),
                                 ),
@@ -207,7 +207,7 @@ class DriveCard extends StatelessWidget {
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      '${ride.from.name.split(',')[0]},${ride.from.name.split(',')[1]}',
+                                      '${ride['ride'].from.name.split(',')[0]},${ride['ride'].from.name.split(',')[1]}',
                                     ),
                                   ),
                                 ),
@@ -216,7 +216,7 @@ class DriveCard extends StatelessWidget {
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                        '${ride.to.name.split(',')[0]},${ride.to.name.split(',')[1]}'),
+                                        '${ride['ride'].to.name.split(',')[0]},${ride['ride'].to.name.split(',')[1]}'),
                                   ),
                                 ),
                               ],
@@ -236,7 +236,7 @@ class DriveCard extends StatelessWidget {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               fit: BoxFit.fill,
-                              image: NetworkImage(ride.driver.pic),
+                              image: NetworkImage(ride['ride'].driver.pic),
                             ),
                           ),
                         ),
@@ -248,7 +248,7 @@ class DriveCard extends StatelessWidget {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    ride.driver.name,
+                                    ride['ride'].driver.name,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15),
@@ -265,11 +265,11 @@ class DriveCard extends StatelessWidget {
                               ),
                               Row(
                                 children: <Widget>[
-                                  _starFilling(ride.driver.rating),
-                                  _starFilling(ride.driver.rating - 1),
-                                  _starFilling(ride.driver.rating - 2),
-                                  _starFilling(ride.driver.rating - 3),
-                                  _starFilling(ride.driver.rating - 4),
+                                  _starFilling(ride['ride'].driver.rating),
+                                  _starFilling(ride['ride'].driver.rating - 1),
+                                  _starFilling(ride['ride'].driver.rating - 2),
+                                  _starFilling(ride['ride'].driver.rating - 3),
+                                  _starFilling(ride['ride'].driver.rating - 4),
                                 ],
                               ),
                             ],

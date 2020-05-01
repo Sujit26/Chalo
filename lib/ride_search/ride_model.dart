@@ -18,6 +18,14 @@ class User {
     this.nod,
     this.phone,
   });
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'email': email,
+        'rating': rating,
+        'pic': pic,
+        'phone': phone,
+        'nod': nod,
+      };
 }
 
 class RideModel {
@@ -44,4 +52,16 @@ class RideModel {
     @required this.dId,
     @required this.driver,
   });
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'from': from.toJson(),
+        'to': to.toJson(),
+        'driveDate': driveDate,
+        'fromTime': fromTime,
+        'toTime': toTime,
+        'vehicle': vehicle.toJson(),
+        'slots': slots,
+        'dId': dId,
+        'driver': driver.toJson(),
+      };
 }

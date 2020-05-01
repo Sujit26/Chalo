@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/ride_model.dart';
 import 'dart:math' as math;
@@ -6,22 +10,125 @@ import 'dart:math' as math;
 import 'package:shared_transport/widgets/custom_dialog.dart';
 
 class BookingCard extends StatefulWidget {
-  final RideModel ride;
+  final ride;
 
-  BookingCard({Key key, @required this.ride})
-      : super(key: key);
+  BookingCard({Key key, @required this.ride}) : super(key: key);
   @override
   _BookingCardState createState() => _BookingCardState();
 }
 
 class _BookingCardState extends State<BookingCard> {
   int bookSeats = 1;
+  var _isSaving = false;
+  RideModel drive;
+
+  @override
+  void initState() {
+    super.initState();
+    drive = widget.ride['ride'];
+  }
+
+  _makePostRequest(data) async {
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    var sendData = {
+      'email': prefs.getString('email'),
+      'token': prefs.getString('token'),
+      'data': data,
+    };
+
+    final response = await post(
+      serverURL + 'ride/request',
+      headers: {"Content-type": "application/json"},
+      body: jsonEncode(sendData),
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        _isSaving = false;
+      });
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => CustomDialog(
+          icon: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              border: Border.all(width: 2, color: buttonColor),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.done,
+              size: 40,
+              color: buttonColor,
+            ),
+          ),
+          title: 'Awesome',
+          description:
+              'Thank you choosing us.\n\nYou will be provided with drivers contact details once your request get approved.',
+          buttons: FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Navigator.pop(context);
+              // Navigator.pop(context);
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(color: buttonColor, fontSize: 20),
+            ),
+          ),
+        ),
+      );
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => CustomDialog(
+          icon: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Icon(
+              Icons.error_outline,
+              size: 40,
+              color: buttonColor,
+            ),
+          ),
+          title: 'Error',
+          description:
+              'Seems like your request got into a conflict please retry again.',
+          buttons: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _makePostRequest(data);
+                },
+                child: Text(
+                  'Retry',
+                  style: TextStyle(color: buttonColor, fontSize: 20),
+                ),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
 
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(drive.driveDate.split('/')[2]),
+      int.parse(drive.driveDate.split('/')[1]),
+      int.parse(drive.driveDate.split('/')[0]),
     ).weekday;
     var days = [
       'Monday',
@@ -37,9 +144,9 @@ class _BookingCardState extends State<BookingCard> {
 
   String getMonthOfYear(date) {
     int mNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(drive.driveDate.split('/')[2]),
+      int.parse(drive.driveDate.split('/')[1]),
+      int.parse(drive.driveDate.split('/')[0]),
     ).month;
     var months = [
       'January',
@@ -85,16 +192,16 @@ class _BookingCardState extends State<BookingCard> {
       decoration: BoxDecoration(
           image: DecorationImage(
         fit: BoxFit.fill,
-        image: NetworkImage(widget.ride.vehicle.pic),
+        image: NetworkImage(drive.vehicle.pic),
       )),
     );
   }
 
   showSeats() {
     List<Widget> seats = List();
-    for (var i = 0; i < widget.ride.vehicle.seats - widget.ride.slots; i++)
+    for (var i = 0; i < drive.vehicle.seats - drive.slots; i++)
       seats.add(Icon(Icons.person, color: buttonColor, size: 18));
-    for (var i = 0; i < widget.ride.slots; i++)
+    for (var i = 0; i < drive.slots; i++)
       seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
 
     return Row(
@@ -107,10 +214,10 @@ class _BookingCardState extends State<BookingCard> {
       child: Column(
         children: <Widget>[
           Text(
-            '${widget.ride.vehicle.name} ${widget.ride.vehicle.modelName}',
+            '${drive.vehicle.name} ${drive.vehicle.modelName}',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          Text('${widget.ride.slots} Seats'),
+          Text('${drive.slots} Seats'),
         ],
       ),
     );
@@ -124,7 +231,7 @@ class _BookingCardState extends State<BookingCard> {
             shape: BoxShape.circle,
             image: DecorationImage(
               fit: BoxFit.fill,
-              image: NetworkImage(widget.ride.driver.pic),
+              image: NetworkImage(drive.driver.pic),
             ),
           ),
         ),
@@ -136,7 +243,7 @@ class _BookingCardState extends State<BookingCard> {
               Row(
                 children: <Widget>[
                   Text(
-                    widget.ride.driver.name,
+                    drive.driver.name,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Padding(
@@ -151,11 +258,11 @@ class _BookingCardState extends State<BookingCard> {
               ),
               Row(
                 children: <Widget>[
-                  _starFilling(widget.ride.driver.rating),
-                  _starFilling(widget.ride.driver.rating - 1),
-                  _starFilling(widget.ride.driver.rating - 2),
-                  _starFilling(widget.ride.driver.rating - 3),
-                  _starFilling(widget.ride.driver.rating - 4),
+                  _starFilling(drive.driver.rating),
+                  _starFilling(drive.driver.rating - 1),
+                  _starFilling(drive.driver.rating - 2),
+                  _starFilling(drive.driver.rating - 3),
+                  _starFilling(drive.driver.rating - 4),
                 ],
               ),
             ],
@@ -169,7 +276,7 @@ class _BookingCardState extends State<BookingCard> {
             borderRadius: BorderRadius.circular(3),
           ),
           child: Text(
-            '${widget.ride.driver.nod} Rides',
+            '${drive.driver.nod} Rides',
             style: TextStyle(color: buttonColor),
           ),
         )
@@ -183,7 +290,7 @@ class _BookingCardState extends State<BookingCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                widget.ride.vehicle.number,
+                drive.vehicle.number,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.black38,
@@ -194,7 +301,7 @@ class _BookingCardState extends State<BookingCard> {
                 children: <Widget>[
                   Flexible(
                     child: Text(
-                      widget.ride.vehicle.name,
+                      drive.vehicle.name,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -203,7 +310,7 @@ class _BookingCardState extends State<BookingCard> {
                   ),
                   Flexible(
                     child: Text(
-                      ' ${widget.ride.vehicle.modelName}',
+                      ' ${drive.vehicle.modelName}',
                       style: TextStyle(
                         fontSize: 16,
                       ),
@@ -332,8 +439,8 @@ class _BookingCardState extends State<BookingCard> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     TimeOfDay(
-                      hour: int.parse(widget.ride.fromTime.split(':')[0]),
-                      minute: int.parse(widget.ride.fromTime.split(':')[1]),
+                      hour: int.parse(drive.fromTime.split(':')[0]),
+                      minute: int.parse(drive.fromTime.split(':')[1]),
                     ).format(context),
                   ),
                 ),
@@ -344,8 +451,8 @@ class _BookingCardState extends State<BookingCard> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     TimeOfDay(
-                      hour: int.parse(widget.ride.fromTime.split(':')[0]) + 1,
-                      minute: int.parse(widget.ride.fromTime.split(':')[1]),
+                      hour: int.parse(drive.fromTime.split(':')[0]) + 1,
+                      minute: int.parse(drive.fromTime.split(':')[1]),
                     ).format(context),
                   ),
                 ),
@@ -356,8 +463,8 @@ class _BookingCardState extends State<BookingCard> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     TimeOfDay(
-                      hour: int.parse(widget.ride.toTime.split(':')[0]) - 1,
-                      minute: int.parse(widget.ride.toTime.split(':')[1]),
+                      hour: int.parse(drive.toTime.split(':')[0]) - 1,
+                      minute: int.parse(drive.toTime.split(':')[1]),
                     ).format(context),
                   ),
                 ),
@@ -368,8 +475,8 @@ class _BookingCardState extends State<BookingCard> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     TimeOfDay(
-                      hour: int.parse(widget.ride.toTime.split(':')[0]),
-                      minute: int.parse(widget.ride.toTime.split(':')[1]),
+                      hour: int.parse(drive.toTime.split(':')[0]),
+                      minute: int.parse(drive.toTime.split(':')[1]),
                     ).format(context),
                   ),
                 ),
@@ -386,7 +493,7 @@ class _BookingCardState extends State<BookingCard> {
                   height: 30.0,
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${widget.ride.from.name.split(',')[0]},${widget.ride.from.name.split(',')[1]}',
+                    '${drive.from.name.split(',')[0]},${drive.from.name.split(',')[1]}',
                   ),
                 ),
                 Container(
@@ -405,7 +512,7 @@ class _BookingCardState extends State<BookingCard> {
                   height: 30.0,
                   alignment: Alignment.centerLeft,
                   child: Text(
-                      '${widget.ride.to.name.split(',')[0]},${widget.ride.to.name.split(',')[1]}'),
+                      '${drive.to.name.split(',')[0]},${drive.to.name.split(',')[1]}'),
                 ),
               ],
             ),
@@ -426,7 +533,7 @@ class _BookingCardState extends State<BookingCard> {
           MaterialButton(
             onPressed: () {
               setState(() {
-                if (bookSeats < widget.ride.slots)
+                if (bookSeats < drive.slots)
                   bookSeats++;
                 else {
                   final scaffold = Scaffold.of(context);
@@ -492,50 +599,36 @@ class _BookingCardState extends State<BookingCard> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
             color: buttonColor,
             onPressed: () {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => CustomDialog(
-                  icon: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 2, color: buttonColor),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.done,
-                      size: 40,
-                      color: buttonColor,
-                    ),
-                  ),
-                  title: 'Awesome',
-                  description:
-                      'Thank you choosing us.\n\nYou will be provided with drivers contact detail as soon as your ride accepts.',
-                  buttons: FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'OK',
-                      style: TextStyle(color: buttonColor, fontSize: 20),
-                    ),
-                  ),
-                ),
-              );
+              if (_isSaving) return;
+              setState(() {
+                _isSaving = true;
+              });
+              var data = {
+                'rider': widget.ride['rider'],
+                'slots': bookSeats,
+                'dId': widget.ride['ride'].dId,
+              };
+              _makePostRequest(data);
             },
-            child: Text(
-              'CONFIRM REQUEST',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: _isSaving
+                ? SizedBox(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                    height: 35.0,
+                    width: 35.0,
+                  )
+                : Text(
+                    'CONFIRM REQUEST',
+                    style: TextStyle(color: Colors.white),
+                  ),
           ),
         ),
       ],
     );
 
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(12),
       child: Material(
         elevation: 1,
         clipBehavior: Clip.antiAlias,

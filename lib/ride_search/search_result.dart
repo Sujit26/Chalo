@@ -152,8 +152,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             ),
           ),
           title: 'Error',
-          description:
-              'Something went wrong\nPlease try again',
+          description: 'Something went wrong\nPlease try again',
           buttons: FlatButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(
@@ -631,15 +630,21 @@ class _SearchResultPageState extends State<SearchResultPage> {
   @override
   Widget build(BuildContext context) {
     Widget appBar = AppBar(
-      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      elevation: 2,
+      titleSpacing: 0,
+      backgroundColor: buttonColor,
       title: Text(
         widget.name,
         style: TextStyle(
           fontSize: 25.0,
         ),
       ),
-      centerTitle: true,
-      backgroundColor: mainColor,
     );
 
     Widget floatingButton = _isVisible
@@ -714,7 +719,11 @@ class _SearchResultPageState extends State<SearchResultPage> {
       if (_refreshRequired) {
         rides.sort(_resultSorter);
         List<Widget> results = rides.map((ride) {
-          Widget drive = DriveCard(ride: ride);
+          var data = {
+            'ride': ride,
+            'rider': widget.search,
+          };
+          Widget drive = DriveCard(ride: data);
 
           drive = (_filterSeatsSelected != null &&
                   ride.slots != _filterSeatsSelected)
@@ -742,138 +751,138 @@ class _SearchResultPageState extends State<SearchResultPage> {
     }
 
     Widget createBody() {
-      return Container(
-        child: Scaffold(
-          appBar: appBar,
-          body: Container(
-            decoration: BoxDecoration(
-              color: bgColor,
-            ),
-            child: Container(
-              child: Column(
-                children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      color: mainColor,
-                      width: MediaQuery.of(context).size.width,
-                      height: _searchHeight,
-                      child: Column(
-                        children: <Widget>[
-                          Flexible(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  widget.search['from']['name'].split(',')[0],
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 22.0),
+      return Scaffold(
+        appBar: appBar,
+        body: Container(
+          decoration: BoxDecoration(color: bgColor),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(20, _searchHeight / 5.3, 20, 0),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: buttonColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    width: MediaQuery.of(context).size.width,
+                    height: _searchHeight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Flexible(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                widget.search['from']['name'].split(',')[0],
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22.0,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    radius: 17,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: CircleAvatar(
-                                        backgroundColor: mainColor,
-                                        radius: 17,
-                                        child: Icon(
-                                          Icons.arrow_forward,
-                                          color: Colors.white,
-                                          size: _searchHeight / 3.5,
-                                        ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  radius: 17,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(1.0),
+                                    child: CircleAvatar(
+                                      backgroundColor: buttonColor,
+                                      radius: 17,
+                                      child: Icon(
+                                        Icons.arrow_forward,
+                                        color: Colors.white,
+                                        size: _searchHeight / 3.5,
                                       ),
                                     ),
                                   ),
                                 ),
-                                Text(
-                                  widget.search['to']['name'].split(',')[0],
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 22.0),
+                              ),
+                              Text(
+                                widget.search['to']['name'].split(',')[0],
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 22.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      widget.search['date'].split('/')[0],
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20.0),
+                                    ),
+                                    Text(
+                                      widget.search['date'].split('/')[0] ==
+                                              '01'
+                                          ? 'st'
+                                          : widget.search['date']
+                                                      .split('/')[0] ==
+                                                  '02'
+                                              ? 'nd'
+                                              : widget.search['date']
+                                                          .split('/')[0] ==
+                                                      '03'
+                                                  ? 'rd'
+                                                  : 'th',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    '${getMonthOfYear(widget.search['date'])}, ${getDayOfWeek(widget.search['date'])}',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          Flexible(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        widget.search['date'].split('/')[0],
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20.0),
-                                      ),
-                                      Text(
-                                        widget.search['date'].split('/')[0] ==
-                                                '01'
-                                            ? 'st'
-                                            : widget.search['date']
-                                                        .split('/')[0] ==
-                                                    '02'
-                                                ? 'nd'
-                                                : widget.search['date']
-                                                            .split('/')[0] ==
-                                                        '03'
-                                                    ? 'rd'
-                                                    : 'th',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      '${getMonthOfYear(widget.search['date'])}, ${getDayOfWeek(widget.search['date'])}',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 15),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  _isLoading
+                ),
+              ),
+              _isLoading
+                  ? Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : rides.length <= 0
                       ? Expanded(
                           child: Center(
-                            child: CircularProgressIndicator(),
+                            child: EmptyState(
+                              title: 'Oops',
+                              message:
+                                  'No rides found\nPlease update the search',
+                            ),
                           ),
                         )
-                      : rides.length <= 0
-                          ? Expanded(
-                              child: Center(
-                                child: EmptyState(
-                                  title: 'Oops',
-                                  message:
-                                      'No rides found\nPlease update the search',
-                                ),
-                              ),
-                            )
-                          : Expanded(child: searchResults()),
-                ],
-              ),
-            ),
+                      : Expanded(child: searchResults()),
+            ],
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: rides.length <= 0 ? null : floatingButton,
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: rides.length <= 0 ? null : floatingButton,
       );
     }
 
