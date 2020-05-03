@@ -27,7 +27,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://192.168.43.209:3002/';
+String serverURL = 'http://172.20.10.2:3002/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';

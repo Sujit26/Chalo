@@ -195,7 +195,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
           border: Border.all(width: 2, color: Colors.grey),
           borderRadius: BorderRadius.all(const Radius.circular(10)),
           image: DecorationImage(
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
             image: _images.length == 0
                 ? NetworkImage(
                     'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80')

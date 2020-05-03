@@ -179,18 +179,24 @@ class HistoryCard extends StatelessWidget {
   }
 
   _vehicleInfo(slots) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: <Widget>[
-        Text(
-          '${history.rideInfo.vehicle.name} ${history.rideInfo.vehicle.modelName}',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        Text('$slots Seats | ${history.rideInfo.vehicle.type}'),
-      ],
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Text(
+            '${history.rideInfo.vehicle.name} ${history.rideInfo.vehicle.modelName}',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            overflow: TextOverflow.fade,
+            maxLines: 1,
+            softWrap: false,
+          ),
+          Text('$slots Seats | ${history.rideInfo.vehicle.type}'),
+        ],
+      ),
     );
   }
 
+  // TODO: Server not sending time
   _columnTime(context, fromTime, toTime) {
     return Padding(
       padding: const EdgeInsets.only(left: 15),
@@ -315,7 +321,6 @@ class HistoryCard extends StatelessWidget {
                                   '${getMonthOfYear(history.rideInfo.driveDate)}, ${getDayOfWeek(history.rideInfo.driveDate)}'),
                             ],
                           ),
-                          Spacer(),
                           history.action == 'Driving'
                               ? _vehicleInfo(history.rideInfo.slots +
                                   history.acceptedRiders.length)
