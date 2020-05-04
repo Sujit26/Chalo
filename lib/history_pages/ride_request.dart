@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/history_pages/history_model.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/ride_model.dart';
 
 class RideRequest extends StatefulWidget {
-  final RideModel ride;
+  final HistoryModel ride;
+  final User reqUsrInfo;
 
-  RideRequest({Key key, @required this.ride}) : super(key: key);
+  RideRequest({Key key, @required this.ride, @required this.reqUsrInfo})
+      : super(key: key);
   @override
   _RideRequestState createState() => _RideRequestState();
 }
@@ -13,9 +16,9 @@ class RideRequest extends StatefulWidget {
 class _RideRequestState extends State<RideRequest> {
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(date.split('/')[2]),
+      int.parse(date.split('/')[1]),
+      int.parse(date.split('/')[0]),
     ).weekday;
     var days = [
       'Monday',
@@ -29,11 +32,11 @@ class _RideRequestState extends State<RideRequest> {
     return days[dNum - 1];
   }
 
-  String getMonthOfYear(date) {
+  String getMonthOfYear(date, short) {
     int mNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(date.split('/')[2]),
+      int.parse(date.split('/')[1]),
+      int.parse(date.split('/')[0]),
     ).month;
     var months = [
       'January',
@@ -49,7 +52,10 @@ class _RideRequestState extends State<RideRequest> {
       'November',
       'December',
     ];
-    return months[mNum - 1];
+    if (!short) return months[mNum - 1];
+    return months[mNum - 1] == 'May'
+        ? months[mNum - 1]
+        : '${months[mNum - 1].substring(0, 3)}.';
   }
 
   Widget _starFilling(double fill) {
@@ -79,17 +85,19 @@ class _RideRequestState extends State<RideRequest> {
       decoration: BoxDecoration(
           image: DecorationImage(
         fit: BoxFit.fill,
-        image: NetworkImage(widget.ride.vehicle.pic),
+        image: NetworkImage(widget.ride.rideInfo.vehicle.pic),
       )),
     );
   }
 
-  showSeats() {
+  showSeats({total, toFill, filled, req}) {
     List<Widget> seats = List();
-    for (var i = 0; i < widget.ride.vehicle.seats - widget.ride.slots; i++)
+    for (var i = 0; i < total - toFill + filled; i++)
       seats.add(Icon(Icons.person, color: buttonColor, size: 18));
-    for (var i = 0; i < widget.ride.slots; i++)
+    for (var i = 0; i < req; i++)
       seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+    for (var i = 0; i < toFill - filled - req; i++)
+      seats.add(Icon(Icons.person_outline, size: 18));
 
     return Row(
       children: seats,
@@ -188,25 +196,36 @@ class _RideRequestState extends State<RideRequest> {
                 ),
                 title: Text('Source Location'),
                 subtitle: Text(
-                  '${widget.ride.from.name.split(',')[0]},${widget.ride.from.name.split(',')[1]}',
+                  '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
                 ),
                 trailing: Text(
                   TimeOfDay(
-                    hour: int.parse(widget.ride.fromTime.split(':')[0]),
-                    minute: int.parse(widget.ride.fromTime.split(':')[1]),
+                    hour:
+                        int.parse(widget.ride.rideInfo.fromTime.split(':')[0]),
+                    minute:
+                        int.parse(widget.ride.rideInfo.fromTime.split(':')[1]),
                   ).format(context),
                 ),
               ),
               // Additional Stop Points
               _addAcceptedPoint(
-                  'Pick Up Sidhant', 'Sidhant, from location', '13:00'),
+                'Pick Up Sidhant',
+                'Sidhant, from location',
+                '13:00',
+              ),
               _addNewPoint(
-                  'Pick Up Sandy', 'Sandy, from location', 'Detour: 0.4 km'),
+                'Pick Up ${widget.reqUsrInfo.name.split(' ')[0]}',
+                '${widget.reqUsrInfo.from.name}',
+                'Detour: 0.4 km',
+              ),
               _addAcceptedPoint(
-                  'Drop off Sidhant', 'Sidhant, to location', '15:00'),
+                'Drop off Sidhant',
+                'Sidhant, to location',
+                '15:00',
+              ),
               _addNewPoint(
-                'Drop off Sandy',
-                'Sandy, to location',
+                'Drop off ${widget.reqUsrInfo.name.split(' ')[0]}',
+                '${widget.reqUsrInfo.to.name}',
                 TimeOfDay(
                   hour: int.parse('01:00'.split(':')[0]),
                   minute: int.parse('01:00'.split(':')[1]),
@@ -233,7 +252,7 @@ class _RideRequestState extends State<RideRequest> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '${widget.ride.to.name.split(',')[0]},${widget.ride.to.name.split(',')[1]}',
+                      '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
                     ),
                     Text(
                       'Arrival: +10 mins',
@@ -243,8 +262,9 @@ class _RideRequestState extends State<RideRequest> {
                 ),
                 trailing: Text(
                   TimeOfDay(
-                    hour: int.parse(widget.ride.toTime.split(':')[0]),
-                    minute: int.parse(widget.ride.toTime.split(':')[1]),
+                    hour: int.parse(widget.ride.rideInfo.toTime.split(':')[0]),
+                    minute:
+                        int.parse(widget.ride.rideInfo.toTime.split(':')[1]),
                   ).format(context),
                 ),
               ),
@@ -271,15 +291,18 @@ class _RideRequestState extends State<RideRequest> {
         height: 95,
         padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+          contentPadding: const EdgeInsets.only(left: 5, right: 20),
           leading: Container(
-            width: 20,
+            width: 40,
             height: 100,
             alignment: Alignment.topLeft,
-            child: Icon(
-              Icons.navigate_before,
-              size: 40,
-              color: Colors.white,
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: Icon(
+                Icons.navigate_before,
+                size: 40,
+                color: Colors.white,
+              ),
             ),
           ),
           title: Row(
@@ -287,14 +310,17 @@ class _RideRequestState extends State<RideRequest> {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             children: <Widget>[
               Text(
-                "10 April ",
+                '${widget.ride.rideInfo.driveDate.split('/')[0]} ${getMonthOfYear(widget.ride.rideInfo.driveDate, false)} ',
                 style: TextStyle(
                     fontSize: 30,
                     color: Colors.white,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                "5:00 pm",
+                TimeOfDay(
+                  hour: int.parse(widget.ride.rideInfo.toTime.split(':')[0]),
+                  minute: int.parse(widget.ride.rideInfo.toTime.split(':')[1]),
+                ).format(context),
                 style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -303,7 +329,9 @@ class _RideRequestState extends State<RideRequest> {
             ],
           ),
           subtitle: Text(
-            "Trip to driver's destination",
+            'Trip to ${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
+            softWrap: false,
+            overflow: TextOverflow.fade,
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -312,7 +340,7 @@ class _RideRequestState extends State<RideRequest> {
         ),
       ),
     );
-    
+
     Widget map = Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
@@ -354,7 +382,13 @@ class _RideRequestState extends State<RideRequest> {
                     ),
                   ),
                   Text(
-                    "Friday, Sep. 12, 2019 | 5:00 pm",
+                    '${getDayOfWeek(widget.ride.rideInfo.driveDate)}, ${getMonthOfYear(widget.ride.rideInfo.driveDate, true)} ${widget.ride.rideInfo.driveDate.split('/')[0]}, ${widget.ride.rideInfo.driveDate.split('/')[2]} | ' +
+                        TimeOfDay(
+                          hour: int.parse(
+                              widget.ride.rideInfo.fromTime.split(':')[0]),
+                          minute: int.parse(
+                              widget.ride.rideInfo.fromTime.split(':')[1]),
+                        ).format(context),
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -363,8 +397,13 @@ class _RideRequestState extends State<RideRequest> {
                   ),
                   Row(
                     children: <Widget>[
-                      showSeats(),
-                      Text('  3 Seats Available'),
+                      showSeats(
+                          total: widget.ride.rideInfo.vehicle.seats,
+                          toFill: widget.ride.rideInfo.slots,
+                          filled: widget.ride.acceptedRiders.length,
+                          req: widget.reqUsrInfo.slots),
+                      Text(
+                          '  ${widget.ride.rideInfo.slots - widget.ride.acceptedRiders.length} Seats Available'),
                     ],
                   ),
                 ],
@@ -384,7 +423,7 @@ class _RideRequestState extends State<RideRequest> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Sidhant Jain',
+                widget.reqUsrInfo.name,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 26,
@@ -392,17 +431,17 @@ class _RideRequestState extends State<RideRequest> {
               ),
               Row(
                 children: <Widget>[
-                  _starFilling(4.5),
-                  _starFilling(4.5 - 1),
-                  _starFilling(4.5 - 2),
-                  _starFilling(4.5 - 3),
-                  _starFilling(4.5 - 4),
+                  _starFilling(widget.reqUsrInfo.rating),
+                  _starFilling(widget.reqUsrInfo.rating - 1),
+                  _starFilling(widget.reqUsrInfo.rating - 2),
+                  _starFilling(widget.reqUsrInfo.rating - 3),
+                  _starFilling(widget.reqUsrInfo.rating - 4),
                 ],
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'sidhantjain@gmail.com',
+                  widget.reqUsrInfo.email,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 12,
@@ -423,10 +462,8 @@ class _RideRequestState extends State<RideRequest> {
                 shape: BoxShape.circle,
                 border: Border.all(color: buttonColor, width: 2),
                 image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: NetworkImage(
-                    'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80',
-                  ),
+                  fit: BoxFit.cover,
+                  image: NetworkImage(widget.reqUsrInfo.pic),
                 ),
               ),
             ),

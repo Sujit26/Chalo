@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/driver_pages/vehicle_info.dart';
 import 'package:shared_transport/history_pages/history_card.dart';
 import 'package:shared_transport/history_pages/history_model.dart';
+import 'package:shared_transport/history_pages/notification_page.dart';
 import 'package:shared_transport/history_pages/trip_summary_driver.dart';
 import 'package:shared_transport/history_pages/trip_summary_rider.dart';
 import 'package:shared_transport/login/login_page.dart';
@@ -45,6 +46,9 @@ class _MyTripsPageState extends State<MyTripsPage>
   var _cancelledRefreshRequired = true;
   // Filters
   var _upcomingType = ['Riding', 'Driving'];
+  // Notification
+  List<HistoryModel> notifications = [];
+  var notificationCount = 0;
 
   @override
   void initState() {
@@ -78,7 +82,7 @@ class _MyTripsPageState extends State<MyTripsPage>
       setState(() {
         if (trip == 'upcoming') {
           upcomingList = jsonData['rides'].map<HistoryModel>((data) {
-            return data['action'] == 'Riding'
+            HistoryModel formatted = data['action'] == 'Riding'
                 ? HistoryModel(
                     action: data['action'],
                     rideInfo: RideModel(
@@ -182,6 +186,18 @@ class _MyTripsPageState extends State<MyTripsPage>
                             email: rider['email'],
                             rating: rider['rating'] * 1.0,
                             pic: rider['pic'],
+                            rideId: rider['rideId'],
+                            from: Location(
+                              rider['from']['name'],
+                              rider['from']['lat'],
+                              rider['from']['lon'],
+                            ),
+                            to: Location(
+                              rider['to']['name'],
+                              rider['to']['lat'],
+                              rider['to']['lon'],
+                            ),
+                            slots: rider['slots'],
                           ),
                         )
                         .toList(),
@@ -193,10 +209,30 @@ class _MyTripsPageState extends State<MyTripsPage>
                             rating: rider['rating'] * 1.0,
                             pic: rider['pic'],
                             phone: rider['phone'],
+                            rideId: rider['rideId'],
+                            from: Location(
+                              rider['from']['name'],
+                              rider['from']['lat'],
+                              rider['from']['lon'],
+                            ),
+                            to: Location(
+                              rider['to']['name'],
+                              rider['to']['lat'],
+                              rider['to']['lon'],
+                            ),
+                            slots: rider['slots'],
                           ),
                         )
                         .toList(),
                   );
+
+            if (formatted.action != 'Riding' &&
+                formatted.requestFromRiders.length > 0) {
+              notifications.add(formatted);
+              notificationCount += formatted.requestFromRiders.length;
+            }
+
+            return formatted;
           }).toList();
           _upcomingRefreshRequired = true;
         } else if (trip == 'completed') {
@@ -624,8 +660,57 @@ class _MyTripsPageState extends State<MyTripsPage>
                     });
                   });
                 },
-              )
+              ),
+              Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.notifications_none),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (build) => NotificationPage(
+                            notifications: notifications,
+                          ),
+                        ),
+                      ).then((onValue) {
+                        setState(() {
+                          notificationCount = 0;
+                        });
+                        _makeGetRequest('upcoming');
+                      });
+                    },
+                  ),
+                  notificationCount != 0
+                      ? Positioned(
+                          right: 11,
+                          top: 11,
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 14,
+                              minHeight: 14,
+                            ),
+                            child: Text(
+                              '$notificationCount',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : Container()
+                ],
+              ),
             ],
+            centerTitle: true,
           ),
           body: Container(
             color: bgColor,

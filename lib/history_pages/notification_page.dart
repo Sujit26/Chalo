@@ -1,72 +1,69 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/history_pages/history_model.dart';
 import 'package:shared_transport/history_pages/ride_request.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/ride_model.dart';
-import 'package:shared_transport/widgets/loacation.dart';
 
 class NotificationPage extends StatefulWidget {
-  final HistoryModel history = HistoryModel(
-    action: 'Driving',
-    rideInfo: RideModel(
-      type: 'ride',
-      fromTime: "12:00",
-      toTime: "02:00",
-      from: Location("Driver, from location", 32.132254, 75.707455),
-      to: Location("Driver, to location", 22.72056, 75.84722),
-      driveDate: "11/10/2020",
-      dId: "asd324424@gmail.com_0",
-      vehicle: Vehicle(
-        name: 'Audi',
-        modelName: 'A6',
-        seats: 4,
-        number: 'MP45AB1234',
-        pic:
-            'https://pictures.topspeed.com/IMG/crop/201706/audi-a5-cabriolet-dr_1600x0w.jpg',
-        type: 'Sedan',
-        index: 0,
-      ),
-      driver: User(
-        name: 'Sidhant Jain',
-        email: 'sidhantjain456@gmail.com',
-        rating: 5.0,
-        pic:
-            'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80  ',
-        nod: 5,
-      ),
-      slots: 3,
-    ),
-    requestFromRiders: [],
-    acceptedRiders: [
-      User(
-        name: 'Request Rider 1',
-        email: 'request_rider_1@gmail.com',
-        rating: 5.0,
-        pic:
-            'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80  ',
-      ),
-      User(
-        name: 'Accepted Rider 1',
-        email: 'accepted_rider_1@gmail.com',
-        rating: 5.0,
-        pic:
-            'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80  ',
-        phone: '8989145987',
-      ),
-    ],
-  );
+  final List<HistoryModel> notifications;
   final name = 'Notifications';
 
-  NotificationPage({Key key}) : super(key: key);
+  NotificationPage({Key key, @required this.notifications}) : super(key: key);
   @override
   _NotificationPageState createState() => _NotificationPageState();
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  showSeats() {
+  var _refreshRequired = true;
+  ListView notificationListView;
+
+  _makePostRequest(res, HistoryModel ride, int upSlots, User remUsr) async {
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    var data = {
+      'email': prefs.getString('email'),
+      'token': prefs.getString('token'),
+      'data': res,
+    };
+    final response = await post(
+      serverURL + 'driver/response',
+      headers: {"Content-type": "application/json"},
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      if (res['status'] == 'Accepted') {
+        List<User> tempReq = List.from(ride.requestFromRiders);
+        var ava = ride.rideInfo.slots - upSlots;
+        ride.requestFromRiders.forEach((req) {
+          if (req.rideId == res['rideId']) ride.acceptedRiders.add(req);
+          if (req.slots > ava || req.rideId == res['rideId'])
+            tempReq.remove(req);
+        });
+        setState(() {
+          ride.requestFromRiders = List.from(tempReq);
+          ride.rideInfo.slots = ava;
+          _refreshRequired = true;
+        });
+      } else {
+        setState(() {
+          ride.requestFromRiders.remove(remUsr);
+          _refreshRequired = true;
+        });
+      }
+    } else {
+      setState(() {
+        // _isLoading = false;
+      });
+    }
+  }
+
+  showSeats(int slots) {
     List<Widget> seats = List();
-    for (var i = 0; i < widget.history.rideInfo.slots; i++)
+    for (var i = 0; i < slots; i++)
       seats.add(Icon(Icons.person, color: buttonColor, size: 12));
 
     return Row(
@@ -74,7 +71,7 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  Widget _notification() {
+  Widget _notification(User req, HistoryModel ride) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
       child: Material(
@@ -85,7 +82,10 @@ class _NotificationPageState extends State<NotificationPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (build) => RideRequest(ride: widget.history.rideInfo),
+                builder: (build) => RideRequest(
+                  ride: ride,
+                  reqUsrInfo: req,
+                ),
               ),
             );
           },
@@ -99,21 +99,19 @@ class _NotificationPageState extends State<NotificationPage> {
                   color: Colors.white,
                   clipBehavior: Clip.antiAlias,
                   child: Container(
-                    width: 80,
-                    height: 80,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: buttonColor, width: 2),
                       image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(
-                          'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80',
-                        ),
+                        fit: BoxFit.cover,
+                        image: NetworkImage(req.pic),
                       ),
                     ),
                   ),
                 ),
-                title: Text('Sidhant Jain'),
+                title: Text(req.name),
                 subtitle: Stack(
                   children: <Widget>[
                     Positioned(
@@ -150,7 +148,7 @@ class _NotificationPageState extends State<NotificationPage> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
-                                  'Riders from location',
+                                  '${req.from.name.split(',')[0]},${req.from.name.split(',')[1]}',
                                   overflow: TextOverflow.fade,
                                   maxLines: 1,
                                   softWrap: false,
@@ -183,7 +181,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
-                                    'Riders to location',
+                                    '${req.to.name.split(',')[0]},${req.to.name.split(',')[1]}',
                                     overflow: TextOverflow.fade,
                                     maxLines: 1,
                                     softWrap: false,
@@ -201,7 +199,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
                     Text(
-                      '4.5',
+                      req.rating.toString(),
                       style: TextStyle(
                         color: buttonColor,
                         fontWeight: FontWeight.bold,
@@ -229,20 +227,14 @@ class _NotificationPageState extends State<NotificationPage> {
                           size: 12,
                         ),
                         Text(
-                          ' 30/04/2020',
+                          ' ${ride.rideInfo.driveDate}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
                         ),
                         Spacer(),
-                        Container(
-                          color: Colors.black45,
-                          height: 20,
-                          width: 1,
-                        ),
-                        Spacer(),
-                        showSeats(),
+                        showSeats(req.slots),
                         Text(
                           ' Seats',
                           style: TextStyle(
@@ -258,14 +250,28 @@ class _NotificationPageState extends State<NotificationPage> {
                       'Accept',
                       style: TextStyle(color: Colors.green),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      var res = {
+                        'status': 'Accepted',
+                        'd_id': ride.rideInfo.dId,
+                        'rideId': req.rideId,
+                      };
+                      _makePostRequest(res, ride, req.slots, req);
+                    },
                   ),
                   FlatButton(
                     child: Text(
                       'Reject',
                       style: TextStyle(color: Colors.red),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      var res = {
+                        'status': 'Rejected',
+                        'd_id': ride.rideInfo.dId,
+                        'rideId': req.rideId,
+                      };
+                      _makePostRequest(res, ride, req.slots, req);
+                    },
                   ),
                 ],
               ),
@@ -274,6 +280,20 @@ class _NotificationPageState extends State<NotificationPage> {
         ),
       ),
     );
+  }
+
+  int _resultSorter(HistoryModel a, HistoryModel b) {
+    var dateA = DateTime.utc(
+      int.parse(a.rideInfo.driveDate.split('/')[2]),
+      int.parse(a.rideInfo.driveDate.split('/')[1]),
+      int.parse(a.rideInfo.driveDate.split('/')[0]),
+    );
+    var dateB = DateTime.utc(
+      int.parse(b.rideInfo.driveDate.split('/')[2]),
+      int.parse(b.rideInfo.driveDate.split('/')[1]),
+      int.parse(b.rideInfo.driveDate.split('/')[0]),
+    );
+    return dateA.compareTo(dateB);
   }
 
   @override
@@ -293,19 +313,30 @@ class _NotificationPageState extends State<NotificationPage> {
       ),
       backgroundColor: buttonColor,
     );
-    
-    Widget body = ListView(
-      children: <Widget>[
-        _notification(),
-        _notification(),
-        _notification(),
-        _notification(),
-        _notification(),
-        _notification(),
-        _notification(),
-        _notification(),
-      ],
-    );
+
+    Widget createBody() {
+      if (_refreshRequired) {
+        List<Widget> list = [];
+        widget.notifications.sort(_resultSorter);
+        widget.notifications.forEach((notification) {
+          notification.requestFromRiders.forEach((request) {
+            list.add(_notification(
+              request,
+              notification,
+            ));
+          });
+        });
+        setState(() {
+          notificationListView = ListView(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            children: list,
+          );
+          _refreshRequired = false;
+        });
+      }
+
+      return notificationListView;
+    }
 
     return Scaffold(
       appBar: appBar,
@@ -317,7 +348,7 @@ class _NotificationPageState extends State<NotificationPage> {
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: body,
+          child: createBody(),
         ),
       ),
     );

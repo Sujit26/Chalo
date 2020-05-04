@@ -9,6 +9,11 @@ class User {
   String pic;
   String phone;
   int nod;
+  // Extra
+  Location from;
+  Location to;
+  int slots;
+  String rideId;
 
   User({
     @required this.name,
@@ -17,6 +22,10 @@ class User {
     @required this.pic,
     this.nod,
     this.phone,
+    this.from,
+    this.to,
+    this.slots,
+    this.rideId,
   });
   Map<String, dynamic> toJson() => {
         'name': name,

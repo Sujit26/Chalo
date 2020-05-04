@@ -39,22 +39,6 @@ class _HomePageState extends State<HomePage> {
               widget.name,
               style: TextStyle(fontSize: 25.0),
             ),
-            actions: <Widget>[
-              IconButton(
-                padding: const EdgeInsets.only(right: 15),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (build) => NotificationPage()));
-                },
-                icon: Icon(
-                  Icons.notifications_none,
-                  color: Colors.white,
-                  size: 25,
-                ),
-              ),
-            ],
           ),
           body: Container(
             color: bgColor,
