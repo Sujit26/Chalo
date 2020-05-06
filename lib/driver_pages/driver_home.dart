@@ -103,6 +103,8 @@ class _DriverHomeState extends State<DriverHome> {
     return {
       'distance': double.parse(distance.toStringAsFixed(2)),
       'duration': double.parse(duration.toStringAsFixed(2)),
+      'currentDis': double.parse(distance.toStringAsFixed(2)),
+      'currentDur': double.parse(duration.toStringAsFixed(2)),
     };
 
     // setState(() {

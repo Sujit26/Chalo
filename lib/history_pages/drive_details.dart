@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/ride_model.dart';
-import 'package:shared_transport/widgets/bottom_navigation.dart';
 
 class DriveDetails extends StatefulWidget {
   final RideModel ride;
@@ -173,25 +172,6 @@ class _DriveDetailsState extends State<DriveDetails> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-
-    Widget appBar1 = Container(
-      width: MediaQuery.of(context).size.width,
-      height: 100,
-      decoration: BoxDecoration(
-        color: buttonColor,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
-      child: Container(
-        margin: EdgeInsets.fromLTRB(10, 30, 0, 0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [],
         ),
       ),
     );

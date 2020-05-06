@@ -86,7 +86,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
       height: 100,
       decoration: BoxDecoration(
           image: DecorationImage(
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
         image: NetworkImage(widget.ride.rideInfo.vehicle.pic),
       )),
     );
@@ -94,8 +94,9 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
 
   showSeats() {
     List<Widget> seats = List();
-    for (var i = 0; i < widget.ride.acceptedRiders.length; i++)
-      seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+    for (var i = 0;
+        i < widget.ride.rideInfo.total - widget.ride.rideInfo.slots;
+        i++) seats.add(Icon(Icons.person, color: buttonColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
       seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
 
@@ -154,7 +155,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
             shape: BoxShape.circle,
             border: Border.all(color: buttonColor, width: 2),
             image: DecorationImage(
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               image: NetworkImage(
                 image,
               ),
@@ -379,7 +380,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
             child: Row(
               children: <Widget>[
                 showSeats(),
-                Text('  ${widget.ride.acceptedRiders.length} Rider Filled'),
+                Text(
+                    '  ${widget.ride.rideInfo.total - widget.ride.rideInfo.slots} Slots Filled'),
               ],
             ),
           ),

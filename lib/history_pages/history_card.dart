@@ -322,8 +322,7 @@ class HistoryCard extends StatelessWidget {
                             ],
                           ),
                           history.action == 'Driving'
-                              ? _vehicleInfo(history.rideInfo.slots +
-                                  history.acceptedRiders.length)
+                              ? _vehicleInfo(history.rideInfo.total)
                               : _vehicleInfo(history.rideSlots),
                         ],
                       ),

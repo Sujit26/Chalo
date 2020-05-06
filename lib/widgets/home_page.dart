@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/history_pages/notification_page.dart';
 import 'package:shared_transport/login/login_page.dart';
 
 /// Converter screen where users can input amounts to convert.

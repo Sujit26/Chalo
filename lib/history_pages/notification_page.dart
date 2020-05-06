@@ -87,7 +87,24 @@ class _NotificationPageState extends State<NotificationPage> {
                   reqUsrInfo: req,
                 ),
               ),
-            );
+            ).then((onValue) {
+              if (onValue == 'Accept') {
+                var res = {
+                  'status': 'Accepted',
+                  'd_id': ride.rideInfo.dId,
+                  'rideId': req.rideId,
+                };
+                _makePostRequest(res, ride, req.slots, req);
+              }
+              if (onValue == 'Reject') {
+                var res = {
+                  'status': 'Rejected',
+                  'd_id': ride.rideInfo.dId,
+                  'rideId': req.rideId,
+                };
+                _makePostRequest(res, ride, req.slots, req);
+              }
+            });
           },
           child: Column(
             children: <Widget>[

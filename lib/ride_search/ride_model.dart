@@ -48,6 +48,10 @@ class RideModel {
   int slots;
   String dId;
   User driver;
+  // for history
+  int total;
+  double currentDis;
+  double currentDur;
 
   RideModel({
     @required this.type,
@@ -60,6 +64,9 @@ class RideModel {
     @required this.slots,
     @required this.dId,
     @required this.driver,
+    this.total,
+    this.currentDis,
+    this.currentDur,
   });
   Map<String, dynamic> toJson() => {
         'type': type,

@@ -81,6 +81,8 @@ class _MyTripsPageState extends State<MyTripsPage>
       var jsonData = json.decode(response.body);
       setState(() {
         if (trip == 'upcoming') {
+          notifications = [];
+          notificationCount = 0;
           upcomingList = jsonData['rides'].map<HistoryModel>((data) {
             HistoryModel formatted = data['action'] == 'Riding'
                 ? HistoryModel(
@@ -111,13 +113,22 @@ class _MyTripsPageState extends State<MyTripsPage>
                       ),
                       slots: data['rideInfo']['slots'],
                       dId: data['rideInfo']['dId'],
-                      driver: User(
-                        name: data['rideInfo']['driver']['name'],
-                        email: data['rideInfo']['driver']['email'],
-                        rating: data['rideInfo']['driver']['rating'],
-                        pic: data['rideInfo']['driver']['pic'],
-                        nod: data['rideInfo']['driver']['nod'],
-                      ),
+                      driver: data['rideStatus'] == 'Accepted'
+                          ? User(
+                              name: data['rideInfo']['driver']['name'],
+                              email: data['rideInfo']['driver']['email'],
+                              rating: data['rideInfo']['driver']['rating'],
+                              pic: data['rideInfo']['driver']['pic'],
+                              nod: data['rideInfo']['driver']['nod'],
+                              phone: data['rideInfo']['driver']['phone'],
+                            )
+                          : User(
+                              name: data['rideInfo']['driver']['name'],
+                              email: data['rideInfo']['driver']['email'],
+                              rating: data['rideInfo']['driver']['rating'],
+                              pic: data['rideInfo']['driver']['pic'],
+                              nod: data['rideInfo']['driver']['nod'],
+                            ),
                     ),
                     rider: User(
                       name: 'Sidhant Jain',
@@ -170,7 +181,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                         index: data['rideInfo']['vehicle']['index'],
                       ),
                       slots: data['rideInfo']['slots'],
+                      total: data['rideInfo']['total'],
                       dId: data['rideInfo']['dId'],
+                      currentDis:
+                          data['rideInfo']['route_detail']['dis'].toDouble(),
+                      currentDur:
+                          data['rideInfo']['route_detail']['dur'].toDouble(),
                       driver: User(
                         name: data['rideInfo']['driver']['name'],
                         email: data['rideInfo']['driver']['email'],
@@ -675,9 +691,6 @@ class _MyTripsPageState extends State<MyTripsPage>
                           ),
                         ),
                       ).then((onValue) {
-                        setState(() {
-                          notificationCount = 0;
-                        });
                         _makeGetRequest('upcoming');
                       });
                     },

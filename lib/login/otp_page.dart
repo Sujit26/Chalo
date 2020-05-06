@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/rider_home.dart';
 import 'package:shared_transport/widgets/bottom_navigation.dart';
 
 class OtpPage extends StatefulWidget {
