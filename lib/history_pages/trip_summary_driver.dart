@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_map/plugin_api.dart';
+import 'package:http/http.dart';
+import 'package:latlong/latlong.dart';
 import 'package:shared_transport/history_pages/drive_details.dart';
 import 'package:shared_transport/history_pages/history_model.dart';
 import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/widgets/custom_tooltip.dart';
 
 class TripSummaryDriver extends StatefulWidget {
   final HistoryModel ride;
@@ -12,6 +18,19 @@ class TripSummaryDriver extends StatefulWidget {
 }
 
 class _TripSummaryDriverState extends State<TripSummaryDriver> {
+  List<Widget> listTiles;
+  var _requestRoute = true;
+  List<LatLng> line = [];
+  List<Marker> markers = [];
+  List<CircleMarker> circleMarkers = [];
+  MapController _mapController;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+  }
+
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
       int.parse(widget.ride.rideInfo.driveDate.split('/')[2]),
@@ -118,7 +137,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     );
   }
 
-  _addAcceptedPoint(String name, String from, String time) {
+  _addAcceptedPoint(IconData icon, String name, String from, String time) {
     return ListTile(
       leading: Container(
         width: 30,
@@ -128,7 +147,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           elevation: 5,
           color: Colors.white,
           child: Icon(
-            Icons.done,
+            icon,
             color: buttonColor,
           ),
         ),
@@ -137,7 +156,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
       subtitle: Text(
         '${from.split(',')[0]},${from.split(',')[1]}',
       ),
-      trailing: Text(timeConversion(time)),
+      trailing: Text(time),
     );
   }
 
@@ -227,7 +246,118 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     );
   }
 
+  int waypointSorter(a, b) => a['index'].compareTo(b['index']);
+
   Widget _buildRouteInfo() {
+    if (_requestRoute) {
+      listTiles = [];
+      List tileData = [];
+      // Driver From Coordinates
+      var coordinates =
+          '${widget.ride.rideInfo.from.lon},${widget.ride.rideInfo.from.lat};';
+      tileData.add({
+        'info': 'src',
+        'title': 'Source Location',
+        'subtitle':
+            '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
+        'trailing': widget.ride.rideInfo.fromTime,
+      });
+      var distributions = '';
+      var count = 1;
+
+      // Accepted Riders Coordinates
+      widget.ride.acceptedRiders.forEach((rider) {
+        coordinates +=
+            '${rider.from.lon},${rider.from.lat};${rider.to.lon},${rider.to.lat};';
+        distributions += count == 1 ? '$count' : ';$count';
+        count++;
+        distributions += ',$count';
+        count++;
+        tileData.add({
+          'info': 'old',
+          'title': 'Pick Up ${rider.name.split(' ')[0]}',
+          'subtitle':
+              '${rider.from.name.split(',')[0]},${rider.from.name.split(',')[1]}',
+          'trailing': widget.ride.rideInfo.fromTime,
+        });
+        tileData.add({
+          'info': 'old',
+          'title': 'Drop off ${rider.name.split(' ')[0]}',
+          'subtitle':
+              '${rider.to.name.split(',')[0]},${rider.to.name.split(',')[1]}',
+          'trailing': widget.ride.rideInfo.fromTime,
+        });
+      });
+
+      // Driver To Coordinates
+      coordinates +=
+          '${widget.ride.rideInfo.to.lon},${widget.ride.rideInfo.to.lat}';
+      tileData.add({
+        'info': 'des',
+        'title': 'Destination Location',
+        'subtitle':
+            '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
+        'trailing': widget.ride.rideInfo.fromTime,
+      });
+
+      _makeRouteRequest(coordinates, distributions).then((onValue) {
+        List temp = [];
+        for (var i = 0; i < tileData.length; i++) {
+          if (i == 0 || i == tileData.length - 1) continue;
+          temp.add({
+            'index': onValue['waypoints'][i]['waypoint_index'],
+            'value': tileData[i],
+          });
+        }
+        temp.sort(waypointSorter);
+
+        Widget src = _addAcceptedPoint(
+          Icons.location_on,
+          tileData.first['title'],
+          tileData.first['subtitle'],
+          TimeOfDay(
+            hour: int.parse(tileData.first['trailing'].split(':')[0]),
+            minute: int.parse(tileData.first['trailing'].split(':')[1]),
+          ).format(context),
+        );
+        Widget des = _addAcceptedPoint(
+          Icons.location_on,
+          tileData.last['title'],
+          tileData.last['subtitle'],
+          TimeOfDay(
+            hour: int.parse(tileData.last['trailing'].split(':')[0]) +
+                (onValue['trips'][0]['duration'] / 3600).toInt(),
+            minute: int.parse(tileData.last['trailing'].split(':')[1]) +
+                ((onValue['trips'][0]['duration'] % 3600) / 60).toInt(),
+          ).format(context),
+        );
+
+        setState(() {
+          int i = -1;
+          var addSec = 0.0;
+          listTiles = temp.map<Widget>((pair) {
+            i++;
+            addSec += onValue['trips'][0]['legs'][i]['duration'];
+            return _addAcceptedPoint(
+              pair['value']['title'].contains('Drop off')
+                  ? Icons.remove
+                  : Icons.add,
+              pair['value']['title'],
+              pair['value']['subtitle'],
+              TimeOfDay(
+                hour: int.parse(pair['value']['trailing'].split(':')[0]) +
+                    addSec ~/ 3600,
+                minute: int.parse(pair['value']['trailing'].split(':')[1]) +
+                    (addSec % 3600) ~/ 60,
+              ).format(context),
+            );
+          }).toList();
+          listTiles.insert(0, src);
+          listTiles.add(des);
+          _requestRoute = false;
+        });
+      });
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
@@ -244,62 +374,155 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Source Location
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.location_on,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Source Location'),
-                subtitle: Text(
-                  '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
-                ),
-                trailing: Text(timeConversion(widget.ride.rideInfo.fromTime)),
-              ),
-              // TODO: Additional Stop Points
-              _addAcceptedPoint(
-                  'Pick Up Sidhant', 'Sidhant, from location', '13:00'),
-              _addAcceptedPoint(
-                  'Pick Up Sandy', 'Sandy, from location', '14:00'),
-              _addAcceptedPoint(
-                  'Drop off Sidhant', 'Sidhant, to location', '15:00'),
-              _addAcceptedPoint(
-                  'Drop off Sandy', 'Sandy, to location', '01:00'),
-              // Destination Location
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.location_on,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Destination Location'),
-                subtitle: Text(
-                  '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
-                ),
-                trailing: Text(timeConversion(widget.ride.rideInfo.toTime)),
-              ),
-            ],
+            children: listTiles,
           ),
         ],
       ),
+    );
+  }
+
+  _makeRouteRequest(coordinates, distributions) async {
+    var accessToken =
+        'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
+    var mode = 'driving';
+    var url =
+        'https://api.mapbox.com/optimized-trips/v1/mapbox/$mode/$coordinates?&distributions=$distributions&source=first&destination=last&roundtrip=false&access_token=$accessToken&geometries=geojson';
+    var res = await get(url);
+    var jsonResponse = jsonDecode(res.body);
+    setState(() {
+      line =
+          jsonResponse['trips'][0]['geometry']['coordinates'].map<LatLng>((g) {
+        return LatLng(g[1], g[0]);
+      }).toList();
+
+      markers = widget.ride.acceptedRiders.map((rider) {
+        return Marker(
+          width: 40.0,
+          height: 40.0,
+          point: LatLng(rider.from.lat, rider.from.lon),
+          builder: (context) => CustomTooltip(
+            message: rider.name.split(' ')[0],
+            bgColor: buttonColor,
+            photoUrl: rider.pic,
+          ),
+        );
+      }).toList();
+      markers.insert(
+        0,
+        Marker(
+          width: 30.0,
+          height: 30.0,
+          point: LatLng(
+              widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
+          builder: (context) => Material(
+            shape: CircleBorder(),
+            elevation: 5,
+            color: buttonColor,
+            clipBehavior: Clip.antiAlias,
+            child: Center(
+              child: Icon(
+                Icons.directions_car,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+      markers.insert(
+        0,
+        Marker(
+          width: 30.0,
+          height: 30.0,
+          point:
+              LatLng(widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
+          builder: (context) => Material(
+            shape: CircleBorder(),
+            elevation: 5,
+            color: buttonColor,
+            clipBehavior: Clip.antiAlias,
+            child: Center(
+              child: Icon(
+                Icons.done,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      circleMarkers = widget.ride.acceptedRiders.map((rider) {
+        return CircleMarker(
+          point: LatLng(rider.from.lat, rider.from.lon),
+          color: buttonColor.withOpacity(0.3),
+          radius: 30,
+        );
+      }).toList();
+      circleMarkers.insert(
+        0,
+        CircleMarker(
+          point: LatLng(
+              widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
+          color: buttonColor.withOpacity(0.3),
+          radius: 25,
+        ),
+      );
+      circleMarkers.insert(
+        0,
+        CircleMarker(
+          point:
+              LatLng(widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
+          color: buttonColor.withOpacity(0.3),
+          radius: 25,
+        ),
+      );
+
+      var bounds = LatLngBounds();
+      bounds.extend(
+        LatLng(widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
+      );
+      bounds.extend(
+        LatLng(widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
+      );
+      _mapController.fitBounds(
+        bounds,
+        options: FitBoundsOptions(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+        ),
+      );
+    });
+    return jsonResponse;
+  }
+
+  Widget map() {
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        center: LatLng(
+          widget.ride.rideInfo.from.lat,
+          widget.ride.rideInfo.from.lon,
+        ),
+        minZoom: 3.0,
+      ),
+      layers: [
+        TileLayerOptions(
+          urlTemplate:
+              'https://api.mapbox.com/styles/v1/paradox-sid/ck9vf9nq008b81ip8myceai04/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig',
+          additionalOptions: {
+            'accessToken':
+                'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig',
+            'id': 'mapbox.streets'
+          },
+        ),
+        PolylineLayerOptions(
+          polylines: [
+            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+          ],
+        ),
+        CircleLayerOptions(circles: circleMarkers),
+        MarkerLayerOptions(markers: markers),
+      ],
     );
   }
 
@@ -350,17 +573,6 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
             ),
           ),
         ),
-      ),
-    );
-
-    Widget map = Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      color: mainColor,
-      child: Image(
-        fit: BoxFit.cover,
-        image: NetworkImage(
-            'https://www.theinformationlab.co.uk/wp-content/uploads/2016/02/Basic.png'),
       ),
     );
 
@@ -583,7 +795,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     );
 
     Widget bottomSheet = DraggableScrollableSheet(
-      initialChildSize: 0.6,
+      initialChildSize: 0.2,
       minChildSize: 0.2,
       maxChildSize: 0.6,
       builder: (BuildContext context, myscrollController) {
@@ -650,7 +862,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[
-              map,
+              map(),
               bottomSheet,
               appBar,
             ],

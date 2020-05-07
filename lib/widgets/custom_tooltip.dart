@@ -1,41 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/widgets/custom_tooltip_shape.dart';
 
-class TooltipShapeBorder extends ShapeBorder {
-  final double arrowWidth;
-  final double arrowHeight;
-  final double arrowArc;
-  final double radius;
+class CustomTooltip extends StatelessWidget {
+  final String message;
+  final Color bgColor;
+  final String photoUrl;
+  final GlobalKey<State<Tooltip>> _tipKey = GlobalKey();
 
-  TooltipShapeBorder({
-    this.radius = 10.0,
-    this.arrowWidth = 12.0,
-    this.arrowHeight = 15.0,
-    this.arrowArc = 0.0,
-  }) : assert(arrowArc <= 1.0 && arrowArc >= 0.0);
-
-  @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.only(bottom: arrowHeight);
+  CustomTooltip({
+    Key key,
+    @required this.message,
+    @required this.bgColor,
+    @required this.photoUrl,
+  }) : super(key: key);
 
   @override
-  Path getInnerPath(Rect rect, {TextDirection textDirection}) => null;
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection textDirection}) {
-    rect = Rect.fromPoints(
-        rect.topLeft, rect.bottomRight - Offset(0, arrowHeight));
-    double x = arrowWidth, y = arrowHeight, r = 1 - arrowArc;
-    return Path()
-      ..addRRect(RRect.fromRectAndRadius(rect, Radius.circular(radius)))
-      ..moveTo(rect.bottomCenter.dx + x / 2, rect.bottomCenter.dy)
-      ..relativeLineTo(-x / 2 * r, y * r)
-      ..relativeQuadraticBezierTo(
-          -x / 2 * (1 - r), y * (1 - r), -x * (1 - r), 0)
-      ..relativeLineTo(-x / 2 * r, -y * r);
+  Widget build(BuildContext context) {
+    return Tooltip(
+      key: _tipKey,
+      showDuration: Duration(seconds: 10),
+      preferBelow: false,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      message: message,
+      textStyle: TextStyle(color: bgColor),
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: TooltipShapeBorder(arrowArc: 0.5),
+        shadows: [
+          BoxShadow(
+              color: Colors.black26, blurRadius: 4.0, offset: Offset(2, 2))
+        ],
+      ),
+      child: MaterialButton(
+        padding: const EdgeInsets.all(0),
+        onPressed: () {
+          final dynamic tooltip = _tipKey.currentState;
+          tooltip.ensureTooltipVisible();
+        },
+        shape: CircleBorder(),
+        elevation: 5,
+        color: Colors.white,
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage(photoUrl),
+            ),
+          ),
+        ),
+      ),
+    );
   }
-
-  @override
-  void paint(Canvas canvas, Rect rect, {TextDirection textDirection}) {}
-
-  @override
-  ShapeBorder scale(double t) => this;
 }

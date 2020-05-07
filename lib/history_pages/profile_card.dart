@@ -90,7 +90,6 @@ class _ProfileCardState extends State<ProfileCard> {
                         color: Colors.black38,
                       ),
                     ),
-                    Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -101,7 +100,7 @@ class _ProfileCardState extends State<ProfileCard> {
                         _starFilling(widget.user.rating - 4),
                       ],
                     ),
-                    Spacer(),
+                    Spacer(flex: 2),
                     widget.user.phone == null
                         ? Container(
                             height: 60,
@@ -113,40 +112,33 @@ class _ProfileCardState extends State<ProfileCard> {
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
-                              ClipOval(
-                                child: Material(
-                                  color: mainColor,
-                                  child: InkWell(
-                                    child: SizedBox(
-                                        width: 60,
-                                        height: 60,
-                                        child: Icon(
-                                          Icons.call,
-                                          color: Colors.white,
-                                          size: 30,
-                                        )),
-                                    onTap: () {},
-                                  ),
+                              MaterialButton(
+                                onPressed: () {},
+                                padding: const EdgeInsets.all(16),
+                                shape: CircleBorder(),
+                                elevation: 3,
+                                color: mainColor,
+                                child: Icon(
+                                  Icons.call,
+                                  color: Colors.white,
+                                  size: 30,
                                 ),
                               ),
-                              ClipOval(
-                                child: Material(
-                                  color: buttonColor,
-                                  child: InkWell(
-                                    child: SizedBox(
-                                        width: 60,
-                                        height: 60,
-                                        child: Icon(
-                                          Icons.message,
-                                          color: Colors.white,
-                                          size: 30,
-                                        )),
-                                    onTap: () {},
-                                  ),
+                              MaterialButton(
+                                onPressed: () {},
+                                padding: const EdgeInsets.all(16),
+                                shape: CircleBorder(),
+                                elevation: 3,
+                                color: buttonColor,
+                                child: Icon(
+                                  Icons.message,
+                                  color: Colors.white,
+                                  size: 30,
                                 ),
                               ),
                             ],
                           ),
+                    Spacer(flex: 1),
                   ],
                 ),
               ),

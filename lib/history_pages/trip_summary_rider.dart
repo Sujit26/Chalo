@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_map/plugin_api.dart';
+import 'package:http/http.dart';
+import 'package:latlong/latlong.dart';
 import 'package:shared_transport/history_pages/history_model.dart';
 import 'package:shared_transport/login/login_page.dart';
 
@@ -11,6 +16,30 @@ class TripSummaryRider extends StatefulWidget {
 }
 
 class _TripSummaryRiderState extends State<TripSummaryRider> {
+  List<Widget> listTiles = [];
+  var _requestRoute = true;
+  List<LatLng> line = [];
+  List<Marker> markers = [];
+  List<CircleMarker> circleMarkers = [];
+  MapController _mapController;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+    _mapController.onReady.then((onValue) {
+      var bounds = LatLngBounds();
+      bounds.extend(LatLng(widget.ride.rideFrom.lat, widget.ride.rideFrom.lon));
+      bounds.extend(LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon));
+      _mapController.fitBounds(
+        bounds,
+        options: FitBoundsOptions(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+        ),
+      );
+    });
+  }
+
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
       int.parse(widget.ride.rideInfo.driveDate.split('/')[2]),
@@ -85,7 +114,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
       height: 100,
       decoration: BoxDecoration(
           image: DecorationImage(
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
         image: NetworkImage(widget.ride.rideInfo.vehicle.pic),
       )),
     );
@@ -118,7 +147,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
             shape: BoxShape.circle,
             border: Border.all(color: buttonColor, width: 2),
             image: DecorationImage(
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               image: NetworkImage(
                 image,
               ),
@@ -193,7 +222,146 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     );
   }
 
+  _makeRouteRequest() async {
+    var accessToken =
+        'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
+    var mode = 'driving';
+    // Rider Coordinates
+    var coordinates =
+        '${widget.ride.rideFrom.lon},${widget.ride.rideFrom.lat};${widget.ride.rideTo.lon},${widget.ride.rideTo.lat}';
+    var url =
+        'https://api.mapbox.com/optimized-trips/v1/mapbox/$mode/$coordinates?&source=first&destination=last&roundtrip=false&access_token=$accessToken&geometries=geojson';
+    var res = await get(url);
+    var jsonResponse = jsonDecode(res.body);
+    setState(() {
+      line =
+          jsonResponse['trips'][0]['geometry']['coordinates'].map<LatLng>((g) {
+        return LatLng(g[1], g[0]);
+      }).toList();
+
+      markers = [];
+      markers.add(
+        Marker(
+          width: 30.0,
+          height: 30.0,
+          point: LatLng(widget.ride.rideFrom.lat, widget.ride.rideFrom.lon),
+          builder: (context) => Material(
+            shape: CircleBorder(),
+            elevation: 5,
+            color: buttonColor,
+            clipBehavior: Clip.antiAlias,
+            child: Center(
+              child: Icon(
+                Icons.directions_car,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+      markers.add(
+        Marker(
+          width: 30.0,
+          height: 30.0,
+          point: LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon),
+          builder: (context) => Material(
+            shape: CircleBorder(),
+            elevation: 5,
+            color: buttonColor,
+            clipBehavior: Clip.antiAlias,
+            child: Center(
+              child: Icon(
+                Icons.done,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      circleMarkers = [];
+      circleMarkers.add(
+        CircleMarker(
+          point: LatLng(widget.ride.rideFrom.lat, widget.ride.rideFrom.lon),
+          color: buttonColor.withOpacity(0.3),
+          radius: 25,
+        ),
+      );
+      circleMarkers.add(
+        CircleMarker(
+          point: LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon),
+          color: buttonColor.withOpacity(0.3),
+          radius: 25,
+        ),
+      );
+    });
+    return jsonResponse;
+  }
+
   Widget _buildRouteInfo() {
+    if (_requestRoute) {
+      _makeRouteRequest().then((onValue) {
+        Widget src = ListTile(
+          leading: Container(
+            width: 30,
+            height: 30,
+            child: Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: Colors.white,
+              child: Icon(
+                Icons.location_on,
+                color: buttonColor,
+              ),
+            ),
+          ),
+          title: Text('Source Location'),
+          subtitle: Text(
+            '${widget.ride.rideFrom.name.split(',')[0]},${widget.ride.rideFrom.name.split(',')[1]}',
+          ),
+          trailing: Text(
+            TimeOfDay(
+              hour: int.parse(widget.ride.rideFromTime.split(':')[0]),
+              minute: int.parse(widget.ride.rideFromTime.split(':')[1]),
+            ).format(context),
+          ),
+        );
+        Widget des = ListTile(
+          leading: Container(
+            width: 30,
+            height: 30,
+            child: Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: Colors.white,
+              child: Icon(
+                Icons.location_on,
+                color: buttonColor,
+              ),
+            ),
+          ),
+          title: Text('Destination Location'),
+          subtitle: Text(
+            '${widget.ride.rideTo.name.split(',')[0]},${widget.ride.rideTo.name.split(',')[1]}',
+          ),
+          trailing: Text(
+            TimeOfDay(
+              hour: int.parse(widget.ride.rideToTime.split(':')[0]),
+              minute: int.parse(widget.ride.rideToTime.split(':')[1]),
+            ).format(context),
+          ),
+        );
+
+        setState(() {
+          listTiles = [];
+          listTiles.add(src);
+          listTiles.add(des);
+          _requestRoute = false;
+        });
+      });
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
@@ -210,50 +378,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Source Location
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.location_on,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Source Location'),
-                subtitle: Text(
-                  '${widget.ride.rideFrom.name.split(',')[0]},${widget.ride.rideFrom.name.split(',')[1]}',
-                ),
-                trailing: Text(timeConversion(widget.ride.rideFromTime)),
-              ),
-              // Destination Location
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.location_on,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Destination Location'),
-                subtitle: Text(
-                  '${widget.ride.rideTo.name.split(',')[0]},${widget.ride.rideTo.name.split(',')[1]}',
-                ),
-                trailing: Text(timeConversion(widget.ride.rideToTime)),
-              ),
-            ],
+            children: listTiles,
           ),
         ],
       ),
@@ -269,6 +394,34 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
       return Colors.amber[300];
     else
       return Colors.black;
+  }
+
+  Widget map() {
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        center: LatLng(widget.ride.rideFrom.lat, widget.ride.rideFrom.lon),
+        minZoom: 3.0,
+      ),
+      layers: [
+        TileLayerOptions(
+          urlTemplate:
+              'https://api.mapbox.com/styles/v1/paradox-sid/ck9vf9nq008b81ip8myceai04/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig',
+          additionalOptions: {
+            'accessToken':
+                'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig',
+            'id': 'mapbox.streets'
+          },
+        ),
+        PolylineLayerOptions(
+          polylines: [
+            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+          ],
+        ),
+        CircleLayerOptions(circles: circleMarkers),
+        MarkerLayerOptions(markers: markers),
+      ],
+    );
   }
 
   @override
@@ -318,17 +471,6 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
             ),
           ),
         ),
-      ),
-    );
-
-    Widget map = Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      color: mainColor,
-      child: Image(
-        fit: BoxFit.cover,
-        image: NetworkImage(
-            'https://www.theinformationlab.co.uk/wp-content/uploads/2016/02/Basic.png'),
       ),
     );
 
@@ -513,8 +655,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     );
 
     Widget bottomSheet = DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.2,
+      initialChildSize: 0.16,
+      minChildSize: 0.16,
       maxChildSize: 0.6,
       builder: (BuildContext context, myscrollController) {
         return Wrap(
@@ -580,7 +722,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[
-              map,
+              map(),
               bottomSheet,
               appBar,
             ],

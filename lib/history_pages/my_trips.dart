@@ -32,6 +32,7 @@ class MyTripsPage extends StatefulWidget {
 
 class _MyTripsPageState extends State<MyTripsPage>
     with SingleTickerProviderStateMixin {
+  var _isLoading = true;
   TabController _tabController;
   // to store all the histories
   List<HistoryModel> completedList;
@@ -58,12 +59,87 @@ class _MyTripsPageState extends State<MyTripsPage>
     _tabController.addListener(() {
       if (_tabController.index == 0 && completedList == null) {
         _makeGetRequest('completed');
+        _isLoading = true;
       }
       if (_tabController.index == 2 && cancelledList == null) {
         cancelledList = [];
         _makeGetRequest('cancelled');
       }
     });
+  }
+
+  _updateRideTimes(jsonData) async {
+    for (var data in jsonData['rides']) {
+      {
+        if (data['action'] == 'Riding') {
+          // Rider Coordinates
+          var mode = 'driving';
+          var accessToken =
+              'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
+          var coordinates =
+              '${data['rideInfo']['from']['lon']},${data['rideInfo']['from']['lat']};${data['rideFrom']['lon']},${data['rideFrom']['lat']};${data['rideTo']['lon']},${data['rideTo']['lat']}';
+          var url =
+              'https://api.mapbox.com/optimized-trips/v1/mapbox/$mode/$coordinates?&source=first&destination=last&roundtrip=false&access_token=$accessToken&geometries=geojson';
+          var res = await get(url);
+          var jsonResponse = jsonDecode(res.body);
+
+          var ftime = TimeOfDay(
+            hour: int.parse(data['rideInfo']['fromTime'].split(':')[0]) +
+                (jsonResponse['trips'][0]['legs'][0]['duration'] / 3600)
+                    .toInt(),
+            minute: int.parse(data['rideInfo']['fromTime'].split(':')[1]) +
+                ((jsonResponse['trips'][0]['legs'][0]['duration'] % 3600) / 60)
+                    .toInt(),
+          );
+          data['rideFromTime'] =
+              (ftime.hour + ((ftime.period == DayPeriod.am) ? 0 : 12))
+                      .toString() +
+                  ':' +
+                  ftime.minute.toString();
+
+          var ttime = TimeOfDay(
+            hour: int.parse(data['rideInfo']['fromTime'].split(':')[0]) +
+                (jsonResponse['trips'][0]['duration'] / 3600).toInt(),
+            minute: int.parse(data['rideInfo']['fromTime'].split(':')[1]) +
+                ((jsonResponse['trips'][0]['duration'] % 3600) / 60).toInt(),
+          );
+          data['rideToTime'] =
+              (ttime.hour + ((ttime.period == DayPeriod.am) ? 0 : 12))
+                      .toString() +
+                  ':' +
+                  ttime.minute.toString();
+        } else {
+          // Rider Coordinates
+          var mode = 'driving';
+          var accessToken =
+              'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
+          var coordinates =
+              '${data['rideInfo']['from']['lon']},${data['rideInfo']['from']['lat']};';
+          data['acceptedRiders'].forEach((rider) {
+            coordinates += '${rider['from']['lon']},${rider['from']['lat']};';
+          });
+          coordinates +=
+              '${data['rideInfo']['to']['lon']},${data['rideInfo']['to']['lat']}';
+          var url =
+              'https://api.mapbox.com/optimized-trips/v1/mapbox/$mode/$coordinates?&source=first&destination=last&roundtrip=false&access_token=$accessToken&geometries=geojson';
+          var res = await get(url);
+          var jsonResponse = jsonDecode(res.body);
+
+          var ttime = TimeOfDay(
+            hour: int.parse(data['rideInfo']['fromTime'].split(':')[0]) +
+                (jsonResponse['trips'][0]['duration'] / 3600).toInt(),
+            minute: int.parse(data['rideInfo']['fromTime'].split(':')[1]) +
+                ((jsonResponse['trips'][0]['duration'] % 3600) / 60).toInt(),
+          );
+          data['rideInfo']['toTime'] =
+              (ttime.hour + ((ttime.period == DayPeriod.am) ? 0 : 12))
+                      .toString() +
+                  ':' +
+                  ttime.minute.toString();
+        }
+      }
+    }
+    return jsonData;
   }
 
   _makeGetRequest(trip) async {
@@ -79,6 +155,7 @@ class _MyTripsPageState extends State<MyTripsPage>
     });
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      jsonData = await _updateRideTimes(jsonData);
       setState(() {
         if (trip == 'upcoming') {
           notifications = [];
@@ -149,8 +226,8 @@ class _MyTripsPageState extends State<MyTripsPage>
                       data['rideTo']['lat'],
                       data['rideTo']['lon'],
                     ),
-                    rideFromTime: "00:00",
-                    rideToTime: "00:00",
+                    rideFromTime: data['rideFromTime'],
+                    rideToTime: data['rideToTime'],
                     rideSlots: data['rideSlots'],
                     rideStatus: data['rideStatus'],
                   )
@@ -376,38 +453,6 @@ class _MyTripsPageState extends State<MyTripsPage>
           _completedRefreshRequired = true;
         } else if (trip == 'cancelled') {}
       });
-    } else {
-      // showDialog(
-      //   barrierDismissible: false,
-      //   context: context,
-      //   builder: (context) => CustomDialog(
-      //     icon: Container(
-      //       padding: const EdgeInsets.symmetric(vertical: 10),
-      //       child: Icon(
-      //         Icons.error_outline,
-      //         size: 40,
-      //         color: buttonColor,
-      //       ),
-      //     ),
-      //     title: 'Invalid Request',
-      //     description:
-      //         'This incident will be reported.\nYou will be redireted to the login page.',
-      //     buttons: FlatButton(
-      //       onPressed: () {
-      //         Navigator.pushAndRemoveUntil(
-      //           context,
-      //           MaterialPageRoute(
-      //               builder: (BuildContext context) => LoginPage()),
-      //           ModalRoute.withName(''),
-      //         );
-      //       },
-      //       child: Text(
-      //         'OK',
-      //         style: TextStyle(color: buttonColor, fontSize: 20),
-      //       ),
-      //     ),
-      //   ),
-      // );
     }
   }
 
@@ -458,6 +503,7 @@ class _MyTripsPageState extends State<MyTripsPage>
           children: results,
         );
         _upcomingRefreshRequired = false;
+        _isLoading = false;
       });
     }
     return upcomingResultListView;
@@ -480,16 +526,6 @@ class _MyTripsPageState extends State<MyTripsPage>
           },
           child: HistoryCard(history: ride),
         );
-
-        // drive =
-        //     (_filterSeatsSelected != null && ride.slots != _filterSeatsSelected)
-        //         ? Container()
-        //         : drive;
-
-        // drive = ride.driver.rating >= _filterMinRating ? drive : Container();
-
-        // drive = _filterCarTypes.contains(ride.vehicle.type) ? drive : Container();
-
         return drive;
       }).toList();
       setState(() {
@@ -499,6 +535,7 @@ class _MyTripsPageState extends State<MyTripsPage>
           children: results,
         );
         _completedRefreshRequired = false;
+        _isLoading = false;
       });
     }
     return completedResultListView;
@@ -523,10 +560,12 @@ class _MyTripsPageState extends State<MyTripsPage>
         color: borderColor,
         child: upcomingList == null || upcomingList.length == 0
             ? Center(
-                child: EmptyState(
-                  title: 'Oops',
-                  message: 'No Upcoming Rides Found',
-                ),
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : EmptyState(
+                        title: 'Oops',
+                        message: 'No Upcoming Rides Found',
+                      ),
               )
             : upcomingResults(),
       ),
@@ -545,7 +584,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                 addAutomaticKeepAlives: true,
                 itemCount: cancelledList.length,
                 itemBuilder: (_, i) => GestureDetector(
-                  onTap: () {
+                  onTap: () { 
                     Navigator.push(
                       context,
                       MaterialPageRoute(
