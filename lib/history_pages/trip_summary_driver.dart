@@ -616,7 +616,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        DriveDetails(ride: widget.ride.rideInfo),
+                        DriveDetails(ride: widget.ride),
                   ),
                 );
               },

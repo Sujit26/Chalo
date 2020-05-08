@@ -1,9 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_map/plugin_api.dart';
+import 'package:http/http.dart';
+import 'package:latlong/latlong.dart';
+import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/history_pages/history_model.dart';
 import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
+import 'package:shared_transport/widgets/custom_tooltip.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class DriveDetails extends StatefulWidget {
-  final RideModel ride;
+  final HistoryModel ride;
 
   DriveDetails({Key key, @required this.ride}) : super(key: key);
   @override
@@ -11,11 +21,106 @@ class DriveDetails extends StatefulWidget {
 }
 
 class _DriveDetailsState extends State<DriveDetails> {
+  WebSocketChannel channel;
+  List<Widget> listTiles;
+  var _requestRoute = true;
+  List<LatLng> line = [];
+  List<Marker> markers = [];
+  List<CircleMarker> circleMarkers = [];
+  MapController _mapController;
+  Map userLocations = {};
+  Location location;
+  LocationData _myLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+    if (widget.ride.action == 'Driving')
+      widget.ride.acceptedRiders.forEach((rider) {
+        userLocations.putIfAbsent(
+          rider.email,
+          () => {
+            'lat': rider.from.lat,
+            'lon': rider.from.lon,
+          },
+        );
+      });
+    else
+      userLocations.putIfAbsent(
+        widget.ride.rideInfo.driver.email,
+        () => {
+          'lat': widget.ride.rideInfo.from.lat,
+          'lon': widget.ride.rideInfo.from.lon,
+        },
+      );
+
+    _locationShare();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  _locationShare() async {
+    // Setting up my locations
+    location = new Location();
+    var tempLoc = await location.getLocation();
+    setState(() {
+      _myLocation = tempLoc;
+    });
+
+    // Conneting to a socket to share live location
+    WidgetsFlutterBinding.ensureInitialized();
+    var _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    var data = {
+      'email': prefs.getString('email'),
+      'token': prefs.getString('token'),
+      'action': widget.ride.action,
+      'driveID': widget.ride.rideInfo.dId,
+    };
+
+    channel = IOWebSocketChannel.connect(
+        'ws://172.20.10.2:3002/location?data=${jsonEncode(data)}');
+    channel.stream.listen((onData) {
+      onData = jsonDecode(onData);
+      print('Socket Says: ' + onData.toString());
+      if (onData['loc'] != null || onData['driver'] != null) {
+        if (widget.ride.action == 'Driving')
+          userLocations[onData['email']] = {
+            'lat': onData['loc']['lat'],
+            'lon': onData['loc']['lon'],
+          };
+        else
+          userLocations[widget.ride.rideInfo.driver.email] = {
+            'lat': onData['driver']['lat'],
+            'lon': onData['driver']['lon'],
+          };
+      }
+    });
+
+    location.onLocationChanged.listen((newLocation) {
+      if (mounted)
+        setState(() {
+          _myLocation = newLocation;
+        });
+      print('new loc');
+      channel.sink.add(jsonEncode({
+        'msg': {
+          'lat': newLocation.latitude,
+          'lon': newLocation.longitude,
+        }
+      }));
+    });
+  }
+
   String getDayOfWeek(date) {
     int dNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(date.split('/')[2]),
+      int.parse(date.split('/')[1]),
+      int.parse(date.split('/')[0]),
     ).weekday;
     var days = [
       'Monday',
@@ -31,9 +136,9 @@ class _DriveDetailsState extends State<DriveDetails> {
 
   String getMonthOfYear(date) {
     int mNum = DateTime.utc(
-      int.parse(widget.ride.driveDate.split('/')[2]),
-      int.parse(widget.ride.driveDate.split('/')[1]),
-      int.parse(widget.ride.driveDate.split('/')[0]),
+      int.parse(date.split('/')[2]),
+      int.parse(date.split('/')[1]),
+      int.parse(date.split('/')[0]),
     ).month;
     var months = [
       'January',
@@ -79,20 +184,468 @@ class _DriveDetailsState extends State<DriveDetails> {
       decoration: BoxDecoration(
           image: DecorationImage(
         fit: BoxFit.fill,
-        image: NetworkImage(widget.ride.vehicle.pic),
+        image: NetworkImage(widget.ride.rideInfo.vehicle.pic),
       )),
     );
   }
 
   showSeats() {
     List<Widget> seats = List();
-    for (var i = 0; i < widget.ride.vehicle.seats - widget.ride.slots; i++)
-      seats.add(Icon(Icons.person, color: buttonColor, size: 18));
-    for (var i = 0; i < widget.ride.slots; i++)
+    for (var i = 0;
+        i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
+        i++) seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+    for (var i = 0; i < widget.ride.rideInfo.slots; i++)
       seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
 
     return Row(
       children: seats,
+    );
+  }
+
+  _addAcceptedPoint(IconData icon, String name, String from, String time) {
+    return ListTile(
+      leading: Container(
+        width: 30,
+        height: 30,
+        child: Material(
+          shape: CircleBorder(),
+          elevation: 5,
+          color: Colors.white,
+          child: Icon(
+            icon,
+            color: buttonColor,
+          ),
+        ),
+      ),
+      title: Text('$name'),
+      subtitle: Text(
+        '${from.split(',')[0]},${from.split(',')[1]}',
+      ),
+      trailing: Text(time),
+    );
+  }
+
+  int waypointSorter(a, b) => a['index'].compareTo(b['index']);
+
+  Widget _buildRouteInfo() {
+    if (_requestRoute) {
+      listTiles = [];
+      List tileData = [];
+      // Driver From Coordinates
+      var coordinates =
+          '${widget.ride.rideInfo.from.lon},${widget.ride.rideInfo.from.lat};';
+      tileData.add({
+        'info': 'src',
+        'title': 'Source Location',
+        'subtitle':
+            '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
+        'trailing': widget.ride.rideInfo.fromTime,
+      });
+      var distributions = '';
+      var count = 1;
+
+      // Accepted Riders Coordinates
+      if (widget.ride.action == 'Driving')
+        widget.ride.acceptedRiders.forEach((rider) {
+          coordinates +=
+              '${rider.from.lon},${rider.from.lat};${rider.to.lon},${rider.to.lat};';
+          distributions += count == 1 ? '$count' : ';$count';
+          count++;
+          distributions += ',$count';
+          count++;
+          tileData.add({
+            'info': 'old',
+            'title': 'Pick Up ${rider.name.split(' ')[0]}',
+            'subtitle':
+                '${rider.from.name.split(',')[0]},${rider.from.name.split(',')[1]}',
+            'trailing': widget.ride.rideInfo.fromTime,
+          });
+          tileData.add({
+            'info': 'old',
+            'title': 'Drop off ${rider.name.split(' ')[0]}',
+            'subtitle':
+                '${rider.to.name.split(',')[0]},${rider.to.name.split(',')[1]}',
+            'trailing': widget.ride.rideInfo.fromTime,
+          });
+        });
+      else {
+        coordinates +=
+            ('${widget.ride.rideFrom.lon},${widget.ride.rideFrom.lat};' +
+                '${widget.ride.rideTo.lon},${widget.ride.rideTo.lat};');
+      }
+      // Driver To Coordinates
+      coordinates +=
+          '${widget.ride.rideInfo.to.lon},${widget.ride.rideInfo.to.lat}';
+      tileData.add({
+        'info': 'des',
+        'title': 'Destination Location',
+        'subtitle':
+            '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
+        'trailing': widget.ride.rideInfo.fromTime,
+      });
+
+      _makeRouteRequest(coordinates, distributions).then((onValue) {
+        List temp = [];
+        for (var i = 0; i < tileData.length; i++) {
+          if (i == 0 || i == tileData.length - 1) continue;
+          temp.add({
+            'index': onValue['waypoints'][i]['waypoint_index'],
+            'value': tileData[i],
+          });
+        }
+        temp.sort(waypointSorter);
+
+        Widget src = _addAcceptedPoint(
+          Icons.location_on,
+          tileData.first['title'],
+          tileData.first['subtitle'],
+          TimeOfDay(
+            hour: int.parse(tileData.first['trailing'].split(':')[0]),
+            minute: int.parse(tileData.first['trailing'].split(':')[1]),
+          ).format(context),
+        );
+        Widget des = _addAcceptedPoint(
+          Icons.location_on,
+          tileData.last['title'],
+          tileData.last['subtitle'],
+          TimeOfDay(
+            hour: int.parse(tileData.last['trailing'].split(':')[0]) +
+                (onValue['trips'][0]['duration'] / 3600).toInt(),
+            minute: int.parse(tileData.last['trailing'].split(':')[1]) +
+                ((onValue['trips'][0]['duration'] % 3600) / 60).toInt(),
+          ).format(context),
+        );
+
+        setState(() {
+          int i = -1;
+          var addSec = 0.0;
+          listTiles = temp.map<Widget>((pair) {
+            i++;
+            addSec += onValue['trips'][0]['legs'][i]['duration'];
+            return _addAcceptedPoint(
+              pair['value']['title'].contains('Drop off')
+                  ? Icons.remove
+                  : Icons.add,
+              pair['value']['title'],
+              pair['value']['subtitle'],
+              TimeOfDay(
+                hour: int.parse(pair['value']['trailing'].split(':')[0]) +
+                    addSec ~/ 3600,
+                minute: int.parse(pair['value']['trailing'].split(':')[1]) +
+                    (addSec % 3600) ~/ 60,
+              ).format(context),
+            );
+          }).toList();
+          listTiles.insert(0, src);
+          listTiles.add(des);
+          _requestRoute = false;
+        });
+      });
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            top: 28,
+            bottom: 50,
+            left: 27,
+            child: Container(
+              width: 7,
+              height: 1000,
+              color: buttonColor,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: listTiles,
+          ),
+        ],
+      ),
+    );
+  }
+
+  _makeRouteRequest(coordinates, distributions) async {
+    var accessToken =
+        'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
+    var mode = 'driving';
+    var url =
+        'https://api.mapbox.com/optimized-trips/v1/mapbox/$mode/$coordinates?&distributions=$distributions&source=first&destination=last&roundtrip=false&access_token=$accessToken&geometries=geojson';
+    var res = await get(url);
+    var jsonResponse = jsonDecode(res.body);
+    setState(() {
+      line =
+          jsonResponse['trips'][0]['geometry']['coordinates'].map<LatLng>((g) {
+        return LatLng(g[1], g[0]);
+      }).toList();
+
+      var bounds = LatLngBounds();
+      bounds.extend(
+        LatLng(widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
+      );
+      bounds.extend(
+        LatLng(widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
+      );
+      _mapController.fitBounds(
+        bounds,
+        options: FitBoundsOptions(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+        ),
+      );
+    });
+    return jsonResponse;
+  }
+
+  _drawLocations() {
+    if (widget.ride.action == 'Driving')
+      setState(() {
+        // Accepted riders location
+        markers = widget.ride.acceptedRiders.map((rider) {
+          return Marker(
+            width: 40.0,
+            height: 40.0,
+            point: LatLng(userLocations[rider.email]['lat'],
+                userLocations[rider.email]['lon']),
+            builder: (context) => CustomTooltip(
+              message: rider.name.split(' ')[0],
+              bgColor: buttonColor,
+              photoUrl: rider.pic,
+            ),
+          );
+        }).toList();
+        // Driver from to location
+        markers.insert(
+          0,
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(
+                widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
+            builder: (context) => Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: buttonColor,
+              clipBehavior: Clip.antiAlias,
+              child: Center(
+                child: Icon(
+                  Icons.directions_car,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+        markers.insert(
+          0,
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(
+                widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
+            builder: (context) => Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: buttonColor,
+              clipBehavior: Clip.antiAlias,
+              child: Center(
+                child: Icon(
+                  Icons.done,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Driver (current user) location
+        markers.add(
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(_myLocation.latitude, _myLocation.longitude),
+            builder: (context) => Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: buttonColor,
+              clipBehavior: Clip.antiAlias,
+              child: Center(
+                child: Icon(
+                  Icons.drive_eta,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        circleMarkers = widget.ride.acceptedRiders.map((rider) {
+          return CircleMarker(
+            point: LatLng(userLocations[rider.email]['lat'],
+                userLocations[rider.email]['lon']),
+            color: buttonColor.withOpacity(0.3),
+            radius: 30,
+          );
+        }).toList();
+        circleMarkers.insert(
+          0,
+          CircleMarker(
+            point: LatLng(
+                widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
+            color: buttonColor.withOpacity(0.3),
+            radius: 25,
+          ),
+        );
+        circleMarkers.insert(
+          0,
+          CircleMarker(
+            point: LatLng(
+                widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
+            color: buttonColor.withOpacity(0.3),
+            radius: 25,
+          ),
+        );
+
+        circleMarkers.add(
+          CircleMarker(
+            point: LatLng(_myLocation.latitude, _myLocation.longitude),
+            color: buttonColor.withOpacity(0.3),
+            radius: 25,
+          ),
+        );
+      });
+    else
+      setState(() {
+        markers = [];
+        // Rider to location
+        markers.add(
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon),
+            builder: (context) => Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: buttonColor,
+              clipBehavior: Clip.antiAlias,
+              child: Center(
+                child: Icon(
+                  Icons.done,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+        // Rider (current user) location
+        markers.add(
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(_myLocation.latitude, _myLocation.longitude),
+            builder: (context) => Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: buttonColor,
+              clipBehavior: Clip.antiAlias,
+              child: Center(
+                child: Icon(
+                  Icons.my_location,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+        // Driver location
+        markers.add(
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(
+              userLocations[widget.ride.rideInfo.driver.email]['lat'],
+              userLocations[widget.ride.rideInfo.driver.email]['lon'],
+            ),
+            builder: (context) => Material(
+              shape: CircleBorder(),
+              elevation: 5,
+              color: buttonColor,
+              clipBehavior: Clip.antiAlias,
+              child: Center(
+                child: Icon(
+                  Icons.drive_eta,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        circleMarkers = [];
+        // Rider to location
+        circleMarkers.add(
+          CircleMarker(
+            point: LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon),
+            color: buttonColor.withOpacity(0.3),
+            radius: 25,
+          ),
+        );
+        // Rider (current user) location
+        circleMarkers.add(
+          CircleMarker(
+            point: LatLng(_myLocation.latitude, _myLocation.longitude),
+            color: buttonColor.withOpacity(0.3),
+            radius: 25,
+          ),
+        );
+        // Driver location
+        circleMarkers.add(
+          CircleMarker(
+            point: LatLng(
+              userLocations[widget.ride.rideInfo.driver.email]['lat'],
+              userLocations[widget.ride.rideInfo.driver.email]['lon'],
+            ),
+            color: buttonColor.withOpacity(0.3),
+            radius: 25,
+          ),
+        );
+      });
+  }
+
+  Widget map() {
+    if (_myLocation != null) _drawLocations();
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        center: LatLng(
+          widget.ride.rideInfo.from.lat,
+          widget.ride.rideInfo.from.lon,
+        ),
+        minZoom: 3.0,
+      ),
+      layers: [
+        TileLayerOptions(
+          urlTemplate:
+              'https://api.mapbox.com/styles/v1/paradox-sid/ck9vf9nq008b81ip8myceai04/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig',
+          additionalOptions: {
+            'accessToken':
+                'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig',
+            'id': 'mapbox.streets'
+          },
+        ),
+        PolylineLayerOptions(
+          polylines: [
+            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+          ],
+        ),
+        CircleLayerOptions(circles: circleMarkers),
+        MarkerLayerOptions(markers: markers),
+      ],
     );
   }
 
@@ -159,6 +712,7 @@ class _DriveDetailsState extends State<DriveDetails> {
               color: Colors.white,
               onPressed: () {
                 print('send sos');
+                channel.sink.add(jsonEncode({'msg': 'sos'}));
               },
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -173,17 +727,6 @@ class _DriveDetailsState extends State<DriveDetails> {
             ),
           ),
         ),
-      ),
-    );
-
-    Widget map = Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      color: mainColor,
-      child: Image(
-        fit: BoxFit.cover,
-        image: NetworkImage(
-            'https://www.theinformationlab.co.uk/wp-content/uploads/2016/02/Basic.png'),
       ),
     );
 
@@ -260,7 +803,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                       ),
                     ),
                     subtitle: Text(
-                      '${widget.ride.vehicle.name} ${widget.ride.vehicle.modelName}',
+                      '${widget.ride.rideInfo.vehicle.name} ${widget.ride.rideInfo.vehicle.modelName}',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -280,7 +823,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                       ),
                     ),
                     subtitle: Text(
-                      '${widget.ride.vehicle.number}',
+                      '${widget.ride.rideInfo.vehicle.number}',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -307,128 +850,6 @@ class _DriveDetailsState extends State<DriveDetails> {
           ),
           Expanded(
             child: showCarPic(),
-          ),
-        ],
-      ),
-    );
-
-    Widget _routeInfo = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            top: 20,
-            left: 27,
-            child: Container(
-              width: 7,
-              height: 230,
-              color: buttonColor,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.location_on,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Source Location'),
-                subtitle: Text(
-                  '${widget.ride.from.name.split(',')[0]},${widget.ride.from.name.split(',')[1]}',
-                ),
-                trailing: Text(
-                  TimeOfDay(
-                    hour: int.parse(widget.ride.fromTime.split(':')[0]),
-                    minute: int.parse(widget.ride.fromTime.split(':')[1]),
-                  ).format(context),
-                ),
-              ),
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Source Location'),
-                subtitle: Text(
-                  '${widget.ride.from.name.split(',')[0]},${widget.ride.from.name.split(',')[1]}',
-                ),
-                trailing: Text(
-                  TimeOfDay(
-                    hour: int.parse(widget.ride.fromTime.split(':')[0]),
-                    minute: int.parse(widget.ride.fromTime.split(':')[1]),
-                  ).format(context),
-                ),
-              ),
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Source Location'),
-                subtitle: Text(
-                  '${widget.ride.from.name.split(',')[0]},${widget.ride.from.name.split(',')[1]}',
-                ),
-                trailing: Text(
-                  TimeOfDay(
-                    hour: int.parse(widget.ride.fromTime.split(':')[0]),
-                    minute: int.parse(widget.ride.fromTime.split(':')[1]),
-                  ).format(context),
-                ),
-              ),
-              ListTile(
-                leading: Container(
-                  width: 30,
-                  height: 30,
-                  child: Material(
-                    shape: CircleBorder(),
-                    elevation: 5,
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.location_on,
-                      color: buttonColor,
-                    ),
-                  ),
-                ),
-                title: Text('Source Location'),
-                subtitle: Text(
-                  '${widget.ride.from.name.split(',')[0]},${widget.ride.from.name.split(',')[1]}',
-                ),
-                trailing: Text(
-                  TimeOfDay(
-                    hour: int.parse(widget.ride.fromTime.split(':')[0]),
-                    minute: int.parse(widget.ride.fromTime.split(':')[1]),
-                  ).format(context),
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -542,7 +963,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                       children: <Widget>[
                         _carInfo,
                         Divider(),
-                        _routeInfo,
+                        _buildRouteInfo(),
                         Divider(),
                         _userInfo,
                         Divider(),
@@ -572,7 +993,7 @@ class _DriveDetailsState extends State<DriveDetails> {
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[
-              map,
+              map(),
               bottomSheet,
               appBar,
             ],

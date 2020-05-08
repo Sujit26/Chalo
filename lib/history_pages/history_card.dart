@@ -467,7 +467,7 @@ class HistoryCard extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        DriveDetails(ride: history.rideInfo)),
+                                        DriveDetails(ride: history)),
                               );
                             },
                             highlightedBorderColor: buttonColor,
