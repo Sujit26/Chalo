@@ -20,6 +20,7 @@ class TripSummaryDriver extends StatefulWidget {
 class _TripSummaryDriverState extends State<TripSummaryDriver> {
   List<Widget> listTiles;
   var _requestRoute = true;
+  var dis = 0.0;
   List<LatLng> line = [];
   List<Marker> markers = [];
   List<CircleMarker> circleMarkers = [];
@@ -390,6 +391,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     var res = await get(url);
     var jsonResponse = jsonDecode(res.body);
     setState(() {
+      dis = jsonResponse['trips'][0]['distance'] / 1000;
+
       line =
           jsonResponse['trips'][0]['geometry']['coordinates'].map<LatLng>((g) {
         return LatLng(g[1], g[0]);
@@ -615,8 +618,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        DriveDetails(ride: widget.ride),
+                    builder: (context) => DriveDetails(ride: widget.ride),
                   ),
                 );
               },
@@ -655,8 +657,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
             child: ListTile(
               title: Text('Distance Covered'),
               subtitle: Text(
-                // TODO: update route info in models
-                '40 Kms',
+                '${dis.toStringAsFixed(2)} Kms',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,

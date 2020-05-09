@@ -26,7 +26,7 @@ Color bgColor = hexToColor("#F7FAFB");
 Color borderColor = hexToColor("#EBEBEB");
 Color fbColor = hexToColor("#4267B2");
 Color gColor = hexToColor("#de5246");
-String serverURL = 'http://172.20.10.2:3002/';
+String serverURL = 'http://ec2-18-191-184-211.us-east-2.compute.amazonaws.com:8080/';
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
@@ -36,7 +36,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-// TODO: doc compress before upload and improve location suggestion and my vehicle pics and sidebar otp page getting out of view and show message when unable to connect to server
+// TODO: doc compress before upload and improve location suggestion and my vehicle pics and otp page getting out of view and show message when unable to connect to server
 class _LoginPageState extends State<LoginPage> {
   var _isLoading = true;
 

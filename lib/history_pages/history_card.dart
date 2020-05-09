@@ -196,7 +196,6 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  // TODO: Server not sending time
   _columnTime(context, fromTime, toTime) {
     return Padding(
       padding: const EdgeInsets.only(left: 15),

@@ -8,6 +8,7 @@ import 'package:shared_transport/driver_pages/add_addition_info.dart';
 import 'package:shared_transport/driver_pages/vehicle_info.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
 import 'package:shared_transport/widgets/loacation.dart';
+import 'package:location/location.dart' as loc;
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 
@@ -43,6 +44,9 @@ class _DriverHomeState extends State<DriverHome> {
   TextEditingController _goodsFromController = new TextEditingController();
   TextEditingController _goodsToController = new TextEditingController();
   TextEditingController _goodsDateController = new TextEditingController();
+  // User Location
+  loc.Location _location;
+  loc.LocationData _myLocation;
   // Field Data
   Location _rideFromLocation;
   Location _rideToLocation;
@@ -72,16 +76,15 @@ class _DriverHomeState extends State<DriverHome> {
     if (val.isEmpty) return;
     var accessToken =
         'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
-    // TODO: Bias the response to favor results that are closer to this location.
-    // var proximity = 'longitude,latitude';
+    var proximity = '${_myLocation.longitude},${_myLocation.latitude}';
     var url =
-        'http://api.mapbox.com/geocoding/v5/mapbox.places/$val.json?access_token=$accessToken&language=en&country=in&types=place';
+        'http://api.mapbox.com/geocoding/v5/mapbox.places/$val.json?proximity=$proximity&access_token=$accessToken&language=en&country=in&types=place';
     var placesSearch = await get(url);
     var places = jsonDecode(placesSearch.body)['features'];
     setState(() {
       places.forEach((prediction) => {
             suggestions.add(Location(prediction['place_name'],
-                prediction['center'][1], prediction['center'][0])),
+                prediction['center'][1] * 1.0, prediction['center'][0] * 1.0)),
           });
     });
   }
@@ -126,12 +129,19 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   int suggestionSorter(Location a, Location b) {
-    return a.name.compareTo(b.name);
+    return 0;
   }
 
   @override
   void initState() {
     super.initState();
+    // Setting up my locations
+    _location = loc.Location();
+    _location.getLocation().then((onValue) {
+      setState(() {
+        _myLocation = onValue;
+      });
+    });
     _makeGetRequest();
   }
 

@@ -23,6 +23,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
   List<CircleMarker> circleMarkers = [];
   MapController _mapController;
 
+  var dis = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -234,6 +236,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     var res = await get(url);
     var jsonResponse = jsonDecode(res.body);
     setState(() {
+      dis = jsonResponse['trips'][0]['distance'] / 1000;
+
       line =
           jsonResponse['trips'][0]['geometry']['coordinates'].map<LatLng>((g) {
         return LatLng(g[1], g[0]);
@@ -515,8 +519,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
             child: ListTile(
               title: Text('Distance Covered'),
               subtitle: Text(
-                // TODO: update route info in models
-                '0 Kms',
+                '${dis.toStringAsFixed(2)} Kms',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_transport/widgets/loacation.dart';
+import 'package:location/location.dart' as loc;
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/search_result.dart';
 import 'package:shared_transport/widgets/sidebar.dart';
@@ -34,6 +35,9 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController _fromController = new TextEditingController();
   TextEditingController _toController = new TextEditingController();
   TextEditingController _dateController = new TextEditingController();
+  // User Location
+  loc.Location _location;
+  loc.LocationData _myLocation;
   // Field Data
   Location _fromLocation;
   Location _toLocation;
@@ -44,21 +48,32 @@ class _SearchPageState extends State<SearchPage> {
 
   var _validationError = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Setting up my locations
+    _location = loc.Location();
+    _location.getLocation().then((onValue) {
+      setState(() {
+        _myLocation = onValue;
+      });
+    });
+  }
+
   getSuggestions(String val) async {
     suggestions.clear();
     if (val.isEmpty) return;
     var accessToken =
         'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
-    // TODO: Bias the response to favor results that are closer to this location.
-    // var proximity = 'latitude,longitude';
+    var proximity = '${_myLocation.longitude},${_myLocation.latitude}';
     var url =
-        'http://api.mapbox.com/geocoding/v5/mapbox.places/$val.json?access_token=$accessToken&language=en&country=in&types=place';
+        'http://api.mapbox.com/geocoding/v5/mapbox.places/$val.json?proximity=$proximity&access_token=$accessToken&language=en&country=in&types=place';
     var placesSearch = await get(url);
     var places = jsonDecode(placesSearch.body)['features'];
     setState(() {
       places.forEach((prediction) => {
             suggestions.add(Location(prediction['place_name'],
-                prediction['center'][1], prediction['center'][0])),
+                prediction['center'][1] * 1.0, prediction['center'][0] * 1.0)),
           });
     });
   }
@@ -74,7 +89,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   int suggestionSorter(Location a, Location b) {
-    return a.name.compareTo(b.name);
+    return 0;
   }
 
   @override
@@ -421,7 +436,7 @@ class _SearchPageState extends State<SearchPage> {
       selectedDate = DateTime.now();
 
       _validationError = false;
-      
+
       type = 'ride';
     });
   }

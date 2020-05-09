@@ -81,7 +81,6 @@ class _ProfileCardState extends State<ProfileCard> {
                       ),
                     ),
                     Text(
-                      // TODO: Make it dynamic
                       // widget.user.gender,
                       '',
                       textAlign: TextAlign.center,
