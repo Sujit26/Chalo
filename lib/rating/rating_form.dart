@@ -1,6 +1,5 @@
+import 'package:shared_transport/models/models.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/rating/rating_info.dart';
 
 class RatingForm extends StatelessWidget {
   final UserRating user;
@@ -12,16 +11,16 @@ class RatingForm extends StatelessWidget {
       return fill >= 1.0
           ? Icon(
               Icons.star,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             )
           : fill > 0
               ? Icon(
                   Icons.star_half,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 )
               : Icon(
                   Icons.star_border,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 );
     }
 
@@ -36,7 +35,6 @@ class RatingForm extends StatelessWidget {
           children: <Widget>[
             AppBar(
               title: Text('User Rating'),
-              backgroundColor: buttonColor,
               centerTitle: false,
               automaticallyImplyLeading: false,
               elevation: 0,

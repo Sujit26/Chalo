@@ -4,11 +4,11 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/add_addition_info.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
-import 'package:shared_transport/widgets/loacation.dart';
-import 'package:location/location.dart' as loc;
+import 'package:location/location.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 
@@ -30,13 +30,13 @@ class _DriverHomeState extends State<DriverHome> {
   var _isLoading = true;
   var _verifiedDriver = true;
   // Location Suggestions
-  List<Location> suggestions = [];
-  GlobalKey<AutoCompleteTextFieldState<Location>> _rideFromKey =
+  List<LocationLatLng> suggestions = [];
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _rideFromKey =
       new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<Location>> _rideToKey = new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<Location>> _goodsFromKey =
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _rideToKey = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _goodsFromKey =
       new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<Location>> _goodsToKey = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _goodsToKey = new GlobalKey();
   // Fields Controllers
   TextEditingController _rideFromController = new TextEditingController();
   TextEditingController _rideToController = new TextEditingController();
@@ -45,13 +45,13 @@ class _DriverHomeState extends State<DriverHome> {
   TextEditingController _goodsToController = new TextEditingController();
   TextEditingController _goodsDateController = new TextEditingController();
   // User Location
-  loc.Location _location;
-  loc.LocationData _myLocation;
+  Location _location;
+  LocationData _myLocation;
   // Field Data
-  Location _rideFromLocation;
-  Location _rideToLocation;
-  Location _goodsFromLocation;
-  Location _goodsToLocation;
+  LocationLatLng _rideFromLocation;
+  LocationLatLng _rideToLocation;
+  LocationLatLng _goodsFromLocation;
+  LocationLatLng _goodsToLocation;
   // Time
   var _rideTime;
   var _goodsTime;
@@ -83,13 +83,13 @@ class _DriverHomeState extends State<DriverHome> {
     var places = jsonDecode(placesSearch.body)['features'];
     setState(() {
       places.forEach((prediction) => {
-            suggestions.add(Location(prediction['place_name'],
+            suggestions.add(LocationLatLng(prediction['place_name'],
                 prediction['center'][1] * 1.0, prediction['center'][0] * 1.0)),
           });
     });
   }
 
-  getDistance(Location fromLocation, Location toLocation) async {
+  getDistance(LocationLatLng fromLocation, LocationLatLng toLocation) async {
     var accessToken =
         'pk.eyJ1IjoicGFyYWRveC1zaWQiLCJhIjoiY2p3dWluNmlrMDVlbTRicWcwMHJjdDY0bSJ9.sBILZWT0N-IC-_3s7_-dig';
     var coordinates =
@@ -118,17 +118,17 @@ class _DriverHomeState extends State<DriverHome> {
     // });
   }
 
-  Widget suggestionItemBuilder(BuildContext context, Location suggestion) {
+  Widget suggestionItemBuilder(BuildContext context, LocationLatLng suggestion) {
     return Padding(
         child: ListTile(title: Text(suggestion.name)),
         padding: EdgeInsets.all(8.0));
   }
 
-  bool suggestionFilter(Location suggestion, String query) {
+  bool suggestionFilter(LocationLatLng suggestion, String query) {
     return suggestion.name.toLowerCase().startsWith(query.toLowerCase());
   }
 
-  int suggestionSorter(Location a, Location b) {
+  int suggestionSorter(LocationLatLng a, LocationLatLng b) {
     return 0;
   }
 
@@ -136,7 +136,7 @@ class _DriverHomeState extends State<DriverHome> {
   void initState() {
     super.initState();
     // Setting up my locations
-    _location = loc.Location();
+    _location = Location();
     _location.getLocation().then((onValue) {
       setState(() {
         _myLocation = onValue;
@@ -151,7 +151,7 @@ class _DriverHomeState extends State<DriverHome> {
     final SharedPreferences prefs = await _prefs;
 
     if (prefs.getString('approveStatus') == '100') {
-      final response = await get(serverURL + 'driver', headers: {
+      final response = await get(Keys.serverURL + 'driver', headers: {
         'token': prefs.getString('token'),
         'email': prefs.getString('email'),
       });
@@ -188,7 +188,7 @@ class _DriverHomeState extends State<DriverHome> {
               child: Icon(
                 Icons.error_outline,
                 size: 40,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
             title: 'Invalid Request',
@@ -205,7 +205,7 @@ class _DriverHomeState extends State<DriverHome> {
               },
               child: Text(
                 'OK',
-                style: TextStyle(color: buttonColor, fontSize: 20),
+                style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
               ),
             ),
           ),
@@ -301,7 +301,7 @@ class _DriverHomeState extends State<DriverHome> {
                       itemBuilder: suggestionItemBuilder,
                       itemFilter: suggestionFilter,
                       itemSorter: suggestionSorter,
-                      itemSubmitted: (Location data) {
+                      itemSubmitted: (LocationLatLng data) {
                         setState(() {
                           _rideFromController.text = data.name;
                           _rideFromLocation = data;
@@ -353,7 +353,7 @@ class _DriverHomeState extends State<DriverHome> {
                       itemBuilder: suggestionItemBuilder,
                       itemFilter: suggestionFilter,
                       itemSorter: suggestionSorter,
-                      itemSubmitted: (Location data) {
+                      itemSubmitted: (LocationLatLng data) {
                         setState(() {
                           _rideToController.text = data.name;
                           _rideToLocation = data;
@@ -571,7 +571,7 @@ class _DriverHomeState extends State<DriverHome> {
                 borderRadius: BorderRadius.circular(7),
               ),
               clipBehavior: Clip.antiAlias,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               textColor: Colors.white,
               padding: EdgeInsets.fromLTRB(30.0, 17.0, 30.0, 17.0),
               onPressed: () async {
@@ -735,7 +735,7 @@ class _DriverHomeState extends State<DriverHome> {
                         itemBuilder: suggestionItemBuilder,
                         itemFilter: suggestionFilter,
                         itemSorter: suggestionSorter,
-                        itemSubmitted: (Location data) {
+                        itemSubmitted: (LocationLatLng data) {
                           setState(() {
                             _goodsFromController.text = data.name;
                             _goodsFromLocation = data;
@@ -784,7 +784,7 @@ class _DriverHomeState extends State<DriverHome> {
                         itemBuilder: suggestionItemBuilder,
                         itemFilter: suggestionFilter,
                         itemSorter: suggestionSorter,
-                        itemSubmitted: (Location data) {
+                        itemSubmitted: (LocationLatLng data) {
                           setState(() {
                             _goodsToController.text = data.name;
                             _goodsToLocation = data;
@@ -948,7 +948,7 @@ class _DriverHomeState extends State<DriverHome> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: FlatButton(
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   textColor: Colors.white,
                   padding: EdgeInsets.fromLTRB(30.0, 17.0, 30.0, 17.0),
                   onPressed: () async {
@@ -1051,7 +1051,7 @@ class _DriverHomeState extends State<DriverHome> {
               width: 150,
               height: 150,
               child: Image(
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   image: NetworkImage(
                       'http://icon-library.com/images/verified-icon-png/verified-icon-png-29.jpg')),
             ),
@@ -1077,7 +1077,7 @@ class _DriverHomeState extends State<DriverHome> {
                     ),
                   );
                 },
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(40),
@@ -1096,7 +1096,6 @@ class _DriverHomeState extends State<DriverHome> {
           ? DefaultTabController(
               length: 2,
               child: Container(
-                color: bgColor,
                 child: _isLoading
                     ? Center(child: CircularProgressIndicator())
                     : Column(
@@ -1112,9 +1111,9 @@ class _DriverHomeState extends State<DriverHome> {
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: TabBar(
-                                        unselectedLabelColor: buttonColor,
+                                        unselectedLabelColor: Theme.of(context).accentColor,
                                         indicator: ShapeDecoration(
-                                          color: buttonColor,
+                                          color: Theme.of(context).accentColor,
                                           shape: BeveledRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(0),
@@ -1162,13 +1161,7 @@ class _DriverHomeState extends State<DriverHome> {
         ),
         elevation: 2,
         titleSpacing: 0,
-        title: Text(
-          widget.name,
-          style: TextStyle(
-            fontSize: 25.0,
-          ),
-        ),
-        backgroundColor: buttonColor,
+        title: Text(widget.name),
       ),
       body: GestureDetector(
         onTap: () {

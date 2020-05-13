@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/verification/docs_upload_page.dart';
-import 'package:shared_transport/login/login_page.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -12,7 +11,6 @@ import 'package:shared_transport/login/login_page.dart';
 ///
 class ProfileVerificationPage extends StatefulWidget {
   final String name = 'Profile Verification';
-  final Color color = mainColor;
 
   @override
   _ProfileVerificationPageState createState() =>
@@ -50,13 +48,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
-      backgroundColor: buttonColor,
+      title: Text(widget.name),
     );
 
     Widget getStatusIcon(status) {
@@ -122,7 +114,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(
                                     const Radius.circular(100.0)),
-                                color: buttonColor,
+                                color: Theme.of(context).accentColor,
                               ),
                               child: Icon(
                                 Icons.assignment_ind,
@@ -179,7 +171,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.all(
                                         const Radius.circular(100.0)),
-                                    color: buttonColor,
+                                    color: Theme.of(context).accentColor,
                                   ),
                                   child: Icon(
                                     Icons.assignment_ind,
@@ -223,7 +215,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.all(
                                         const Radius.circular(100.0)),
-                                    color: buttonColor,
+                                    color: Theme.of(context).accentColor,
                                   ),
                                   child: Icon(
                                     Icons.person,
@@ -259,7 +251,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: buttonColor,
+                    color: Theme.of(context).accentColor,
                   ),
                   child: Container(
                       padding: const EdgeInsets.all(50),
@@ -280,7 +272,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                 'Verified',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   fontSize: 18,
                 ),
               ),
@@ -297,10 +289,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
       return Container(
         child: Scaffold(
           appBar: appBar,
-          body: Container(
-            color: bgColor,
-            child: profileVerificationBody,
-          ),
+          body: profileVerificationBody,
         ),
       );
     }

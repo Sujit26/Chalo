@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
 
@@ -16,7 +17,6 @@ import 'package:shared_transport/verification/profile_verification.dart';
 ///
 class ProfileEditPage extends StatefulWidget {
   final String name = 'Profile';
-  final Color color = mainColor;
 
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
@@ -119,12 +119,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ),
       elevation: 2,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
+      title: Text(widget.name),
       actions: <Widget>[
         GestureDetector(
           onTap: () {
@@ -140,7 +135,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ],
       centerTitle: true,
-      backgroundColor: buttonColor,
     );
 
     Widget profileBody = Row(
@@ -201,8 +195,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                         isExpanded: true,
                         isDense: true,
                         onChanged: _updateGenderValue,
-                        items:
-                            ['Male', 'Female', 'Other'].map((String value) {
+                        items: ['Male', 'Female', 'Other'].map((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -228,26 +221,23 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     child: InkWell(
                       onTap: () => {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfileVerificationPage()),
+                              builder: (context) => ProfileVerificationPage()),
                         )
                       },
                       child: TextField(
                         decoration: InputDecoration(
                           suffixIcon:
-                              Icon(Icons.verified_user, color: buttonColor),
+                              Icon(Icons.verified_user, color: Theme.of(context).accentColor),
                           border: InputBorder.none,
                           labelText: 'Profile Verification',
                           labelStyle: TextStyle(
-                              color: buttonColor,
-                              fontWeight: FontWeight.bold),
+                              color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
                           enabled: false,
                           // errorText: _showValidationError ? 'Invalid number entered' : null,
                         ),
@@ -273,7 +263,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             child: profileBody,
           ),
           bottomSheet: Container(
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             child: InkWell(
               onTap: _isSaving
                   ? null
@@ -331,7 +321,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   _makePostRequest(data) async {
-    final response = await post(serverURL + 'profile/update',
+    final response = await post(Keys.serverURL + 'profile/update',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       // TODO: Change data in local storage

@@ -5,8 +5,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
 import 'package:shared_transport/history_pages/drive_details.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
 
 class TripSummaryDriver extends StatefulWidget {
@@ -84,18 +83,18 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 20,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               );
   }
@@ -116,9 +115,9 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.total - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -129,9 +128,9 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -149,7 +148,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           color: Colors.white,
           child: Icon(
             icon,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
           ),
         ),
       ),
@@ -173,7 +172,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: buttonColor, width: 2),
+            border: Border.all(color: Theme.of(context).accentColor, width: 2),
             image: DecorationImage(
               fit: BoxFit.cover,
               image: NetworkImage(
@@ -207,12 +206,12 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                 IconButton(
                   icon: Icon(Icons.call),
                   onPressed: () {},
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 ),
                 IconButton(
                   icon: Icon(Icons.message),
                   onPressed: () {},
-                  color: mainColor,
+                  color: Theme.of(context).primaryColor,
                 ),
               ],
             )
@@ -228,7 +227,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
       widget.ride.rideInfo.driver.pic,
       Row(
         children: <Widget>[
-          Text('You ', style: TextStyle(color: buttonColor)),
+          Text('You ', style: TextStyle(color: Theme.of(context).accentColor)),
           Text('were driver of the trip',
               style: TextStyle(color: Colors.black)),
         ],
@@ -370,7 +369,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
             child: Container(
               width: 7,
               height: 1000,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           Column(
@@ -405,7 +404,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           point: LatLng(rider.from.lat, rider.from.lon),
           builder: (context) => CustomTooltip(
             message: rider.name.split(' ')[0],
-            bgColor: buttonColor,
+            bgColor: Theme.of(context).accentColor,
             photoUrl: rider.pic,
           ),
         );
@@ -420,7 +419,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           builder: (context) => Material(
             shape: CircleBorder(),
             elevation: 5,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             clipBehavior: Clip.antiAlias,
             child: Center(
               child: Icon(
@@ -442,7 +441,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           builder: (context) => Material(
             shape: CircleBorder(),
             elevation: 5,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             clipBehavior: Clip.antiAlias,
             child: Center(
               child: Icon(
@@ -458,7 +457,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
       circleMarkers = widget.ride.acceptedRiders.map((rider) {
         return CircleMarker(
           point: LatLng(rider.from.lat, rider.from.lon),
-          color: buttonColor.withOpacity(0.3),
+          color: Theme.of(context).accentColor.withOpacity(0.3),
           radius: 30,
         );
       }).toList();
@@ -467,7 +466,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
         CircleMarker(
           point: LatLng(
               widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
-          color: buttonColor.withOpacity(0.3),
+          color: Theme.of(context).accentColor.withOpacity(0.3),
           radius: 25,
         ),
       );
@@ -476,7 +475,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
         CircleMarker(
           point:
               LatLng(widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
-          color: buttonColor.withOpacity(0.3),
+          color: Theme.of(context).accentColor.withOpacity(0.3),
           radius: 25,
         ),
       );
@@ -520,7 +519,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+            Polyline(points: line, strokeWidth: 2, color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(circles: circleMarkers),
@@ -533,7 +532,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
   Widget build(BuildContext context) {
     Widget appBar = Material(
       elevation: 2,
-      color: buttonColor,
+      color: Theme.of(context).appBarTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -611,7 +610,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           ? OutlineButton(
               child: Text(
                 'Start Trip',
-                style: TextStyle(color: buttonColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -622,9 +621,9 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   ),
                 );
               },
-              highlightedBorderColor: buttonColor,
+              highlightedBorderColor: Theme.of(context).accentColor,
               borderSide: BorderSide(
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 style: BorderStyle.solid,
                 width: 0.8,
               ),
@@ -684,7 +683,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: buttonColor),
+                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -705,7 +704,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   child: Icon(
                     Icons.fiber_manual_record,
                     size: 7,
-                    color: buttonColor,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
               ),
@@ -716,7 +715,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: buttonColor),
+                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -853,7 +852,6 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     );
 
     return Scaffold(
-      backgroundColor: bgColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());

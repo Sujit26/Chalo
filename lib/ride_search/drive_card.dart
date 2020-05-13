@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/new_ride.dart';
 import 'dart:math' as math;
 
@@ -56,22 +55,22 @@ class DriveCard extends StatelessWidget {
     return months[mNum - 1];
   }
 
-  Widget _starFilling(double fill) {
+  Widget _starFilling(double fill, context) {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 15,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 15,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 15,
               );
   }
@@ -107,11 +106,16 @@ class DriveCard extends StatelessWidget {
                                   ride['ride'].driveDate.split('/')[0],
                                   style: TextStyle(fontSize: 25),
                                 ),
-                                Text(ride['ride'].driveDate.split('/')[0] == '01'
+                                Text(ride['ride'].driveDate.split('/')[0] ==
+                                        '01'
                                     ? 'st'
-                                    : ride['ride'].driveDate.split('/')[0] == '02'
+                                    : ride['ride'].driveDate.split('/')[0] ==
+                                            '02'
                                         ? 'nd'
-                                        : ride['ride'].driveDate.split('/')[0] == '03'
+                                        : ride['ride']
+                                                    .driveDate
+                                                    .split('/')[0] ==
+                                                '03'
                                             ? 'rd'
                                             : 'th'),
                               ],
@@ -129,7 +133,8 @@ class DriveCard extends StatelessWidget {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
-                            Text('${ride['ride'].slots} Seats | ${ride['ride'].vehicle.type}'),
+                            Text(
+                                '${ride['ride'].slots} Seats | ${ride['ride'].vehicle.type}'),
                           ],
                         ),
                       ],
@@ -143,20 +148,22 @@ class DriveCard extends StatelessWidget {
                           children: <Widget>[
                             Icon(
                               Icons.fiber_manual_record,
-                              color: buttonColor,
+                              color: Theme.of(context).accentColor,
                               size: 15,
                             ),
                             Transform.rotate(
                               angle: 90 * math.pi / 180,
                               child: Icon(
                                 Icons.linear_scale,
-                                color: buttonColor.withAlpha(150),
+                                color: Theme.of(context)
+                                    .accentColor
+                                    .withAlpha(150),
                                 size: 15,
                               ),
                             ),
                             Icon(
                               Icons.location_on,
-                              color: mainColor,
+                              color: Theme.of(context).primaryColor,
                               size: 15,
                             ),
                           ],
@@ -186,10 +193,10 @@ class DriveCard extends StatelessWidget {
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     TimeOfDay(
-                                      hour:
-                                          int.parse(ride['ride'].toTime.split(':')[0]),
-                                      minute:
-                                          int.parse(ride['ride'].toTime.split(':')[1]),
+                                      hour: int.parse(
+                                          ride['ride'].toTime.split(':')[0]),
+                                      minute: int.parse(
+                                          ride['ride'].toTime.split(':')[1]),
                                     ).format(context),
                                   ),
                                 ),
@@ -265,11 +272,26 @@ class DriveCard extends StatelessWidget {
                               ),
                               Row(
                                 children: <Widget>[
-                                  _starFilling(ride['ride'].driver.rating),
-                                  _starFilling(ride['ride'].driver.rating - 1),
-                                  _starFilling(ride['ride'].driver.rating - 2),
-                                  _starFilling(ride['ride'].driver.rating - 3),
-                                  _starFilling(ride['ride'].driver.rating - 4),
+                                  _starFilling(
+                                    ride['ride'].driver.rating,
+                                    context,
+                                  ),
+                                  _starFilling(
+                                    ride['ride'].driver.rating - 1,
+                                    context,
+                                  ),
+                                  _starFilling(
+                                    ride['ride'].driver.rating - 2,
+                                    context,
+                                  ),
+                                  _starFilling(
+                                    ride['ride'].driver.rating - 3,
+                                    context,
+                                  ),
+                                  _starFilling(
+                                    ride['ride'].driver.rating - 4,
+                                    context,
+                                  ),
                                 ],
                               ),
                             ],
@@ -278,13 +300,14 @@ class DriveCard extends StatelessWidget {
                         Spacer(),
                         OutlineButton(
                           child: Text('Request',
-                              style: TextStyle(color: buttonColor)),
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor)),
                           onPressed: () {
                             _navigateToConverter(context);
                           },
-                          highlightedBorderColor: buttonColor,
+                          highlightedBorderColor: Theme.of(context).accentColor,
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: Theme.of(context).accentColor,
                             style: BorderStyle.solid,
                             width: 0.8,
                           ),
@@ -301,7 +324,7 @@ class DriveCard extends StatelessWidget {
             right: 50,
             top: -20,
             child: CircleAvatar(
-              backgroundColor: bgColor,
+              backgroundColor: Theme.of(context).backgroundColor,
               radius: 20,
             ),
           ),

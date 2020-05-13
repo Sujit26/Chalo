@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
-import 'package:shared_transport/widgets/loacation.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/drive_card.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 import 'dart:math' as math;
 
@@ -21,7 +20,6 @@ import 'dart:math' as math;
 ///
 class SearchResultPage extends StatefulWidget {
   final String name = 'Search Results';
-  final Color color = mainColor;
   final search;
 
   SearchResultPage({@required this.search});
@@ -98,7 +96,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
 
-    final response = await get(serverURL + 'ride/search', headers: {
+    final response = await get(Keys.serverURL + 'ride/search', headers: {
       'token': prefs.getString('token'),
       'email': prefs.getString('email'),
       'data': jsonEncode(widget.search),
@@ -110,9 +108,9 @@ class _SearchResultPageState extends State<SearchResultPage> {
         rides = jsonRides.map((ride) {
           return RideModel(
             type: ride['type'],
-            from: Location(
+            from: LocationLatLng(
                 ride['from']['name'], ride['from']['lat'], ride['from']['lon']),
-            to: Location(
+            to: LocationLatLng(
                 ride['to']['name'], ride['to']['lat'], ride['to']['lon']),
             driveDate: ride['driveDate'],
             fromTime: ride['fromTime'],
@@ -148,7 +146,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             child: Icon(
               Icons.error_outline,
               size: 40,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           title: 'Error',
@@ -164,7 +162,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: buttonColor, fontSize: 20),
+              style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -227,7 +225,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                 padding: const EdgeInsets.only(right: 12),
                 child: Icon(
                   Icons.done,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 ),
               )
             : null,
@@ -237,7 +235,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             option,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: option == _sortOptionSelected ? buttonColor : mainColor,
+              color: option == _sortOptionSelected ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
             ),
           ),
         ),
@@ -267,15 +265,15 @@ class _SearchResultPageState extends State<SearchResultPage> {
               child: Material(
                 elevation: 3,
                 borderRadius: BorderRadius.circular(3),
-                shadowColor: _isSelected ? buttonColor : Colors.white,
-                color: _isSelected ? buttonColor : Colors.white,
+                shadowColor: _isSelected ? Theme.of(context).accentColor : Colors.white,
+                color: _isSelected ? Theme.of(context).accentColor : Colors.white,
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                   child: Text(
                     val,
                     style: TextStyle(
-                        color: _isSelected ? Colors.white : buttonColor),
+                        color: _isSelected ? Colors.white : Theme.of(context).accentColor),
                   ),
                 ),
               ),
@@ -323,7 +321,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             'SORT BY',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: mainColor,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 18,
                             ),
                           ),
@@ -390,7 +388,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             'FILTER BY',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: mainColor,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 18,
                             ),
                           ),
@@ -410,7 +408,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         'Seats Available',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: mainColor,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
@@ -425,19 +423,19 @@ class _SearchResultPageState extends State<SearchResultPage> {
                               hint: Text(
                                 'Select',
                                 style: TextStyle(
-                                  color: buttonColor,
+                                  color: Theme.of(context).accentColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               underline: Container(),
-                              iconEnabledColor: buttonColor,
+                              iconEnabledColor: Theme.of(context).accentColor,
                               items: [1, 2, 3, 4, 5].map((int val) {
                                 return DropdownMenuItem<int>(
                                   value: val,
                                   child: Text(
                                     '${val.toString()} Seats',
                                     style: TextStyle(
-                                        color: buttonColor,
+                                        color: Theme.of(context).accentColor,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 );
@@ -474,7 +472,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         'Min. Rating',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: mainColor,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
@@ -488,7 +486,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             child: Icon(
                               Icons.star,
                               color: _filterMinRating >= 1
-                                  ? buttonColor
+                                  ? Theme.of(context).accentColor
                                   : Colors.grey,
                             ),
                             onTap: () {
@@ -501,7 +499,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             child: Icon(
                               Icons.star,
                               color: _filterMinRating >= 2
-                                  ? buttonColor
+                                  ? Theme.of(context).accentColor
                                   : Colors.grey,
                             ),
                             onTap: () {
@@ -514,7 +512,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             child: Icon(
                               Icons.star,
                               color: _filterMinRating >= 3
-                                  ? buttonColor
+                                  ? Theme.of(context).accentColor
                                   : Colors.grey,
                             ),
                             onTap: () {
@@ -527,7 +525,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             child: Icon(
                               Icons.star,
                               color: _filterMinRating >= 4
-                                  ? buttonColor
+                                  ? Theme.of(context).accentColor
                                   : Colors.grey,
                             ),
                             onTap: () {
@@ -540,7 +538,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                             child: Icon(
                               Icons.star,
                               color: _filterMinRating >= 5
-                                  ? buttonColor
+                                  ? Theme.of(context).accentColor
                                   : Colors.grey,
                             ),
                             onTap: () {
@@ -572,7 +570,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         'Car Type',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: mainColor,
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
@@ -638,13 +636,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      backgroundColor: buttonColor,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
+      title: Text(widget.name),
     );
 
     Widget floatingButton = _isVisible
@@ -652,7 +644,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
-              color: buttonColor.withOpacity(.9),
+              color: Theme.of(context).accentColor.withOpacity(.9),
             ),
             height: 50,
             child: Row(
@@ -754,7 +746,6 @@ class _SearchResultPageState extends State<SearchResultPage> {
       return Scaffold(
         appBar: appBar,
         body: Container(
-          decoration: BoxDecoration(color: bgColor),
           child: Column(
             children: <Widget>[
               Padding(
@@ -765,7 +756,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: buttonColor,
+                      color: Theme.of(context).accentColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     width: MediaQuery.of(context).size.width,
@@ -793,7 +784,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(1.0),
                                     child: CircleAvatar(
-                                      backgroundColor: buttonColor,
+                                      backgroundColor: Theme.of(context).accentColor,
                                       radius: 17,
                                       child: Icon(
                                         Icons.arrow_forward,

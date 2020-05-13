@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/login/login_page.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -33,14 +32,7 @@ class _HomePageState extends State<HomePage> {
             ),
             elevation: 2,
             titleSpacing: 0,
-            backgroundColor: buttonColor,
-            title: Text(
-              widget.name,
-              style: TextStyle(fontSize: 25.0),
-            ),
-          ),
-          body: Container(
-            color: bgColor,
+            title: Text(widget.name),
           ),
         ),
       );

@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/widgets/bottom_navigation.dart';
 import 'phone_number.dart';
 
@@ -16,27 +17,18 @@ import 'phone_number.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-Color hexToColor(String code) {
-  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
-}
 
-Color mainColor = hexToColor("#708690");
-Color buttonColor = hexToColor("#A65A7B");
-Color bgColor = hexToColor("#F7FAFB");
-Color borderColor = hexToColor("#EBEBEB");
-Color fbColor = hexToColor("#4267B2");
-Color gColor = hexToColor("#de5246");
-String serverURL = 'http://ec2-18-191-184-211.us-east-2.compute.amazonaws.com:8080/';
+Color fbColor = Color(0xFF4267B2);
+Color gColor = Color(0xFFDE5246);
 
 class LoginPage extends StatefulWidget {
   final String name = 'Rider';
-  final Color color = mainColor;
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-// TODO: doc compress before upload and improve location suggestion and my vehicle pics and otp page getting out of view and show message when unable to connect to server
+// TODO: doc compress before upload and my vehicle pics and otp page getting out of view and show message when unable to connect to server
 class _LoginPageState extends State<LoginPage> {
   var _isLoading = true;
 
@@ -47,23 +39,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // if (!_isLoading) {
-    //   googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-    //     var data = {
-    //       'name': account.displayName,
-    //       'email': account.email,
-    //       'photoUrl': account.photoUrl
-    //     };
-    //     print(data);
-    //     _makePostRequest(data);
-    //   });
-    //   googleSignIn.signInSilently();
-    // }
     _makeGetRequest();
   }
 
   _makeGetRequest() async {
-    final response = await get(serverURL);
+    final response = await get(Keys.serverURL);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       if (jsonData['type'] == 'server' &&
@@ -124,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _makePostRequest(data) async {
-    final response = await post(serverURL,
+    final response = await post(Keys.serverURL,
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -182,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     Widget createBody() {
       return Container(
-        color: mainColor,
+        color: Theme.of(context).primaryColor,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Stack(children: <Widget>[
@@ -196,12 +176,12 @@ class _LoginPageState extends State<LoginPage> {
               alignment: FractionalOffset.bottomCenter,
               child: _isLoading
                   ? Padding(
-                    padding: const EdgeInsets.only(bottom: 150.0),
-                    child: CircularProgressIndicator(
+                      padding: const EdgeInsets.only(bottom: 150.0),
+                      child: CircularProgressIndicator(
                         valueColor:
                             new AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
-                  )
+                    )
                   : Wrap(
                       children: <Widget>[
                         Padding(

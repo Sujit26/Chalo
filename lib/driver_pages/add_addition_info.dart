@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 
@@ -27,7 +28,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
       'drive': drive,
     };
 
-    final response = await post(serverURL + 'driver/add',
+    final response = await post(Keys.serverURL + 'driver/add',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       setState(() {
@@ -40,13 +41,13 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
           icon: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              border: Border.all(width: 2, color: buttonColor),
+              border: Border.all(width: 2, color: Theme.of(context).accentColor),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.done,
               size: 40,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           title: 'Saved',
@@ -59,7 +60,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: buttonColor, fontSize: 20),
+              style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -74,7 +75,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
             child: Icon(
               Icons.error_outline,
               size: 40,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           title: 'Invalid Request',
@@ -91,7 +92,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: buttonColor, fontSize: 20),
+              style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -202,7 +203,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                   !_isDistance
                       ? FlatButton(
                           padding: const EdgeInsets.symmetric(vertical: 8),
-                          color: buttonColor,
+                          color: Theme.of(context).accentColor,
                           textColor: Colors.white,
                           child: Text('Add'),
                           onPressed: () {
@@ -261,7 +262,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                   !_isDuration
                       ? FlatButton(
                           padding: const EdgeInsets.symmetric(vertical: 8),
-                          color: buttonColor,
+                          color: Theme.of(context).accentColor,
                           textColor: Colors.white,
                           child: Text('Add'),
                           onPressed: () {
@@ -312,7 +313,7 @@ class _AddAdditionalInfoState extends State<AddAdditionalInfo> {
                   Expanded(
                     child: FlatButton(
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      color: buttonColor,
+                      color: Theme.of(context).accentColor,
                       textColor: Colors.white,
                       child: _isSaving
                           ? SizedBox(

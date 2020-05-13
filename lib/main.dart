@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/theme/theme_builder.dart';
 
 // TODO: open ios/Runner.xcworkspace to open xcode
 
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Chalo',
+      theme: ThemeBuilder.buildLightTheme(),
       home: LoginPage(),
     );
   }

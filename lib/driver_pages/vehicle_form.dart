@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/driver_pages/add_vehicle.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:shared_transport/models/models.dart';
 
 class VehicleCard extends StatefulWidget {
   final Vehicle vehicle;
@@ -104,7 +103,6 @@ class _VehicleCardState extends State<VehicleCard> {
           children: <Widget>[
             AppBar(
               title: Text('Total seats ${vehicle.seats}'),
-              backgroundColor: buttonColor,
               centerTitle: false,
               automaticallyImplyLeading: false,
               elevation: 0,
@@ -166,14 +164,14 @@ class _VehicleCardState extends State<VehicleCard> {
                             children: <Widget>[
                               Icon(
                                 Icons.edit,
-                                color: buttonColor,
+                                color: Theme.of(context).accentColor,
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   'EDIT',
                                   style: TextStyle(
-                                    color: buttonColor,
+                                    color: Theme.of(context).accentColor,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),

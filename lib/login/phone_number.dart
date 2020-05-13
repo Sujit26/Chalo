@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'otp_page.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -12,18 +12,9 @@ import 'otp_page.dart';
 /// While it is named ConverterRoute, a more apt name would be ConverterScreen,
 /// because it is responsible for the UI at the route's destination.
 ///
-Color hexToColor(String code) {
-  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
-}
-
-Color mainColor = hexToColor("#708690");
-Color buttonColor = hexToColor("#A65A7B");
-Color bgColor = hexToColor("#F7FAFB");
-Color borderColor = hexToColor("#EBEBEB");
 
 class NumberPage extends StatefulWidget {
   final String name = 'Rider';
-  final Color color = mainColor;
   final userData;
 
   NumberPage({
@@ -60,7 +51,7 @@ class _NumberPageState extends State<NumberPage> {
       'token': widget.userData['token'],
       'phone': phone,
     };
-    final response = await post(serverURL + 'phone/',
+    final response = await post(Keys.serverURL + 'phone/',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200)
       _navigateToConverter(context, data);
@@ -82,7 +73,7 @@ class _NumberPageState extends State<NumberPage> {
   Widget build(BuildContext context) {
     Widget createBody() {
       return Container(
-        color: mainColor,
+        color: Theme.of(context).primaryColor,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Stack(
@@ -97,7 +88,7 @@ class _NumberPageState extends State<NumberPage> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.phone),
                     filled: true,
-                    fillColor: borderColor.withOpacity(0.5),
+                    fillColor: Theme.of(context).backgroundColor.withOpacity(0.5),
                     labelText: 'Phone',
                     errorText:
                         _showValidationError ? 'Invalid number entered' : null,
@@ -126,7 +117,7 @@ class _NumberPageState extends State<NumberPage> {
                       child: Container(
                         padding: const EdgeInsets.all(13.0),
                         decoration: BoxDecoration(
-                            color: buttonColor,
+                            color: Theme.of(context).accentColor,
                             borderRadius:
                                 BorderRadius.all(const Radius.circular(40.0))),
                         child: Icon(
@@ -146,7 +137,7 @@ class _NumberPageState extends State<NumberPage> {
 
     final appBar = AppBar(
       elevation: 0.0,
-      backgroundColor: widget.color,
+      backgroundColor: Theme.of(context).primaryColor,
     );
 
     return Scaffold(

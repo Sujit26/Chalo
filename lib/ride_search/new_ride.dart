@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/ride_search/booking_card.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/models/models.dart';
 
 class BookingPage extends StatefulWidget {
   final String name = 'Book';
-  final Color color = mainColor;
   final ride;
   BookingPage({Key key, @required this.ride}) : super(key: key);
 
@@ -69,11 +67,11 @@ class _BookingPageState extends State<BookingPage> {
         child: Stack(
           children: <Widget>[
             Container(
-              color: bgColor,
+              color: Theme.of(context).backgroundColor,
               height: 700,
             ),
             Container(
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               width: MediaQuery.of(context).size.width,
               height: 200.0,
               child: Column(
@@ -125,8 +123,7 @@ class _BookingPageState extends State<BookingPage> {
                                 ? 'st'
                                 : drive.driveDate.split('/')[0] == '02'
                                     ? 'nd'
-                                    : drive.driveDate.split('/')[0] ==
-                                            '03'
+                                    : drive.driveDate.split('/')[0] == '03'
                                         ? 'rd'
                                         : 'th',
                             style: TextStyle(color: Colors.white),
@@ -160,7 +157,7 @@ class _BookingPageState extends State<BookingPage> {
                 radius: 30,
                 child: Icon(
                   Icons.directions_car,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   size: 35,
                 ),
               ),
@@ -171,17 +168,10 @@ class _BookingPageState extends State<BookingPage> {
     }
 
     return Scaffold(
-      backgroundColor: bgColor,
       appBar: AppBar(
         elevation: 0,
-        title: Text(
-          widget.name,
-          style: TextStyle(
-            fontSize: 25.0,
-          ),
-        ),
+        title: Text(widget.name),
         centerTitle: true,
-        backgroundColor: buttonColor,
       ),
       body: GestureDetector(
         onTap: () {

@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_transport/widgets/loacation.dart';
-import 'package:location/location.dart' as loc;
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/models/models.dart';
+import 'package:location/location.dart';
 import 'package:shared_transport/ride_search/search_result.dart';
 import 'package:shared_transport/widgets/sidebar.dart';
 import 'package:http/http.dart';
@@ -28,19 +27,21 @@ const kGoogleApiKey = "AIzaSyBRhGd5iTPn7gs0OjQ3CXjwiXVZaLDuInk";
 class _SearchPageState extends State<SearchPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   // Location Suggestions
-  List<Location> suggestions = [];
-  GlobalKey<AutoCompleteTextFieldState<Location>> _fromKey = new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<Location>> _toKey = new GlobalKey();
+  List<LocationLatLng> suggestions = [];
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _fromKey =
+      new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _toKey =
+      new GlobalKey();
   // Fields Controllers
   TextEditingController _fromController = new TextEditingController();
   TextEditingController _toController = new TextEditingController();
   TextEditingController _dateController = new TextEditingController();
   // User Location
-  loc.Location _location;
-  loc.LocationData _myLocation;
+  Location _location;
+  LocationData _myLocation;
   // Field Data
-  Location _fromLocation;
-  Location _toLocation;
+  LocationLatLng _fromLocation;
+  LocationLatLng _toLocation;
   // Date
   DateTime selectedDate = DateTime.now();
   // Type of search
@@ -52,7 +53,7 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     // Setting up my locations
-    _location = loc.Location();
+    _location = Location();
     _location.getLocation().then((onValue) {
       setState(() {
         _myLocation = onValue;
@@ -72,23 +73,24 @@ class _SearchPageState extends State<SearchPage> {
     var places = jsonDecode(placesSearch.body)['features'];
     setState(() {
       places.forEach((prediction) => {
-            suggestions.add(Location(prediction['place_name'],
+            suggestions.add(LocationLatLng(prediction['place_name'],
                 prediction['center'][1] * 1.0, prediction['center'][0] * 1.0)),
           });
     });
   }
 
-  Widget suggestionItemBuilder(BuildContext context, Location suggestion) {
+  Widget suggestionItemBuilder(
+      BuildContext context, LocationLatLng suggestion) {
     return Padding(
         child: ListTile(title: Text(suggestion.name)),
         padding: EdgeInsets.all(8.0));
   }
 
-  bool suggestionFilter(Location suggestion, String query) {
+  bool suggestionFilter(LocationLatLng suggestion, String query) {
     return suggestion.name.toLowerCase().startsWith(query.toLowerCase());
   }
 
-  int suggestionSorter(Location a, Location b) {
+  int suggestionSorter(LocationLatLng a, LocationLatLng b) {
     return 0;
   }
 
@@ -147,7 +149,7 @@ class _SearchPageState extends State<SearchPage> {
                     itemBuilder: suggestionItemBuilder,
                     itemFilter: suggestionFilter,
                     itemSorter: suggestionSorter,
-                    itemSubmitted: (Location data) {
+                    itemSubmitted: (LocationLatLng data) {
                       setState(() {
                         _fromController.text = data.name;
                         _fromLocation = data;
@@ -200,7 +202,7 @@ class _SearchPageState extends State<SearchPage> {
                     itemBuilder: suggestionItemBuilder,
                     itemFilter: suggestionFilter,
                     itemSorter: suggestionSorter,
-                    itemSubmitted: (Location data) {
+                    itemSubmitted: (LocationLatLng data) {
                       setState(() {
                         _toController.text = data.name;
                         _toLocation = data;
@@ -290,7 +292,9 @@ class _SearchPageState extends State<SearchPage> {
                         });
                       },
                       child: Container(
-                        color: type == 'ride' ? buttonColor : Colors.white,
+                        color: type == 'ride'
+                            ? Theme.of(context).accentColor
+                            : Colors.white,
                         child: ListTile(
                           title: Align(
                             alignment: Alignment.center,
@@ -298,8 +302,9 @@ class _SearchPageState extends State<SearchPage> {
                                 child: Text(
                               "RIDE",
                               style: TextStyle(
-                                color:
-                                    type == 'ride' ? Colors.white : buttonColor,
+                                color: type == 'ride'
+                                    ? Colors.white
+                                    : Theme.of(context).accentColor,
                               ),
                             )),
                           ),
@@ -315,7 +320,9 @@ class _SearchPageState extends State<SearchPage> {
                         });
                       },
                       child: Container(
-                        color: type == 'goods' ? buttonColor : Colors.white,
+                        color: type == 'goods'
+                            ? Theme.of(context).accentColor
+                            : Colors.white,
                         child: ListTile(
                           title: Align(
                             alignment: Alignment.center,
@@ -325,7 +332,7 @@ class _SearchPageState extends State<SearchPage> {
                               style: TextStyle(
                                 color: type == 'goods'
                                     ? Colors.white
-                                    : buttonColor,
+                                    : Theme.of(context).accentColor,
                               ),
                             )),
                           ),
@@ -344,7 +351,7 @@ class _SearchPageState extends State<SearchPage> {
               borderRadius: BorderRadius.circular(7),
             ),
             clipBehavior: Clip.antiAlias,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             textColor: Colors.white,
             padding: EdgeInsets.fromLTRB(30.0, 17.0, 30.0, 17.0),
             onPressed: () {
@@ -388,7 +395,6 @@ class _SearchPageState extends State<SearchPage> {
             ),
             elevation: 2,
             titleSpacing: 0,
-            backgroundColor: buttonColor,
             leading: IconButton(
               icon: Icon(Icons.menu),
               onPressed: () {
@@ -396,17 +402,9 @@ class _SearchPageState extends State<SearchPage> {
                 if (_scaffoldKey.currentState.isDrawerOpen) _clearPage();
               },
             ),
-            title: Text(
-              widget.name,
-              style: TextStyle(
-                fontSize: 25.0,
-              ),
-            ),
+            title: Text(widget.name),
           ),
-          body: Container(
-            color: bgColor,
-            child: ride,
-          ),
+          body: ride,
         ),
       );
     }

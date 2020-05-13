@@ -2,7 +2,6 @@ import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_transport/driver_pages/driver_home.dart';
 import 'package:shared_transport/history_pages/my_trips.dart';
-import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/profile.dart';
 import 'package:shared_transport/rider_home.dart';
 import 'package:shared_transport/widgets/home_page.dart';
@@ -42,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: FFNavigationBar(
         theme: FFNavigationBarTheme(
           barBackgroundColor: Colors.white,
-          selectedItemBackgroundColor: buttonColor,
+          selectedItemBackgroundColor: Theme.of(context).accentColor,
           selectedItemIconColor: Colors.white,
           selectedItemLabelColor: Colors.black,
         ),

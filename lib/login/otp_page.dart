@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/widgets/bottom_navigation.dart';
 
 class OtpPage extends StatefulWidget {
@@ -49,7 +49,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   /// Returns "Appbar"
   get _getAppbar {
     return new AppBar(
-      backgroundColor: mainColor,
+      backgroundColor: Theme.of(context).primaryColor,
       elevation: 0.0,
       centerTitle: true,
     );
@@ -133,7 +133,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
         height: 32,
         width: 120,
         decoration: BoxDecoration(
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(32)),
         alignment: Alignment.center,
@@ -290,7 +290,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
       appBar: _getAppbar,
       backgroundColor: Colors.white,
       body: new Container(
-        color: mainColor,
+        color: Theme.of(context).primaryColor,
         width: _screenSize.width,
 //        padding: new EdgeInsets.only(bottom: 16.0),
         child: _getInputPart,
@@ -316,7 +316,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
           border: Border(
               bottom: BorderSide(
         width: 2.0,
-        color: buttonColor,
+        color: Theme.of(context).accentColor,
       ))),
     );
   }
@@ -396,7 +396,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   }
 
   _makePostRequest(data) async {
-    final response = await post(serverURL + 'otp/',
+    final response = await post(Keys.serverURL+ 'otp/',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);

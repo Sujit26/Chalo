@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/driver_pages/driver_home.dart';
 import 'package:shared_transport/driver_pages/my_vehicle.dart';
 import 'package:shared_transport/help_and_support.dart';
-import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/policies.dart';
 import 'package:shared_transport/profile.dart';
@@ -159,7 +158,7 @@ class _NavDrawerState extends State<NavDrawer> {
           children: <Widget>[profile, ratingBar],
         ),
         decoration: BoxDecoration(
-          color: mainColor,
+          color: Theme.of(context).primaryColor,
         ),
       ),
     );
@@ -176,7 +175,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.all(const Radius.circular(100.0)),
-                    color: mainColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: Icon(
                     Icons.directions_car,
@@ -199,7 +198,7 @@ class _NavDrawerState extends State<NavDrawer> {
                         decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.all(const Radius.circular(100.0)),
-                          color: mainColor,
+                          color: Theme.of(context).primaryColor,
                         ),
                         child: Icon(
                           Icons.directions_car,
@@ -222,7 +221,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.all(const Radius.circular(100.0)),
-                    color: mainColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: Icon(
                     Icons.verified_user,
@@ -245,7 +244,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.all(const Radius.circular(100.0)),
-                    color: mainColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: Icon(
                     Icons.call,
@@ -267,7 +266,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.all(const Radius.circular(100.0)),
-                    color: mainColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: Icon(
                     Icons.description,
@@ -299,7 +298,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(color: buttonColor, width: 2),
+                        border: Border.all(color: Theme.of(context).accentColor, width: 2),
                         borderRadius:
                             BorderRadius.all(const Radius.circular(40.0))),
                     child: Padding(
@@ -307,7 +306,7 @@ class _NavDrawerState extends State<NavDrawer> {
                       child: Text(
                         'Drive',
                         style: TextStyle(
-                          color: buttonColor,
+                          color: Theme.of(context).accentColor,
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                         ),

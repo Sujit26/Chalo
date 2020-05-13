@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/history_pages/drive_details.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/history_pages/profile_card.dart';
-import 'package:shared_transport/login/login_page.dart';
 import 'dart:math' as math;
-
-import 'package:shared_transport/ride_search/ride_model.dart';
 
 class HistoryCard extends StatelessWidget {
   final HistoryModel history;
@@ -125,22 +122,22 @@ class HistoryCard extends StatelessWidget {
     return months[mNum - 1];
   }
 
-  Widget _starFilling(double fill) {
+  Widget _starFilling(double fill, context) {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 15,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 15,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 15,
               );
   }
@@ -334,20 +331,22 @@ class HistoryCard extends StatelessWidget {
                             children: <Widget>[
                               Icon(
                                 Icons.fiber_manual_record,
-                                color: buttonColor,
+                                color: Theme.of(context).accentColor,
                                 size: 15,
                               ),
                               Transform.rotate(
                                 angle: 90 * math.pi / 180,
                                 child: Icon(
                                   Icons.linear_scale,
-                                  color: buttonColor.withAlpha(150),
+                                  color: Theme.of(context)
+                                      .accentColor
+                                      .withAlpha(150),
                                   size: 15,
                                 ),
                               ),
                               Icon(
                                 Icons.location_on,
-                                color: mainColor,
+                                color: Theme.of(context).primaryColor,
                                 size: 15,
                               ),
                             ],
@@ -431,20 +430,35 @@ class HistoryCard extends StatelessWidget {
                                             ),
                                             Row(
                                               children: <Widget>[
-                                                _starFilling(history
-                                                    .rideInfo.driver.rating),
-                                                _starFilling(history.rideInfo
-                                                        .driver.rating -
-                                                    1),
-                                                _starFilling(history.rideInfo
-                                                        .driver.rating -
-                                                    2),
-                                                _starFilling(history.rideInfo
-                                                        .driver.rating -
-                                                    3),
-                                                _starFilling(history.rideInfo
-                                                        .driver.rating -
-                                                    4),
+                                                _starFilling(
+                                                  history
+                                                      .rideInfo.driver.rating,
+                                                  context,
+                                                ),
+                                                _starFilling(
+                                                  history.rideInfo.driver
+                                                          .rating -
+                                                      1,
+                                                  context,
+                                                ),
+                                                _starFilling(
+                                                  history.rideInfo.driver
+                                                          .rating -
+                                                      2,
+                                                  context,
+                                                ),
+                                                _starFilling(
+                                                  history.rideInfo.driver
+                                                          .rating -
+                                                      3,
+                                                  context,
+                                                ),
+                                                _starFilling(
+                                                  history.rideInfo.driver
+                                                          .rating -
+                                                      4,
+                                                  context,
+                                                ),
                                               ],
                                             ),
                                           ],
@@ -459,7 +473,8 @@ class HistoryCard extends StatelessWidget {
                               history.action == 'Riding'
                                   ? history.rideStatus
                                   : 'Start Trip',
-                              style: TextStyle(color: buttonColor),
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
                             ),
                             onPressed: () {
                               Navigator.push(
@@ -469,9 +484,10 @@ class HistoryCard extends StatelessWidget {
                                         DriveDetails(ride: history)),
                               );
                             },
-                            highlightedBorderColor: buttonColor,
+                            highlightedBorderColor:
+                                Theme.of(context).accentColor,
                             borderSide: BorderSide(
-                              color: buttonColor,
+                              color: Theme.of(context).accentColor,
                               style: BorderStyle.solid,
                               width: 0.8,
                             ),
@@ -492,7 +508,8 @@ class HistoryCard extends StatelessWidget {
               radius: 25,
               child: Text(
                 history.action == 'Driving' ? 'D' : 'R',
-                style: TextStyle(color: buttonColor, fontSize: 28),
+                style: TextStyle(
+                    color: Theme.of(context).accentColor, fontSize: 28),
               ),
             ),
           ),

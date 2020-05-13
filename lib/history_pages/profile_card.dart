@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/models/models.dart';
 
 class ProfileCard extends StatefulWidget {
   final User user;
@@ -15,18 +14,18 @@ class _ProfileCardState extends State<ProfileCard> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 30,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 30,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 30,
               );
   }
@@ -34,7 +33,7 @@ class _ProfileCardState extends State<ProfileCard> {
   showSeats(slots) {
     List<Widget> seats = List();
     for (var i = 0; i < slots; i++)
-      seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: seats,
@@ -68,7 +67,7 @@ class _ProfileCardState extends State<ProfileCard> {
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
-                          color: buttonColor,
+                          color: Theme.of(context).accentColor,
                         ),
                       ),
                     ),
@@ -116,7 +115,7 @@ class _ProfileCardState extends State<ProfileCard> {
                                 padding: const EdgeInsets.all(16),
                                 shape: CircleBorder(),
                                 elevation: 3,
-                                color: mainColor,
+                                color: Theme.of(context).primaryColor,
                                 child: Icon(
                                   Icons.call,
                                   color: Colors.white,
@@ -128,7 +127,7 @@ class _ProfileCardState extends State<ProfileCard> {
                                 padding: const EdgeInsets.all(16),
                                 shape: CircleBorder(),
                                 elevation: 3,
-                                color: buttonColor,
+                                color: Theme.of(context).accentColor,
                                 child: Icon(
                                   Icons.message,
                                   color: Colors.white,

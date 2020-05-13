@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/rating/rating_info.dart';
+import 'package:shared_transport/config/keys.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 import 'package:shared_transport/rating/rating_form.dart';
 
@@ -18,7 +18,6 @@ import 'package:shared_transport/rating/rating_form.dart';
 
 class RatingPage extends StatefulWidget {
   final String name = 'Rating';
-  final Color color = mainColor;
 
   @override
   _RatingPageState createState() => _RatingPageState();
@@ -47,7 +46,7 @@ class _RatingPageState extends State<RatingPage> {
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
 
-    final response = await get(serverURL + 'profile/rating', headers: {
+    final response = await get(Keys.serverURL + 'profile/rating', headers: {
       'token': prefs.getString('token'),
       'email': prefs.getString('email'),
     });
@@ -99,13 +98,7 @@ class _RatingPageState extends State<RatingPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
-      backgroundColor: buttonColor,
+      title: Text(widget.name),
     );
 
     Widget _ratingBar(int stars, double percentage) {
@@ -118,14 +111,7 @@ class _RatingPageState extends State<RatingPage> {
               style: TextStyle(color: Colors.black),
             ),
             SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: buttonColor,
-                inactiveTrackColor: bgColor,
-                trackHeight: 5.0,
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
-                overlayColor: Colors.purple.withAlpha(0),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
-              ),
+              data: SliderTheme.of(context),
               child: Slider(
                 min: 0,
                 max: 1,
@@ -142,16 +128,16 @@ class _RatingPageState extends State<RatingPage> {
       return fill >= 1.0
           ? Icon(
               Icons.star,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             )
           : fill > 0
               ? Icon(
                   Icons.star_half,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 )
               : Icon(
                   Icons.star_border,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 );
     }
 
@@ -172,103 +158,98 @@ class _RatingPageState extends State<RatingPage> {
     }
 
     Widget createBody() {
-      return Container(
-        child: Scaffold(
-          appBar: appBar,
-          body: Container(
-            decoration: BoxDecoration(
-              color: bgColor,
-            ),
-            child: _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      valueColor:
-                          new AlwaysStoppedAnimation<Color>(buttonColor),
-                    ),
-                  )
-                : Column(
-                    children: <Widget>[
-                      Container(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Column(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8),
-                                        child: Text(
-                                          _avgRating.toString(),
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 40,
+      return Scaffold(
+        appBar: appBar,
+        body: Container(
+          child: _isLoading
+              ? Center(
+                  child: CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).accentColor),
+                  ),
+                )
+              : Column(
+                  children: <Widget>[
+                    Container(
+                      color: Colors.white,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Column(
+                                  children: <Widget>[
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                      child: Text(
+                                        _avgRating.toString(),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 40,
+                                        ),
+                                      ),
+                                    ),
+                                    _stars(_avgRating),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 5),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 8),
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 15,
+                                              color: Colors.grey,
+                                            ),
                                           ),
-                                        ),
+                                          Text(
+                                            _total.toString(),
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                        ],
                                       ),
-                                      _stars(_avgRating),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 5),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8),
-                                              child: Icon(
-                                                Icons.person,
-                                                size: 15,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            Text(
-                                              _total.toString(),
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      _ratingBar(5, _rating5),
-                                      _ratingBar(4, _rating4),
-                                      _ratingBar(3, _rating3),
-                                      _ratingBar(2, _rating2),
-                                      _ratingBar(1, _rating1),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: <Widget>[
+                                    _ratingBar(5, _rating5),
+                                    _ratingBar(4, _rating4),
+                                    _ratingBar(3, _rating3),
+                                    _ratingBar(2, _rating2),
+                                    _ratingBar(1, _rating1),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      users.length <= 0
-                          ? Expanded(
-                              child: Center(
-                                child: EmptyState(
-                                  title: 'Oops',
-                                  message: 'No Ratings yet',
-                                ),
-                              ),
-                            )
-                          : Expanded(
-                              child: ListView.builder(
-                                addAutomaticKeepAlives: true,
-                                itemCount: users.length,
-                                itemBuilder: (_, i) => users[i],
+                    ),
+                    users.length <= 0
+                        ? Expanded(
+                            child: Center(
+                              child: EmptyState(
+                                title: 'Oops',
+                                message: 'No Ratings yet',
                               ),
                             ),
-                    ],
-                  ),
-          ),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                              addAutomaticKeepAlives: true,
+                              itemCount: users.length,
+                              itemBuilder: (_, i) => users[i],
+                            ),
+                          ),
+                  ],
+                ),
         ),
       );
     }

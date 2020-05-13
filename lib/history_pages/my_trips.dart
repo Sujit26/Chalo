@@ -3,16 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:shared_transport/config/keys.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/history_pages/history_card.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
 import 'package:shared_transport/history_pages/notification_page.dart';
 import 'package:shared_transport/history_pages/trip_summary_driver.dart';
 import 'package:shared_transport/history_pages/trip_summary_rider.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
-import 'package:shared_transport/widgets/loacation.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -24,7 +21,6 @@ import 'package:shared_transport/widgets/loacation.dart';
 
 class MyTripsPage extends StatefulWidget {
   final String name = 'My Trips';
-  final Color color = mainColor;
 
   @override
   _MyTripsPageState createState() => _MyTripsPageState();
@@ -147,7 +143,7 @@ class _MyTripsPageState extends State<MyTripsPage>
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
 
-    final response = await get(serverURL + 'profile/history', headers: {
+    final response = await get(Keys.serverURL + 'profile/history', headers: {
       'token': prefs.getString('token'),
       'email': prefs.getString('email'),
       'status': prefs.getString('approveStatus'),
@@ -166,12 +162,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                     action: data['action'],
                     rideInfo: RideModel(
                       type: data['rideInfo']['type'],
-                      from: Location(
+                      from: LocationLatLng(
                         data['rideInfo']['from']['name'],
                         data['rideInfo']['from']['lat'],
                         data['rideInfo']['from']['lon'],
                       ),
-                      to: Location(
+                      to: LocationLatLng(
                         data['rideInfo']['to']['name'],
                         data['rideInfo']['to']['lat'],
                         data['rideInfo']['to']['lon'],
@@ -216,12 +212,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                       nod: 5,
                       phone: '0987654321',
                     ),
-                    rideFrom: Location(
+                    rideFrom: LocationLatLng(
                       data['rideFrom']['name'],
                       data['rideFrom']['lat'],
                       data['rideFrom']['lon'],
                     ),
-                    rideTo: Location(
+                    rideTo: LocationLatLng(
                       data['rideTo']['name'],
                       data['rideTo']['lat'],
                       data['rideTo']['lon'],
@@ -235,12 +231,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                     action: data['action'],
                     rideInfo: RideModel(
                       type: data['rideInfo']['type'],
-                      from: Location(
+                      from: LocationLatLng(
                         data['rideInfo']['from']['name'],
                         data['rideInfo']['from']['lat'],
                         data['rideInfo']['from']['lon'],
                       ),
-                      to: Location(
+                      to: LocationLatLng(
                         data['rideInfo']['to']['name'],
                         data['rideInfo']['to']['lat'],
                         data['rideInfo']['to']['lon'],
@@ -280,12 +276,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                             rating: rider['rating'] * 1.0,
                             pic: rider['pic'],
                             rideId: rider['rideId'],
-                            from: Location(
+                            from: LocationLatLng(
                               rider['from']['name'],
                               rider['from']['lat'],
                               rider['from']['lon'],
                             ),
-                            to: Location(
+                            to: LocationLatLng(
                               rider['to']['name'],
                               rider['to']['lat'],
                               rider['to']['lon'],
@@ -303,12 +299,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                             pic: rider['pic'],
                             phone: rider['phone'],
                             rideId: rider['rideId'],
-                            from: Location(
+                            from: LocationLatLng(
                               rider['from']['name'],
                               rider['from']['lat'],
                               rider['from']['lon'],
                             ),
-                            to: Location(
+                            to: LocationLatLng(
                               rider['to']['name'],
                               rider['to']['lat'],
                               rider['to']['lon'],
@@ -335,12 +331,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                     action: data['action'],
                     rideInfo: RideModel(
                       type: data['rideInfo']['type'],
-                      from: Location(
+                      from: LocationLatLng(
                         data['rideInfo']['from']['name'],
                         data['rideInfo']['from']['lat'],
                         data['rideInfo']['from']['lon'],
                       ),
-                      to: Location(
+                      to: LocationLatLng(
                         data['rideInfo']['to']['name'],
                         data['rideInfo']['to']['lat'],
                         data['rideInfo']['to']['lon'],
@@ -376,12 +372,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                       nod: 5,
                       phone: '0987654321',
                     ),
-                    rideFrom: Location(
+                    rideFrom: LocationLatLng(
                       data['rideFrom']['name'],
                       data['rideFrom']['lat'],
                       data['rideFrom']['lon'],
                     ),
-                    rideTo: Location(
+                    rideTo: LocationLatLng(
                       data['rideTo']['name'],
                       data['rideTo']['lat'],
                       data['rideTo']['lon'],
@@ -395,12 +391,12 @@ class _MyTripsPageState extends State<MyTripsPage>
                     action: data['action'],
                     rideInfo: RideModel(
                       type: data['rideInfo']['type'],
-                      from: Location(
+                      from: LocationLatLng(
                         data['rideInfo']['from']['name'],
                         data['rideInfo']['from']['lat'],
                         data['rideInfo']['from']['lon'],
                       ),
-                      to: Location(
+                      to: LocationLatLng(
                         data['rideInfo']['to']['name'],
                         data['rideInfo']['to']['lat'],
                         data['rideInfo']['to']['lon'],
@@ -544,7 +540,6 @@ class _MyTripsPageState extends State<MyTripsPage>
   Widget build(BuildContext context) {
     Widget completedRide = Scaffold(
       body: Container(
-        color: borderColor,
         child: completedList == null || completedList.length <= 0
             ? Center(
                 child: EmptyState(
@@ -557,7 +552,6 @@ class _MyTripsPageState extends State<MyTripsPage>
     );
     Widget upcomingRide = Scaffold(
       body: Container(
-        color: borderColor,
         child: upcomingList == null || upcomingList.length == 0
             ? Center(
                 child: _isLoading
@@ -572,7 +566,6 @@ class _MyTripsPageState extends State<MyTripsPage>
     );
     final cancelledRide = Scaffold(
       body: Container(
-        color: borderColor,
         child: cancelledList == null || cancelledList.length <= 0
             ? Center(
                 child: EmptyState(
@@ -584,7 +577,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                 addAutomaticKeepAlives: true,
                 itemCount: cancelledList.length,
                 itemBuilder: (_, i) => GestureDetector(
-                  onTap: () { 
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -614,12 +607,7 @@ class _MyTripsPageState extends State<MyTripsPage>
               ),
             ),
             elevation: 2,
-            title: Text(
-              widget.name,
-              style: TextStyle(
-                fontSize: 25.0,
-              ),
-            ),
+            title: Text(widget.name),
             bottom: TabBar(
               indicatorColor: Colors.white,
               labelColor: Colors.white,
@@ -632,7 +620,6 @@ class _MyTripsPageState extends State<MyTripsPage>
                 Tab(text: 'CANCELLED'),
               ],
             ),
-            backgroundColor: buttonColor,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.filter_list),
@@ -658,7 +645,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                                       padding: const EdgeInsets.only(right: 12),
                                       child: Icon(
                                         Icons.done,
-                                        color: buttonColor,
+                                        color: Theme.of(context).accentColor,
                                       ),
                                     )
                                   : null,
@@ -668,7 +655,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                                   'Riding',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: buttonColor),
+                                      color: Theme.of(context).accentColor),
                                 ),
                               ),
                             ),
@@ -686,7 +673,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                                       padding: const EdgeInsets.only(right: 12),
                                       child: Icon(
                                         Icons.done,
-                                        color: buttonColor,
+                                        color: Theme.of(context).accentColor,
                                       ),
                                     )
                                   : null,
@@ -696,7 +683,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                                   'Driving',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: buttonColor),
+                                      color: Theme.of(context).accentColor),
                                 ),
                               ),
                             ),
@@ -765,7 +752,6 @@ class _MyTripsPageState extends State<MyTripsPage>
             centerTitle: true,
           ),
           body: Container(
-            color: bgColor,
             child: TabBarView(
               controller: _tabController,
               children: [

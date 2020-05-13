@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_transport/login/login_page.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -14,7 +13,6 @@ Color hexToColor(String code) {
 
 class HelpAndSupportPage extends StatefulWidget {
   final String name = 'Help and Support';
-  final Color color = mainColor;
 
   @override
   _HelpAndSupportPageState createState() => _HelpAndSupportPageState();
@@ -32,23 +30,14 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
-      backgroundColor: buttonColor,
+      title: Text(widget.name),
     );
 
     Widget createBody() {
       return Container(
         child: Scaffold(
           appBar: appBar,
-          body: Container(
-            color: bgColor,
-            child: Center(child: Text('Body')),
-          ),
+          body: Center(child: Text('Body')),
         ),
       );
     }

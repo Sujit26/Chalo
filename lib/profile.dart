@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/my_vehicle.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/profile_edit.dart';
 import 'package:shared_transport/rating/rating.dart';
@@ -20,7 +21,6 @@ import 'package:shared_transport/verification/profile_verification.dart';
 ///
 class ProfilePage extends StatefulWidget {
   final String name = 'Profile';
-  final Color color = mainColor;
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -88,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final SharedPreferences prefs = await _prefs;
 
     if (prefs.getString('approveStatus') == '100') {
-      final response = await get(serverURL + 'driver/vehicle', headers: {
+      final response = await get(Keys.serverURL + 'driver/vehicle', headers: {
         'token': prefs.getString('token'),
         'email': prefs.getString('email'),
       });
@@ -117,16 +117,16 @@ class _ProfilePageState extends State<ProfilePage> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               );
   }
 
@@ -155,14 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(
             width: MediaQuery.of(context).size.width / 2.5,
             child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: buttonColor,
-                inactiveTrackColor: bgColor,
-                trackHeight: 5.0,
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
-                overlayColor: Colors.purple.withAlpha(0),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
-              ),
+              data: SliderTheme.of(context),
               child: Slider(
                 min: 0,
                 max: 1,
@@ -183,9 +176,10 @@ class _ProfilePageState extends State<ProfilePage> {
               (vehicle) => ListTile(
                 leading: Material(
                   elevation: 2,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   shape: CircleBorder(
-                      side: BorderSide(color: buttonColor, width: 2)),
+                      side: BorderSide(
+                          color: Theme.of(context).accentColor, width: 2)),
                   clipBehavior: Clip.antiAlias,
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(vehicle.pic),
@@ -225,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 trailing: Icon(
                   Icons.directions_car,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   size: 30,
                 )),
             Container(
@@ -268,7 +262,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 trailing: Icon(
                   Icons.thumb_up,
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   size: 30,
                 ),
               ),
@@ -366,7 +360,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 value: double.parse(_approveStatus) / 100,
                 strokeWidth: 3,
                 backgroundColor: double.parse(_approveStatus) / 100 == 0
-                    ? borderColor
+                    ? Theme.of(context).backgroundColor
                     : Colors.white,
               ),
             ),
@@ -388,7 +382,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             trailing: Text(
               'Finish',
-              style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -400,13 +396,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     Widget createBody() {
       return Container(
-        color: borderColor,
         child: Stack(
           children: <Widget>[
             Container(
               height: 200,
               decoration: BoxDecoration(
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.elliptical(30, 20),
                   bottomRight: Radius.elliptical(30, 20),
@@ -472,7 +467,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                     );
                                   },
-                                  color: buttonColor,
+                                  color: Theme.of(context).accentColor,
                                   textColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(40),
@@ -490,7 +485,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               icon: Icon(
                                 Icons.exit_to_app,
-                                color: buttonColor,
+                                color: Theme.of(context).accentColor,
                               ),
                               onPressed: () {
                                 _settingModalBottomSheet(context);

@@ -6,8 +6,7 @@ import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -161,18 +160,18 @@ class _DriveDetailsState extends State<DriveDetails> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 20,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               );
   }
@@ -193,9 +192,9 @@ class _DriveDetailsState extends State<DriveDetails> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -213,7 +212,7 @@ class _DriveDetailsState extends State<DriveDetails> {
           color: Colors.white,
           child: Icon(
             icon,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
           ),
         ),
       ),
@@ -353,7 +352,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             child: Container(
               width: 7,
               height: 1000,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           Column(
@@ -408,7 +407,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                 userLocations[rider.email]['lon']),
             builder: (context) => CustomTooltip(
               message: rider.name.split(' ')[0],
-              bgColor: buttonColor,
+              bgColor: Theme.of(context).accentColor,
               photoUrl: rider.pic,
             ),
           );
@@ -424,7 +423,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             builder: (context) => Material(
               shape: CircleBorder(),
               elevation: 5,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               clipBehavior: Clip.antiAlias,
               child: Center(
                 child: Icon(
@@ -446,7 +445,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             builder: (context) => Material(
               shape: CircleBorder(),
               elevation: 5,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               clipBehavior: Clip.antiAlias,
               child: Center(
                 child: Icon(
@@ -468,7 +467,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             builder: (context) => Material(
               shape: CircleBorder(),
               elevation: 5,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               clipBehavior: Clip.antiAlias,
               child: Center(
                 child: Icon(
@@ -485,7 +484,7 @@ class _DriveDetailsState extends State<DriveDetails> {
           return CircleMarker(
             point: LatLng(userLocations[rider.email]['lat'],
                 userLocations[rider.email]['lon']),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 30,
           );
         }).toList();
@@ -494,7 +493,7 @@ class _DriveDetailsState extends State<DriveDetails> {
           CircleMarker(
             point: LatLng(
                 widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 25,
           ),
         );
@@ -503,7 +502,7 @@ class _DriveDetailsState extends State<DriveDetails> {
           CircleMarker(
             point: LatLng(
                 widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 25,
           ),
         );
@@ -511,7 +510,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         circleMarkers.add(
           CircleMarker(
             point: LatLng(_myLocation.latitude, _myLocation.longitude),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 25,
           ),
         );
@@ -528,7 +527,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             builder: (context) => Material(
               shape: CircleBorder(),
               elevation: 5,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               clipBehavior: Clip.antiAlias,
               child: Center(
                 child: Icon(
@@ -549,7 +548,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             builder: (context) => Material(
               shape: CircleBorder(),
               elevation: 5,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               clipBehavior: Clip.antiAlias,
               child: Center(
                 child: Icon(
@@ -573,7 +572,7 @@ class _DriveDetailsState extends State<DriveDetails> {
             builder: (context) => Material(
               shape: CircleBorder(),
               elevation: 5,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               clipBehavior: Clip.antiAlias,
               child: Center(
                 child: Icon(
@@ -591,7 +590,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         circleMarkers.add(
           CircleMarker(
             point: LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 25,
           ),
         );
@@ -599,7 +598,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         circleMarkers.add(
           CircleMarker(
             point: LatLng(_myLocation.latitude, _myLocation.longitude),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 25,
           ),
         );
@@ -610,7 +609,7 @@ class _DriveDetailsState extends State<DriveDetails> {
               userLocations[widget.ride.rideInfo.driver.email]['lat'],
               userLocations[widget.ride.rideInfo.driver.email]['lon'],
             ),
-            color: buttonColor.withOpacity(0.3),
+            color: Theme.of(context).accentColor.withOpacity(0.3),
             radius: 25,
           ),
         );
@@ -640,7 +639,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+            Polyline(points: line, strokeWidth: 2, color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(circles: circleMarkers),
@@ -653,7 +652,6 @@ class _DriveDetailsState extends State<DriveDetails> {
   Widget build(BuildContext context) {
     Widget appBar = Material(
       elevation: 2,
-      color: buttonColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -721,7 +719,7 @@ class _DriveDetailsState extends State<DriveDetails> {
               child: Text(
                 'SOS',
                 style: TextStyle(
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
             ),
@@ -744,7 +742,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: buttonColor),
+                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -765,7 +763,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                   child: Icon(
                     Icons.fiber_manual_record,
                     size: 7,
-                    color: buttonColor,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
               ),
@@ -776,7 +774,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: buttonColor),
+                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -866,7 +864,7 @@ class _DriveDetailsState extends State<DriveDetails> {
           height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: buttonColor, width: 2),
+            border: Border.all(color: Theme.of(context).accentColor, width: 2),
             image: DecorationImage(
               fit: BoxFit.fill,
               image: NetworkImage(
@@ -894,12 +892,12 @@ class _DriveDetailsState extends State<DriveDetails> {
           IconButton(
             icon: Icon(Icons.call),
             onPressed: () {},
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
           ),
           IconButton(
             icon: Icon(Icons.message),
             onPressed: () {},
-            color: mainColor,
+            color: Theme.of(context).primaryColor,
           ),
         ],
       ),
@@ -925,7 +923,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                       onPressed: () {},
                       child: Icon(
                         Icons.my_location,
-                        color: buttonColor,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -983,7 +981,6 @@ class _DriveDetailsState extends State<DriveDetails> {
     );
 
     return Scaffold(
-      backgroundColor: bgColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());

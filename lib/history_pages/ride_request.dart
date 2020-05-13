@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
 
 class RideRequest extends StatefulWidget {
@@ -79,18 +77,18 @@ class _RideRequestState extends State<RideRequest> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 20,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               );
   }
@@ -110,9 +108,11 @@ class _RideRequestState extends State<RideRequest> {
   showSeats({total, toFill, filled, req}) {
     List<Widget> seats = List();
     for (var i = 0; i < total - toFill + filled; i++)
-      seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < req; i++)
-      seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person_outline,
+          color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < toFill - filled - req; i++)
       seats.add(Icon(Icons.person_outline, size: 18));
 
@@ -132,7 +132,7 @@ class _RideRequestState extends State<RideRequest> {
           color: Colors.white,
           child: Icon(
             Icons.done,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
           ),
         ),
       ),
@@ -155,7 +155,7 @@ class _RideRequestState extends State<RideRequest> {
           color: Colors.white,
           child: Icon(
             Icons.person,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
           ),
         ),
       ),
@@ -168,7 +168,7 @@ class _RideRequestState extends State<RideRequest> {
       ),
       trailing: Text(
         '$extra',
-        style: TextStyle(color: buttonColor),
+        style: TextStyle(color: Theme.of(context).accentColor),
       ),
     );
   }
@@ -293,7 +293,7 @@ class _RideRequestState extends State<RideRequest> {
               color: Colors.white,
               child: Icon(
                 Icons.location_on,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
           ),
@@ -317,7 +317,7 @@ class _RideRequestState extends State<RideRequest> {
               color: Colors.white,
               child: Icon(
                 Icons.location_on,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
           ),
@@ -328,7 +328,7 @@ class _RideRequestState extends State<RideRequest> {
               Text(tileData.last['subtitle']),
               Text(
                 'Arrival: +${(onValue['trips'][0]['duration'] / 60 - widget.ride.rideInfo.currentDur * 60).toStringAsFixed(0)} mins',
-                style: TextStyle(color: buttonColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ],
           ),
@@ -393,7 +393,7 @@ class _RideRequestState extends State<RideRequest> {
             child: Container(
               width: 7,
               height: 1000,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           Column(
@@ -429,7 +429,10 @@ class _RideRequestState extends State<RideRequest> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+            Polyline(
+                points: line,
+                strokeWidth: 2,
+                color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(
@@ -437,19 +440,19 @@ class _RideRequestState extends State<RideRequest> {
             CircleMarker(
               point: LatLng(
                   widget.ride.rideInfo.from.lat, widget.ride.rideInfo.from.lon),
-              color: buttonColor.withOpacity(0.3),
+              color: Theme.of(context).accentColor.withOpacity(0.3),
               radius: 25,
             ),
             CircleMarker(
               point: LatLng(
                   widget.ride.rideInfo.to.lat, widget.ride.rideInfo.to.lon),
-              color: buttonColor.withOpacity(0.3),
+              color: Theme.of(context).accentColor.withOpacity(0.3),
               radius: 25,
             ),
             CircleMarker(
               point: LatLng(
                   widget.reqUsrInfo.from.lat, widget.reqUsrInfo.from.lon),
-              color: buttonColor.withOpacity(0.3),
+              color: Theme.of(context).accentColor.withOpacity(0.3),
               radius: 30,
             ),
           ],
@@ -464,7 +467,7 @@ class _RideRequestState extends State<RideRequest> {
               builder: (context) => Material(
                 shape: CircleBorder(),
                 elevation: 5,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 clipBehavior: Clip.antiAlias,
                 child: Center(
                   child: Icon(
@@ -483,7 +486,7 @@ class _RideRequestState extends State<RideRequest> {
               builder: (context) => Material(
                 shape: CircleBorder(),
                 elevation: 5,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 clipBehavior: Clip.antiAlias,
                 child: Center(
                   child: Icon(
@@ -501,7 +504,7 @@ class _RideRequestState extends State<RideRequest> {
                   widget.reqUsrInfo.from.lat, widget.reqUsrInfo.from.lon),
               builder: (context) => CustomTooltip(
                 message: widget.reqUsrInfo.name.split(' ')[0],
-                bgColor: buttonColor,
+                bgColor: Theme.of(context).accentColor,
                 photoUrl: widget.reqUsrInfo.pic,
               ),
             ),
@@ -515,7 +518,7 @@ class _RideRequestState extends State<RideRequest> {
   Widget build(BuildContext context) {
     Widget appBar = Material(
       elevation: 2,
-      color: buttonColor,
+      color: Theme.of(context).appBarTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -586,7 +589,7 @@ class _RideRequestState extends State<RideRequest> {
             width: 60,
             height: 60,
             child: Image(
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               image: NetworkImage(
                   'https://www.laguardiaairport.com/static/img/Icon-PickDrop.png'),
             ),
@@ -601,7 +604,7 @@ class _RideRequestState extends State<RideRequest> {
                   Text(
                     'Ride request',
                     style: TextStyle(
-                      color: buttonColor,
+                      color: Theme.of(context).accentColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -686,7 +689,8 @@ class _RideRequestState extends State<RideRequest> {
               height: 90,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: buttonColor, width: 2),
+                border:
+                    Border.all(color: Theme.of(context).accentColor, width: 2),
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: NetworkImage(widget.reqUsrInfo.pic),
@@ -732,7 +736,7 @@ class _RideRequestState extends State<RideRequest> {
                   },
                   child: Icon(
                     Icons.my_location,
-                    color: buttonColor,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
               ),
@@ -791,7 +795,7 @@ class _RideRequestState extends State<RideRequest> {
                         Expanded(
                           child: MaterialButton(
                             padding: const EdgeInsets.symmetric(vertical: 20),
-                            textColor: buttonColor,
+                            textColor: Theme.of(context).accentColor,
                             color: Colors.white,
                             onPressed: () => Navigator.pop(context, 'Reject'),
                             child: Text('Reject'),
@@ -801,7 +805,7 @@ class _RideRequestState extends State<RideRequest> {
                           child: MaterialButton(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             textColor: Colors.white,
-                            color: buttonColor,
+                            color: Theme.of(context).accentColor,
                             onPressed: () => Navigator.pop(context, 'Accept'),
                             child: Text('Accept'),
                           ),
@@ -818,7 +822,6 @@ class _RideRequestState extends State<RideRequest> {
     );
 
     return Scaffold(
-      backgroundColor: bgColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());

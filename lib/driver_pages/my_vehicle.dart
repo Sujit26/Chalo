@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/add_vehicle.dart';
 import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 import 'package:shared_transport/driver_pages/vehicle_form.dart';
@@ -20,7 +21,6 @@ import 'package:shared_transport/driver_pages/vehicle_form.dart';
 
 class VehiclePage extends StatefulWidget {
   final String name = 'My Vehicles';
-  final Color color = mainColor;
 
   @override
   _VehiclePageState createState() => _VehiclePageState();
@@ -44,7 +44,7 @@ class _VehiclePageState extends State<VehiclePage> {
     final SharedPreferences prefs = await _prefs;
 
     if (prefs.getString('approveStatus') == '100') {
-      final response = await get(serverURL + 'driver/vehicle', headers: {
+      final response = await get(Keys.serverURL + 'driver/vehicle', headers: {
         'token': prefs.getString('token'),
         'email': prefs.getString('email'),
       });
@@ -78,7 +78,7 @@ class _VehiclePageState extends State<VehiclePage> {
               child: Icon(
                 Icons.error_outline,
                 size: 40,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
             title: 'Invalid Request',
@@ -95,7 +95,8 @@ class _VehiclePageState extends State<VehiclePage> {
               },
               child: Text(
                 'OK',
-                style: TextStyle(color: buttonColor, fontSize: 20),
+                style: TextStyle(
+                    color: Theme.of(context).accentColor, fontSize: 20),
               ),
             ),
           ),
@@ -177,13 +178,7 @@ class _VehiclePageState extends State<VehiclePage> {
         ),
       ),
       elevation: 2,
-      backgroundColor: buttonColor,
-      title: Text(
-        widget.name,
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
+      title: Text(widget.name),
       actions: <Widget>[
         _isLoading
             ? Container()
@@ -203,14 +198,11 @@ class _VehiclePageState extends State<VehiclePage> {
         child: Scaffold(
           appBar: appBar,
           body: Container(
-            decoration: BoxDecoration(
-              color: bgColor,
-            ),
             child: _isLoading
                 ? Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          new AlwaysStoppedAnimation<Color>(buttonColor),
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).accentColor),
                     ),
                   )
                 : Column(

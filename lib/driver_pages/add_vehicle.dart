@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/my_vehicle.dart';
-import 'package:shared_transport/driver_pages/vehicle_info.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/models/models.dart';
 
 class AddVehicleBody extends StatefulWidget {
   final Vehicle vehicle;
@@ -58,7 +58,7 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
       'del': _isDeleting,
       'pos': widget.vehicle.index,
     };
-    final response = await post(serverURL + 'driver/vehicle',
+    final response = await post(Keys.serverURL + 'driver/vehicle',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
@@ -253,7 +253,7 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                 padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
                 child: FlatButton(
                   padding: const EdgeInsets.symmetric(vertical: 15),
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   textColor: Colors.white,
                   child: _isAdding
                       ? SizedBox(
@@ -289,14 +289,14 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                       child: FlatButton(
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         color: Colors.white,
-                        textColor: buttonColor,
+                        textColor: Theme.of(context).accentColor,
                         child: _isDeleting
                             ? SizedBox(
                                 height: 16,
                                 width: 16,
                                 child: CircularProgressIndicator(
                                   valueColor: new AlwaysStoppedAnimation<Color>(
-                                      buttonColor),
+                                      Theme.of(context).accentColor),
                                   strokeWidth: 2,
                                 ),
                               )

@@ -3,10 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
+import 'package:shared_transport/config/keys.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/history_pages/ride_request.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
 
 class NotificationPage extends StatefulWidget {
   final List<HistoryModel> notifications;
@@ -30,7 +29,7 @@ class _NotificationPageState extends State<NotificationPage> {
       'data': res,
     };
     final response = await post(
-      serverURL + 'driver/response',
+      Keys.serverURL+ 'driver/response',
       headers: {"Content-type": "application/json"},
       body: jsonEncode(data),
     );
@@ -64,7 +63,8 @@ class _NotificationPageState extends State<NotificationPage> {
   showSeats(int slots) {
     List<Widget> seats = List();
     for (var i = 0; i < slots; i++)
-      seats.add(Icon(Icons.person, color: buttonColor, size: 12));
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 12));
 
     return Row(
       children: seats,
@@ -120,7 +120,8 @@ class _NotificationPageState extends State<NotificationPage> {
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: buttonColor, width: 2),
+                      border: Border.all(
+                          color: Theme.of(context).accentColor, width: 2),
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: NetworkImage(req.pic),
@@ -137,7 +138,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       child: Container(
                         width: 2,
                         height: 20,
-                        color: buttonColor,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                     Column(
@@ -151,8 +152,9 @@ class _NotificationPageState extends State<NotificationPage> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border:
-                                      Border.all(width: 2, color: buttonColor),
+                                  border: Border.all(
+                                      width: 2,
+                                      color: Theme.of(context).accentColor),
                                 ),
                                 child: Icon(
                                   Icons.fiber_manual_record,
@@ -185,7 +187,8 @@ class _NotificationPageState extends State<NotificationPage> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                        width: 2, color: buttonColor),
+                                        width: 2,
+                                        color: Theme.of(context).accentColor),
                                   ),
                                   child: Icon(
                                     Icons.fiber_manual_record,
@@ -218,7 +221,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     Text(
                       req.rating.toString(),
                       style: TextStyle(
-                        color: buttonColor,
+                        color: Theme.of(context).accentColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -226,7 +229,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     Icon(
                       Icons.star,
                       size: 22,
-                      color: buttonColor,
+                      color: Theme.of(context).accentColor,
                     ),
                   ],
                 ),
@@ -240,7 +243,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         Spacer(),
                         Icon(
                           Icons.calendar_today,
-                          color: buttonColor,
+                          color: Theme.of(context).accentColor,
                           size: 12,
                         ),
                         Text(
@@ -328,7 +331,6 @@ class _NotificationPageState extends State<NotificationPage> {
         widget.name,
         style: TextStyle(fontSize: 25.0),
       ),
-      backgroundColor: buttonColor,
     );
 
     Widget createBody() {
@@ -357,7 +359,6 @@ class _NotificationPageState extends State<NotificationPage> {
 
     return Scaffold(
       appBar: appBar,
-      backgroundColor: bgColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());

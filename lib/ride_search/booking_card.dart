@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login/login_page.dart';
-import 'package:shared_transport/ride_search/ride_model.dart';
+import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'dart:math' as math;
 
 import 'package:shared_transport/widgets/custom_dialog.dart';
@@ -38,7 +38,7 @@ class _BookingCardState extends State<BookingCard> {
     };
 
     final response = await post(
-      serverURL + 'ride/request',
+      Keys.serverURL + 'ride/request',
       headers: {"Content-type": "application/json"},
       body: jsonEncode(sendData),
     );
@@ -53,13 +53,13 @@ class _BookingCardState extends State<BookingCard> {
           icon: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              border: Border.all(width: 2, color: buttonColor),
+              border: Border.all(width: 2, color: Theme.of(context).accentColor),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.done,
               size: 40,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           title: 'Awesome',
@@ -73,7 +73,7 @@ class _BookingCardState extends State<BookingCard> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: buttonColor, fontSize: 20),
+              style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -88,7 +88,7 @@ class _BookingCardState extends State<BookingCard> {
             child: Icon(
               Icons.error_outline,
               size: 40,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           title: 'Error',
@@ -104,7 +104,7 @@ class _BookingCardState extends State<BookingCard> {
                 },
                 child: Text(
                   'Retry',
-                  style: TextStyle(color: buttonColor, fontSize: 20),
+                  style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
                 ),
               ),
               FlatButton(
@@ -169,18 +169,18 @@ class _BookingCardState extends State<BookingCard> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 15,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 15,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 15,
               );
   }
@@ -200,9 +200,9 @@ class _BookingCardState extends State<BookingCard> {
   showSeats() {
     List<Widget> seats = List();
     for (var i = 0; i < drive.vehicle.seats - drive.slots; i++)
-      seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < drive.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -272,12 +272,12 @@ class _BookingCardState extends State<BookingCard> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
-            border: Border.all(width: .8, color: buttonColor),
+            border: Border.all(width: .8, color: Theme.of(context).accentColor),
             borderRadius: BorderRadius.circular(3),
           ),
           child: Text(
             '${drive.driver.nod} Rides',
-            style: TextStyle(color: buttonColor),
+            style: TextStyle(color: Theme.of(context).accentColor),
           ),
         )
       ],
@@ -384,46 +384,46 @@ class _BookingCardState extends State<BookingCard> {
           children: <Widget>[
             Icon(
               Icons.fiber_manual_record,
-              color: buttonColor.withOpacity(.3),
+              color: Theme.of(context).accentColor.withOpacity(.3),
               size: 15,
             ),
             Transform.rotate(
               angle: 90 * math.pi / 180,
               child: Icon(
                 Icons.linear_scale,
-                color: buttonColor.withOpacity(.3),
+                color: Theme.of(context).accentColor.withOpacity(.3),
                 size: 15,
               ),
             ),
             Icon(
               Icons.fiber_manual_record,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
               size: 15,
             ),
             Transform.rotate(
               angle: 90 * math.pi / 180,
               child: Icon(
                 Icons.linear_scale,
-                color: buttonColor.withAlpha(150),
+                color: Theme.of(context).accentColor.withAlpha(150),
                 size: 15,
               ),
             ),
             Icon(
               Icons.location_on,
-              color: mainColor,
+              color: Theme.of(context).primaryColor,
               size: 15,
             ),
             Transform.rotate(
               angle: 90 * math.pi / 180,
               child: Icon(
                 Icons.linear_scale,
-                color: mainColor.withOpacity(.3),
+                color: Theme.of(context).primaryColor.withOpacity(.3),
                 size: 15,
               ),
             ),
             Icon(
               Icons.location_on,
-              color: mainColor.withOpacity(.5),
+              color: Theme.of(context).primaryColor.withOpacity(.5),
               size: 15,
             ),
           ],
@@ -524,7 +524,7 @@ class _BookingCardState extends State<BookingCard> {
     Widget _seats = Container(
       padding: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: buttonColor.withAlpha(150)),
+        border: Border.all(color: Theme.of(context).accentColor.withAlpha(150)),
         borderRadius: BorderRadius.circular(3),
       ),
       child: Row(
@@ -539,7 +539,7 @@ class _BookingCardState extends State<BookingCard> {
                   final scaffold = Scaffold.of(context);
                   scaffold.showSnackBar(
                     SnackBar(
-                      backgroundColor: mainColor,
+                      backgroundColor: Theme.of(context).primaryColor,
                       content: const Text(
                         'Maximum seats selected.',
                       ),
@@ -549,7 +549,7 @@ class _BookingCardState extends State<BookingCard> {
                 }
               });
             },
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             textColor: Colors.white,
             child: Icon(
               Icons.add,
@@ -569,7 +569,7 @@ class _BookingCardState extends State<BookingCard> {
                   final scaffold = Scaffold.of(context);
                   scaffold.showSnackBar(
                     SnackBar(
-                      backgroundColor: mainColor,
+                      backgroundColor: Theme.of(context).primaryColor,
                       content: const Text(
                         'Minmum seats selected.',
                       ),
@@ -579,7 +579,7 @@ class _BookingCardState extends State<BookingCard> {
                 }
               });
             },
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             textColor: Colors.white,
             child: Icon(
               Icons.remove,
@@ -597,7 +597,7 @@ class _BookingCardState extends State<BookingCard> {
             padding: const EdgeInsets.symmetric(vertical: 15),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             onPressed: () {
               if (_isSaving) return;
               setState(() {

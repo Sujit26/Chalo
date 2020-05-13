@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
+import 'package:shared_transport/models/models.dart';
 import 'package:latlong/latlong.dart';
-import 'package:shared_transport/history_pages/history_model.dart';
-import 'package:shared_transport/login/login_page.dart';
 
 class TripSummaryRider extends StatefulWidget {
   final HistoryModel ride;
@@ -94,18 +93,18 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     return fill >= 1.0
         ? Icon(
             Icons.star,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             size: 20,
           )
         : fill > 0
             ? Icon(
                 Icons.star_half,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               )
             : Icon(
                 Icons.star_border,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
                 size: 20,
               );
   }
@@ -126,9 +125,9 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: buttonColor, size: 18));
+        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: buttonColor, size: 18));
+      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -147,7 +146,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: buttonColor, width: 2),
+            border: Border.all(color: Theme.of(context).accentColor, width: 2),
             image: DecorationImage(
               fit: BoxFit.cover,
               image: NetworkImage(
@@ -181,12 +180,12 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                 IconButton(
                   icon: Icon(Icons.call),
                   onPressed: () {},
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                 ),
                 IconButton(
                   icon: Icon(Icons.message),
                   onPressed: () {},
-                  color: mainColor,
+                  color: Theme.of(context).primaryColor,
                 ),
               ],
             )
@@ -202,7 +201,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
       widget.ride.rider.pic,
       Row(
         children: <Widget>[
-          Text('You ', style: TextStyle(color: buttonColor)),
+          Text('You ', style: TextStyle(color: Theme.of(context).accentColor)),
           Text('were passenger of the trip',
               style: TextStyle(color: Colors.black)),
         ],
@@ -252,7 +251,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           builder: (context) => Material(
             shape: CircleBorder(),
             elevation: 5,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             clipBehavior: Clip.antiAlias,
             child: Center(
               child: Icon(
@@ -272,7 +271,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           builder: (context) => Material(
             shape: CircleBorder(),
             elevation: 5,
-            color: buttonColor,
+            color: Theme.of(context).accentColor,
             clipBehavior: Clip.antiAlias,
             child: Center(
               child: Icon(
@@ -289,14 +288,14 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
       circleMarkers.add(
         CircleMarker(
           point: LatLng(widget.ride.rideFrom.lat, widget.ride.rideFrom.lon),
-          color: buttonColor.withOpacity(0.3),
+          color: Theme.of(context).accentColor.withOpacity(0.3),
           radius: 25,
         ),
       );
       circleMarkers.add(
         CircleMarker(
           point: LatLng(widget.ride.rideTo.lat, widget.ride.rideTo.lon),
-          color: buttonColor.withOpacity(0.3),
+          color: Theme.of(context).accentColor.withOpacity(0.3),
           radius: 25,
         ),
       );
@@ -317,7 +316,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
               color: Colors.white,
               child: Icon(
                 Icons.location_on,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
           ),
@@ -342,7 +341,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
               color: Colors.white,
               child: Icon(
                 Icons.location_on,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
           ),
@@ -377,7 +376,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
             child: Container(
               width: 7,
               height: 1000,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           Column(
@@ -419,7 +418,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: buttonColor),
+            Polyline(points: line, strokeWidth: 2, color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(circles: circleMarkers),
@@ -432,7 +431,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
   Widget build(BuildContext context) {
     Widget appBar = Material(
       elevation: 2,
-      color: buttonColor,
+      color: Theme.of(context).appBarTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -546,7 +545,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: buttonColor),
+                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -567,7 +566,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   child: Icon(
                     Icons.fiber_manual_record,
                     size: 7,
-                    color: buttonColor,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
               ),
@@ -578,7 +577,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: buttonColor),
+                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -715,7 +714,6 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     );
 
     return Scaffold(
-      backgroundColor: bgColor,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());

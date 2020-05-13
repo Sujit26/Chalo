@@ -9,7 +9,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -21,7 +21,6 @@ import 'package:shared_transport/widgets/custom_dialog.dart';
 ///
 class DocsUploadPage extends StatefulWidget {
   final String name;
-  final Color color = mainColor;
 
   DocsUploadPage({
     Key key,
@@ -53,7 +52,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
     var _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
 
-    final response = await get(serverURL + 'profile/docs', headers: {
+    final response = await get(Keys.serverURL + 'profile/docs', headers: {
       'token': prefs.getString('token'),
       'email': prefs.getString('email'),
       'data': widget.name,
@@ -117,7 +116,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
       'data': widget.name,
     };
 
-    final response = await post(serverURL + 'profile/docs',
+    final response = await post(Keys.serverURL + 'profile/docs',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
 
     var jsonData = json.decode(response.body);
@@ -153,7 +152,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
             child: Icon(
               Icons.error_outline,
               size: 40,
-              color: buttonColor,
+              color: Theme.of(context).accentColor,
             ),
           ),
           title: 'Error',
@@ -164,7 +163,8 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: buttonColor, fontSize: 20),
+              style:
+                  TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -297,7 +297,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
         padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(width: 2, color: buttonColor),
+            border: Border.all(width: 2, color: Theme.of(context).accentColor),
             shape: BoxShape.circle,
           ),
           child: InkWell(
@@ -317,7 +317,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                       child: Icon(
                         FontAwesomeIcons.questionCircle,
                         size: 40,
-                        color: buttonColor,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                     title: 'Replace',
@@ -384,7 +384,8 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(width: 2, color: buttonColor),
+              border:
+                  Border.all(width: 2, color: Theme.of(context).accentColor),
               shape: BoxShape.circle,
             ),
             child: Container(
@@ -393,7 +394,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
               decoration: BoxDecoration(
                 border: Border.all(width: 2, color: Colors.white),
                 shape: BoxShape.circle,
-                color: buttonColor,
+                color: Theme.of(context).accentColor,
               ),
               child: Icon(
                 Icons.add,
@@ -426,17 +427,11 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(
-        widget.name == 'dl'
-            ? 'Driving Licence'
-            : widget.name == 'sd'
-                ? 'Secondary Document'
-                : widget.name == 'lp' ? 'Live Photo' : '',
-        style: TextStyle(
-          fontSize: 25.0,
-        ),
-      ),
-      backgroundColor: buttonColor,
+      title: Text(widget.name == 'dl'
+          ? 'Driving Licence'
+          : widget.name == 'sd'
+              ? 'Secondary Document'
+              : widget.name == 'lp' ? 'Live Photo' : ''),
     );
 
     Widget getGuidlines() {
@@ -564,7 +559,8 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
     Widget uploadBody = _isLoading
         ? Center(
             child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(buttonColor),
+            valueColor: new AlwaysStoppedAnimation<Color>(
+                Theme.of(context).accentColor),
           ))
         : Row(
             children: <Widget>[
@@ -597,13 +593,10 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
       return Container(
         child: Scaffold(
           appBar: appBar,
-          body: Container(
-            color: bgColor,
-            child: uploadBody,
-          ),
+          body: Container(child: uploadBody),
           bottomSheet: !_isLoading
               ? Container(
-                  color: buttonColor,
+                  color: Theme.of(context).accentColor,
                   child: InkWell(
                     onTap: () {
                       if (!_isSaving) {
@@ -621,7 +614,8 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                                         CircularProgressIndicator(
                                           valueColor:
                                               new AlwaysStoppedAnimation<Color>(
-                                                  buttonColor),
+                                                  Theme.of(context)
+                                                      .accentColor),
                                         ),
                                         Padding(
                                           padding:
@@ -642,7 +636,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                                 child: Icon(
                                   Icons.error_outline,
                                   size: 40,
-                                  color: buttonColor,
+                                  color: Theme.of(context).accentColor,
                                 ),
                               ),
                               title: 'Error',
@@ -654,7 +648,8 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                                 child: Text(
                                   'OK',
                                   style: TextStyle(
-                                      color: buttonColor, fontSize: 20),
+                                      color: Theme.of(context).accentColor,
+                                      fontSize: 20),
                                 ),
                               ),
                             ),
