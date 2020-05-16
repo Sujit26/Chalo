@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/verification/docs_upload_page.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -10,8 +11,6 @@ import 'package:shared_transport/verification/docs_upload_page.dart';
 /// because it is responsible for the UI at the route's destination.
 ///
 class ProfileVerificationPage extends StatefulWidget {
-  final String name = 'Profile Verification';
-
   @override
   _ProfileVerificationPageState createState() =>
       _ProfileVerificationPageState();
@@ -48,7 +47,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(widget.name),
+      title: Text(
+          AppLocalizations.of(context).localisedText['profile_verification']),
     );
 
     Widget getStatusIcon(status) {
@@ -125,7 +125,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Text(
-                            'Driving Licence',
+                            AppLocalizations.of(context)
+                                .localisedText['driving_licence'],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -183,7 +184,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 30),
                               child: Text(
-                                'Second Document',
+                                AppLocalizations.of(context)
+                                    .localisedText['second_document'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -227,7 +229,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 30),
                               child: Text(
-                                'Live Photo',
+                                AppLocalizations.of(context)
+                                    .localisedText['live_photo'],
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -269,7 +272,7 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
                 ),
               ),
               Text(
-                'Verified',
+                AppLocalizations.of(context).localisedText['verified'],
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).accentColor,
@@ -278,7 +281,8 @@ class _ProfileVerificationPageState extends State<ProfileVerificationPage> {
               ),
               SizedBox(height: 10),
               Divider(),
-              Text('To drive with us complete the verification process.'),
+              Text(AppLocalizations.of(context)
+                  .localisedText['verification_page_message']),
             ],
           ),
         ),

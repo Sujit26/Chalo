@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_transport/ride_search/new_ride.dart';
 import 'dart:math' as math;
 
+import 'package:shared_transport/utils/localizations.dart';
+
 class DriveCard extends StatelessWidget {
   final ride;
 
@@ -299,7 +301,9 @@ class DriveCard extends StatelessWidget {
                         ),
                         Spacer(),
                         OutlineButton(
-                          child: Text('Request',
+                          child: Text(
+                              AppLocalizations.of(context)
+                                  .localisedText['request'],
                               style: TextStyle(
                                   color: Theme.of(context).accentColor)),
                           onPressed: () {

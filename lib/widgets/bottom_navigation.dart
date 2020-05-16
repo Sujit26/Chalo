@@ -4,6 +4,7 @@ import 'package:shared_transport/driver_pages/driver_home.dart';
 import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/profile.dart';
 import 'package:shared_transport/rider_home.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/home_page.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget child;
     switch (_currentTab) {
       case 0:
-        child = HomePage();
+        child = MyTripsPage();
         break;
       case 1:
         child = DriverHome();
@@ -30,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child = SearchPage();
         break;
       case 3:
-        child = MyTripsPage();
+        child = HomePage();
         break;
       case 4:
         child = ProfilePage();
@@ -54,23 +55,23 @@ class _MyHomePageState extends State<MyHomePage> {
         items: [
           FFNavigationBarItem(
             iconData: Icons.home,
-            label: 'Home',
+            label: AppLocalizations.of(context).localisedText['my_trips'],
           ),
           FFNavigationBarItem(
             iconData: Icons.directions_car,
-            label: 'Drive',
+            label: AppLocalizations.of(context).localisedText['drive'],
           ),
           FFNavigationBarItem(
             iconData: Icons.search,
-            label: 'Search',
+            label: AppLocalizations.of(context).localisedText['search'],
           ),
           FFNavigationBarItem(
             iconData: Icons.history,
-            label: 'History',
+            label: AppLocalizations.of(context).localisedText['history'],
           ),
           FFNavigationBarItem(
             iconData: Icons.person,
-            label: 'Profile',
+            label: AppLocalizations.of(context).localisedText['profile'],
           ),
         ],
       ),

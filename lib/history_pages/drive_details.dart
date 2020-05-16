@@ -6,7 +6,9 @@ import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -82,10 +84,12 @@ class _DriveDetailsState extends State<DriveDetails> {
     };
 
     channel = IOWebSocketChannel.connect(
-        'ws://172.20.10.2:3002/location?data=${jsonEncode(data)}');
+        Keys.locationSocket + '?data=${jsonEncode(data)}');
     channel.stream.listen((onData) {
       onData = jsonDecode(onData);
       print('Socket Says: ' + onData.toString());
+      if (onData['msg'] != null && onData['msg'] == 'Drive Not Started yet')
+        print(onData['msg']);
       if (onData['loc'] != null || onData['driver'] != null) {
         if (widget.ride.action == 'Driving')
           userLocations[onData['email']] = {
@@ -105,7 +109,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         setState(() {
           _myLocation = newLocation;
         });
-      print('new loc');
+
       channel.sink.add(jsonEncode({
         'msg': {
           'lat': newLocation.latitude,
@@ -192,9 +196,12 @@ class _DriveDetailsState extends State<DriveDetails> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
+        i++)
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
+      seats.add(Icon(Icons.person_outline,
+          color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -235,10 +242,13 @@ class _DriveDetailsState extends State<DriveDetails> {
           '${widget.ride.rideInfo.from.lon},${widget.ride.rideInfo.from.lat};';
       tileData.add({
         'info': 'src',
-        'title': 'Source Location',
-        'subtitle':
-            '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
-        'trailing': widget.ride.rideInfo.fromTime,
+        'title': AppLocalizations.of(context).localisedText['source_location'],
+        'subtitle': widget.ride.action == 'Driving'
+            ? '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}'
+            : '${widget.ride.rideFrom.name.split(',')[0]},${widget.ride.rideFrom.name.split(',')[1]}',
+        'trailing': widget.ride.action == 'Driving'
+            ? widget.ride.rideInfo.fromTime
+            : widget.ride.rideFromTime,
       });
       var distributions = '';
       var count = 1;
@@ -254,14 +264,16 @@ class _DriveDetailsState extends State<DriveDetails> {
           count++;
           tileData.add({
             'info': 'old',
-            'title': 'Pick Up ${rider.name.split(' ')[0]}',
+            'title':
+                '${AppLocalizations.of(context).localisedText['pick_up']} ${rider.name.split(' ')[0]}',
             'subtitle':
                 '${rider.from.name.split(',')[0]},${rider.from.name.split(',')[1]}',
             'trailing': widget.ride.rideInfo.fromTime,
           });
           tileData.add({
             'info': 'old',
-            'title': 'Drop off ${rider.name.split(' ')[0]}',
+            'title':
+                '${AppLocalizations.of(context).localisedText['drop_off']} ${rider.name.split(' ')[0]}',
             'subtitle':
                 '${rider.to.name.split(',')[0]},${rider.to.name.split(',')[1]}',
             'trailing': widget.ride.rideInfo.fromTime,
@@ -271,16 +283,24 @@ class _DriveDetailsState extends State<DriveDetails> {
         coordinates +=
             ('${widget.ride.rideFrom.lon},${widget.ride.rideFrom.lat};' +
                 '${widget.ride.rideTo.lon},${widget.ride.rideTo.lat};');
+        distributions += count == 1 ? '$count' : ';$count';
+        count++;
+        distributions += ',$count';
+        count++;
       }
       // Driver To Coordinates
       coordinates +=
           '${widget.ride.rideInfo.to.lon},${widget.ride.rideInfo.to.lat}';
       tileData.add({
         'info': 'des',
-        'title': 'Destination Location',
-        'subtitle':
-            '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
-        'trailing': widget.ride.rideInfo.fromTime,
+        'title':
+            AppLocalizations.of(context).localisedText['destination_location'],
+        'subtitle': widget.ride.action == 'Driving'
+            ? '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}'
+            : '${widget.ride.rideTo.name.split(',')[0]},${widget.ride.rideTo.name.split(',')[1]}',
+        'trailing': widget.ride.action == 'Driving'
+            ? widget.ride.rideInfo.fromTime
+            : widget.ride.rideToTime,
       });
 
       _makeRouteRequest(coordinates, distributions).then((onValue) {
@@ -309,9 +329,13 @@ class _DriveDetailsState extends State<DriveDetails> {
           tileData.last['subtitle'],
           TimeOfDay(
             hour: int.parse(tileData.last['trailing'].split(':')[0]) +
-                (onValue['trips'][0]['duration'] / 3600).toInt(),
+                (widget.ride.action == 'Driving'
+                    ? (onValue['trips'][0]['duration'] / 3600).toInt()
+                    : 0),
             minute: int.parse(tileData.last['trailing'].split(':')[1]) +
-                ((onValue['trips'][0]['duration'] % 3600) / 60).toInt(),
+                (widget.ride.action == 'Driving'
+                    ? ((onValue['trips'][0]['duration'] % 3600) / 60).toInt()
+                    : 0),
           ).format(context),
         );
 
@@ -639,7 +663,10 @@ class _DriveDetailsState extends State<DriveDetails> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: Theme.of(context).accentColor),
+            Polyline(
+                points: line,
+                strokeWidth: 2,
+                color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(circles: circleMarkers),
@@ -650,82 +677,132 @@ class _DriveDetailsState extends State<DriveDetails> {
 
   @override
   Widget build(BuildContext context) {
-    Widget appBar = Material(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        height: 95,
-        padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-          leading: Container(
-            width: 20,
-            height: 100,
-            alignment: Alignment.topLeft,
-            child: Icon(
-              Icons.navigate_before,
-              size: 40,
-              color: Colors.white,
+    Widget appBar = Column(
+      children: <Widget>[
+        Material(
+          color: Theme.of(context).accentColor,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
-          title: Row(
-            textBaseline: TextBaseline.alphabetic,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            children: <Widget>[
-              Text(
-                "10 April ",
-                style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            height: 95,
+            padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+              leading: Container(
+                width: 20,
+                height: 100,
+                alignment: Alignment.topLeft,
+                child: Icon(
+                  Icons.navigate_before,
+                  size: 40,
+                  color: Colors.white,
+                ),
               ),
-              Text(
-                "5:00 pm",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
+              title: Row(
+                textBaseline: TextBaseline.alphabetic,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                children: <Widget>[
+                  Text(
+                    '${widget.ride.rideInfo.driveDate.split('/')[0]} ${getMonthOfYear(widget.ride.rideInfo.driveDate)} ',
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.ride.action == 'Driving'
+                        ? TimeOfDay(
+                            hour: int.parse(
+                                widget.ride.rideInfo.fromTime.split(':')[0]),
+                            minute: int.parse(
+                                widget.ride.rideInfo.fromTime.split(':')[1]),
+                          ).format(context)
+                        : TimeOfDay(
+                            hour: int.parse(
+                                widget.ride.rideFromTime.split(':')[0]),
+                            minute: int.parse(
+                                widget.ride.rideFromTime.split(':')[1]),
+                          ).format(context),
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ],
-          ),
-          subtitle: Text(
-            "Trip to driver's destination",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          trailing: Container(
-            margin: const EdgeInsets.only(right: 10, top: 5),
-            width: 50,
-            height: 40,
-            child: MaterialButton(
-              padding: const EdgeInsets.all(0),
-              color: Colors.white,
-              onPressed: () {
-                print('send sos');
-                channel.sink.add(jsonEncode({'msg': 'sos'}));
-              },
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                'SOS',
+              subtitle: Text(
+                '${AppLocalizations.of(context).localisedText['trip_to']} ' +
+                    (widget.ride.action == 'Driving'
+                        ? '${widget.ride.rideInfo.to.name}'
+                        : '${widget.ride.rideTo.name}'),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
                 style: TextStyle(
-                  color: Theme.of(context).accentColor,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+              trailing: Container(
+                margin: const EdgeInsets.only(right: 10, top: 5),
+                width: 50,
+                height: 40,
+                child: MaterialButton(
+                  padding: const EdgeInsets.all(0),
+                  color: Colors.white,
+                  onPressed: () {
+                    print('send sos');
+                    channel.sink.add(jsonEncode({'msg': 'sos'}));
+                  },
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'SOS',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: widget.ride.action == 'Driving'
+              ? Container(
+                  margin: const EdgeInsets.only(right: 10, top: 5),
+                  width: 50,
+                  height: 40,
+                  child: MaterialButton(
+                    padding: const EdgeInsets.all(0),
+                    color: Colors.white,
+                    onPressed: () {
+                      print('Finish Trip');
+                      channel.sink.add(jsonEncode({'msg': 'finish'}));
+                    },
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Finish',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+        ),
+      ],
     );
 
     Widget _carInfo = Padding(
@@ -742,7 +819,8 @@ class _DriveDetailsState extends State<DriveDetails> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -774,7 +852,8 @@ class _DriveDetailsState extends State<DriveDetails> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -794,7 +873,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Car Model',
+                      AppLocalizations.of(context).localisedText['car_model'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -814,7 +893,8 @@ class _DriveDetailsState extends State<DriveDetails> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Registration no.',
+                      AppLocalizations.of(context)
+                          .localisedText['registration_number'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -834,7 +914,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Seats',
+                      AppLocalizations.of(context).localisedText['seats'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -853,55 +933,87 @@ class _DriveDetailsState extends State<DriveDetails> {
       ),
     );
 
-    Widget _userInfo = ListTile(
-      leading: Material(
-        shape: CircleBorder(),
-        elevation: 5,
-        color: Colors.white,
-        clipBehavior: Clip.antiAlias,
-        child: Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Theme.of(context).accentColor, width: 2),
-            image: DecorationImage(
-              fit: BoxFit.fill,
-              image: NetworkImage(
-                'https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80',
+    Widget _userInfo(image, name, {rating, phone}) {
+      return ListTile(
+        leading: Material(
+          shape: CircleBorder(),
+          elevation: 5,
+          color: Colors.white,
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border:
+                  Border.all(color: Theme.of(context).accentColor, width: 2),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(
+                  image,
+                ),
               ),
             ),
           ),
         ),
-      ),
-      title: Text(
-        'Sidhant Jain',
-        style: TextStyle(color: Colors.black),
-      ),
-      subtitle: Row(
-        children: <Widget>[
-          _starFilling(4.5),
-          _starFilling(4.5 - 1),
-          _starFilling(4.5 - 2),
-          _starFilling(4.5 - 3),
-          _starFilling(4.5 - 4),
-        ],
-      ),
-      trailing: Wrap(
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.call),
-            onPressed: () {},
-            color: Theme.of(context).accentColor,
-          ),
-          IconButton(
-            icon: Icon(Icons.message),
-            onPressed: () {},
-            color: Theme.of(context).primaryColor,
-          ),
-        ],
-      ),
-    );
+        title: name,
+        subtitle: rating != null
+            ? Row(
+                children: <Widget>[
+                  _starFilling(rating),
+                  _starFilling(rating - 1),
+                  _starFilling(rating - 2),
+                  _starFilling(rating - 3),
+                  _starFilling(rating - 4),
+                ],
+              )
+            : null,
+        trailing: phone != null
+            ? Wrap(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.call),
+                    onPressed: () {},
+                    color: Theme.of(context).accentColor,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.message),
+                    onPressed: () {},
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              )
+            : Wrap(),
+      );
+    }
+
+    Widget _driveUsers() {
+      if (widget.ride.action == 'Driving') {
+        List<Widget> users = [];
+        widget.ride.acceptedRiders.forEach((rider) {
+          users.add(_userInfo(rider.pic,
+              Text('${rider.name}', style: TextStyle(color: Colors.black)),
+              rating: rider.rating, phone: rider.phone));
+          users.add(Divider());
+        });
+        return Wrap(
+          children: users,
+        );
+      } else {
+        return Wrap(
+          children: <Widget>[
+            _userInfo(
+              widget.ride.rideInfo.driver.pic,
+              Text('${widget.ride.rideInfo.driver.name}',
+                  style: TextStyle(color: Colors.black)),
+              rating: widget.ride.rideInfo.driver.rating,
+              phone: widget.ride.rideInfo.driver.phone,
+            ),
+            Divider(),
+          ],
+        );
+      }
+    }
 
     Widget bottomSheet = DraggableScrollableSheet(
       initialChildSize: 0.3,
@@ -963,12 +1075,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                         Divider(),
                         _buildRouteInfo(),
                         Divider(),
-                        _userInfo,
-                        Divider(),
-                        _userInfo,
-                        Divider(),
-                        _userInfo,
-                        Divider(),
+                        _driveUsers(),
                       ],
                     ),
                   ),

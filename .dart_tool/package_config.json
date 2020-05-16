@@ -152,10 +152,22 @@
       "languageVersion": "2.6"
     },
     {
+      "name": "flutter_datetime_picker",
+      "rootUri": "file:///Library/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_datetime_picker-1.3.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "flutter_image",
       "rootUri": "file:///Library/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_image-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
+    },
+    {
+      "name": "flutter_localizations",
+      "rootUri": "file:///Library/flutter/packages/flutter_localizations",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
     },
     {
       "name": "flutter_map",
@@ -243,9 +255,9 @@
     },
     {
       "name": "intl",
-      "rootUri": "file:///Library/flutter/.pub-cache/hosted/pub.dartlang.org/intl-0.16.1",
+      "rootUri": "file:///Library/flutter/.pub-cache/hosted/pub.dartlang.org/intl-0.16.0",
       "packageUri": "lib/",
-      "languageVersion": "2.5"
+      "languageVersion": "2.0"
     },
     {
       "name": "js",
@@ -542,7 +554,7 @@
       "languageVersion": "2.2"
     }
   ],
-  "generated": "2020-05-13T16:43:06.165476Z",
+  "generated": "2020-05-14T11:28:18.589085Z",
   "generator": "pub",
   "generatorVersion": "2.7.2"
 }

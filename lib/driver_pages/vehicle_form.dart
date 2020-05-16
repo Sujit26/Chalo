@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/driver_pages/add_vehicle.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 
 class VehicleCard extends StatefulWidget {
   final Vehicle vehicle;
@@ -53,13 +54,8 @@ class _VehicleCardState extends State<VehicleCard> {
             children: <Widget>[
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 10),
-                height: 50,
+                height: 30,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(width: 1, color: Colors.black12),
-                  ),
-                ),
                 child: Center(
                   child: Container(
                     height: 4,
@@ -102,7 +98,8 @@ class _VehicleCardState extends State<VehicleCard> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             AppBar(
-              title: Text('Total seats ${vehicle.seats}'),
+              title: Text(
+                  '${AppLocalizations.of(context).localisedText['total_seats']} ${vehicle.seats}'),
               centerTitle: false,
               automaticallyImplyLeading: false,
               elevation: 0,
@@ -156,9 +153,7 @@ class _VehicleCardState extends State<VehicleCard> {
                         ),
                         Divider(),
                         InkWell(
-                          onTap: () {
-                            _showEditForm();
-                          },
+                          onTap: () => _showEditForm(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
@@ -169,7 +164,8 @@ class _VehicleCardState extends State<VehicleCard> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  'EDIT',
+                                  AppLocalizations.of(context)
+                                      .localisedText['edit'],
                                   style: TextStyle(
                                     color: Theme.of(context).accentColor,
                                     fontWeight: FontWeight.w600,

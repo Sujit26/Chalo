@@ -5,6 +5,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
 
 class RideRequest extends StatefulWidget {
@@ -212,7 +213,7 @@ class _RideRequestState extends State<RideRequest> {
           '${widget.ride.rideInfo.from.lon},${widget.ride.rideInfo.from.lat};';
       tileData.add({
         'info': 'src',
-        'title': 'Source Location',
+        'title': AppLocalizations.of(context).localisedText['source_location'],
         'subtitle':
             '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
         'trailing': widget.ride.rideInfo.fromTime,
@@ -222,14 +223,16 @@ class _RideRequestState extends State<RideRequest> {
           '${widget.reqUsrInfo.from.lon},${widget.reqUsrInfo.from.lat};${widget.reqUsrInfo.to.lon},${widget.reqUsrInfo.to.lat};';
       tileData.add({
         'info': 'newPickup',
-        'title': 'Pick Up ${widget.reqUsrInfo.name.split(' ')[0]}',
+        'title':
+            '${AppLocalizations.of(context).localisedText['pick_up']} ${widget.reqUsrInfo.name.split(' ')[0]}',
         'subtitle':
             '${widget.reqUsrInfo.from.name.split(',')[0]},${widget.reqUsrInfo.from.name.split(',')[1]}',
         'trailing': 'Detour: 0.0 km',
       });
       tileData.add({
         'info': 'newDrop',
-        'title': 'Drop off ${widget.reqUsrInfo.name.split(' ')[0]}',
+        'title':
+            '${AppLocalizations.of(context).localisedText['drop_off']} ${widget.reqUsrInfo.name.split(' ')[0]}',
         'subtitle':
             '${widget.reqUsrInfo.to.name.split(',')[0]},${widget.reqUsrInfo.to.name.split(',')[1]}',
         'trailing': widget.ride.rideInfo.fromTime,
@@ -247,14 +250,16 @@ class _RideRequestState extends State<RideRequest> {
         count++;
         tileData.add({
           'info': 'old',
-          'title': 'Pick Up ${rider.name.split(' ')[0]}',
+          'title':
+              '${AppLocalizations.of(context).localisedText['pick_up']} ${rider.name.split(' ')[0]}',
           'subtitle':
               '${rider.from.name.split(',')[0]},${rider.from.name.split(',')[1]}',
           'trailing': widget.ride.rideInfo.fromTime,
         });
         tileData.add({
           'info': 'old',
-          'title': 'Drop off ${rider.name.split(' ')[0]}',
+          'title':
+              '${AppLocalizations.of(context).localisedText['drop_off']} ${rider.name.split(' ')[0]}',
           'subtitle':
               '${rider.to.name.split(',')[0]},${rider.to.name.split(',')[1]}',
           'trailing': widget.ride.rideInfo.fromTime,
@@ -266,7 +271,8 @@ class _RideRequestState extends State<RideRequest> {
           '${widget.ride.rideInfo.to.lon},${widget.ride.rideInfo.to.lat}';
       tileData.add({
         'info': 'des',
-        'title': 'Destination Location',
+        'title':
+            AppLocalizations.of(context).localisedText['destination_location'],
         'subtitle':
             '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
         'extra': 'Arrival: +0 mins',
@@ -568,7 +574,7 @@ class _RideRequestState extends State<RideRequest> {
             ],
           ),
           subtitle: Text(
-            'Trip to ${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
+            '${AppLocalizations.of(context).localisedText['trip_to']} ${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
             softWrap: false,
             overflow: TextOverflow.fade,
             style: TextStyle(
@@ -602,7 +608,7 @@ class _RideRequestState extends State<RideRequest> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text(
-                    'Ride request',
+                    AppLocalizations.of(context).localisedText['ride_request'],
                     style: TextStyle(
                       color: Theme.of(context).accentColor,
                       fontWeight: FontWeight.bold,
@@ -632,7 +638,8 @@ class _RideRequestState extends State<RideRequest> {
                             widget.ride.rideInfo.slots,
                         req: widget.reqUsrInfo.slots,
                       ),
-                      Text('  ${widget.ride.rideInfo.slots} Seats Available'),
+                      Text(
+                          '  ${widget.ride.rideInfo.slots} ${AppLocalizations.of(context).localisedText['seats_available']}'),
                     ],
                   ),
                 ],
@@ -798,7 +805,8 @@ class _RideRequestState extends State<RideRequest> {
                             textColor: Theme.of(context).accentColor,
                             color: Colors.white,
                             onPressed: () => Navigator.pop(context, 'Reject'),
-                            child: Text('Reject'),
+                            child: Text(AppLocalizations.of(context)
+                                .localisedText['reject']),
                           ),
                         ),
                         Expanded(
@@ -807,7 +815,8 @@ class _RideRequestState extends State<RideRequest> {
                             textColor: Colors.white,
                             color: Theme.of(context).accentColor,
                             onPressed: () => Navigator.pop(context, 'Accept'),
-                            child: Text('Accept'),
+                            child: Text(AppLocalizations.of(context)
+                                .localisedText['accept']),
                           ),
                         ),
                       ],

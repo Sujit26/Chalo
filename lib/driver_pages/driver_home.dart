@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/add_addition_info.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
 import 'package:location/location.dart';
 import 'package:shared_transport/login/login_page.dart';
@@ -20,8 +22,6 @@ import 'package:shared_transport/widgets/custom_dialog.dart';
 /// because it is responsible for the UI at the route's destination.
 ///
 class DriverHome extends StatefulWidget {
-  final String name = 'Drive';
-
   @override
   _DriverHomeState createState() => _DriverHomeState();
 }
@@ -33,10 +33,12 @@ class _DriverHomeState extends State<DriverHome> {
   List<LocationLatLng> suggestions = [];
   GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _rideFromKey =
       new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _rideToKey = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _rideToKey =
+      new GlobalKey();
   GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _goodsFromKey =
       new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _goodsToKey = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<LocationLatLng>> _goodsToKey =
+      new GlobalKey();
   // Fields Controllers
   TextEditingController _rideFromController = new TextEditingController();
   TextEditingController _rideToController = new TextEditingController();
@@ -118,7 +120,8 @@ class _DriverHomeState extends State<DriverHome> {
     // });
   }
 
-  Widget suggestionItemBuilder(BuildContext context, LocationLatLng suggestion) {
+  Widget suggestionItemBuilder(
+      BuildContext context, LocationLatLng suggestion) {
     return Padding(
         child: ListTile(title: Text(suggestion.name)),
         padding: EdgeInsets.all(8.0));
@@ -204,8 +207,9 @@ class _DriverHomeState extends State<DriverHome> {
                 );
               },
               child: Text(
-                'OK',
-                style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
+                AppLocalizations.of(context).localisedText['ok'],
+                style: TextStyle(
+                    color: Theme.of(context).accentColor, fontSize: 20),
               ),
             ),
           ),
@@ -221,11 +225,23 @@ class _DriverHomeState extends State<DriverHome> {
   @override
   Widget build(BuildContext context) {
     Future<Null> _selectDate(BuildContext context, String val) async {
-      final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: val == 'ride' ? rideSelectedDate : goodsSelectedDate,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
-        lastDate: DateTime(2101),
+      final DateTime picked = await DatePicker.showDatePicker(
+        context,
+        theme: DatePickerTheme(
+          containerHeight: 200.0,
+          doneStyle: DatePickerTheme().cancelStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).accentColor,
+              ),
+          cancelStyle: DatePickerTheme()
+              .cancelStyle
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        showTitleActions: true,
+        minTime: DateTime.now(),
+        maxTime: DateTime(2100, 12, 31),
+        currentTime: val == 'ride' ? rideSelectedDate : goodsSelectedDate,
+        locale: LocaleType.en,
       );
       if (picked != null)
         setState(() {
@@ -286,7 +302,8 @@ class _DriverHomeState extends State<DriverHome> {
                             OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: 'From',
+                        hintText:
+                            AppLocalizations.of(context).localisedText['from'],
                       ),
                       keyboardType: TextInputType.text,
                       key: _rideFromKey,
@@ -337,7 +354,8 @@ class _DriverHomeState extends State<DriverHome> {
                             OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: 'To',
+                        hintText:
+                            AppLocalizations.of(context).localisedText['to'],
                         // errorText: _showValidationError ? _validRideTo() : null,
                       ),
                       keyboardType: TextInputType.text,
@@ -399,7 +417,8 @@ class _DriverHomeState extends State<DriverHome> {
                           OutlineInputBorder(borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
-                      hintText: 'Date',
+                      hintText:
+                          AppLocalizations.of(context).localisedText['date'],
                     ),
                     keyboardType: TextInputType.datetime,
                     onTap: () => _selectDate(context, 'ride'),
@@ -424,7 +443,8 @@ class _DriverHomeState extends State<DriverHome> {
                   ),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
-                      hintText: 'Time',
+                      hintText:
+                          AppLocalizations.of(context).localisedText['time'],
                       enabledBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
                       focusedBorder:
@@ -474,7 +494,8 @@ class _DriverHomeState extends State<DriverHome> {
                 children: <Widget>[
                   DropdownButtonFormField<Vehicle>(
                     decoration: InputDecoration(
-                      hintText: 'Choose Vehicle',
+                      hintText: AppLocalizations.of(context)
+                          .localisedText['choose_vehicle'],
                       border: OutlineInputBorder(borderSide: BorderSide.none),
                       disabledBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
@@ -522,7 +543,8 @@ class _DriverHomeState extends State<DriverHome> {
                   ),
                   DropdownButtonFormField<int>(
                     decoration: InputDecoration(
-                      hintText: 'Slots Available',
+                      hintText: AppLocalizations.of(context)
+                          .localisedText['slots_available'],
                       border: OutlineInputBorder(borderSide: BorderSide.none),
                       disabledBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
@@ -687,7 +709,7 @@ class _DriverHomeState extends State<DriverHome> {
                 });
               },
               child: Text(
-                'Add',
+                AppLocalizations.of(context).localisedText['add'],
                 style: TextStyle(fontSize: 20.0),
               ),
             ),
@@ -720,7 +742,8 @@ class _DriverHomeState extends State<DriverHome> {
                               OutlineInputBorder(borderSide: BorderSide.none),
                           focusedBorder:
                               OutlineInputBorder(borderSide: BorderSide.none),
-                          hintText: 'From',
+                          hintText: AppLocalizations.of(context)
+                              .localisedText['from'],
                         ),
                         keyboardType: TextInputType.text,
                         key: _goodsFromKey,
@@ -769,7 +792,8 @@ class _DriverHomeState extends State<DriverHome> {
                               OutlineInputBorder(borderSide: BorderSide.none),
                           focusedBorder:
                               OutlineInputBorder(borderSide: BorderSide.none),
-                          hintText: 'To',
+                          hintText:
+                              AppLocalizations.of(context).localisedText['to'],
                         ),
                         keyboardType: TextInputType.text,
                         key: _goodsToKey,
@@ -829,7 +853,8 @@ class _DriverHomeState extends State<DriverHome> {
                             OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: 'Date',
+                        hintText:
+                            AppLocalizations.of(context).localisedText['date'],
                       ),
                       keyboardType: TextInputType.datetime,
                       onTap: () => _selectDate(context, 'goods'),
@@ -853,7 +878,8 @@ class _DriverHomeState extends State<DriverHome> {
                     ),
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        hintText: 'Time',
+                        hintText:
+                            AppLocalizations.of(context).localisedText['time'],
                         enabledBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
@@ -902,7 +928,8 @@ class _DriverHomeState extends State<DriverHome> {
                   children: <Widget>[
                     DropdownButtonFormField<int>(
                       decoration: InputDecoration(
-                        labelText: 'Slots Available',
+                        labelText: AppLocalizations.of(context)
+                            .localisedText['slots_available'],
                         enabledBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
@@ -1027,7 +1054,7 @@ class _DriverHomeState extends State<DriverHome> {
                     });
                   },
                   child: Text(
-                    'Add',
+                    AppLocalizations.of(context).localisedText['add'],
                     style: TextStyle(fontSize: 20.0),
                   ),
                 ),
@@ -1058,7 +1085,8 @@ class _DriverHomeState extends State<DriverHome> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
-                'To drive with us please complete the verification process.',
+                AppLocalizations.of(context)
+                    .localisedText['verification_page_message'],
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -1083,7 +1111,8 @@ class _DriverHomeState extends State<DriverHome> {
                   borderRadius: BorderRadius.circular(40),
                 ),
                 padding: const EdgeInsets.all(15),
-                child: Text('Go to verification Page'),
+                child: Text(AppLocalizations.of(context)
+                    .localisedText['go_to_verification_page']),
               ),
             )
           ],
@@ -1111,7 +1140,9 @@ class _DriverHomeState extends State<DriverHome> {
                                     ),
                                     clipBehavior: Clip.antiAlias,
                                     child: TabBar(
-                                        unselectedLabelColor: Theme.of(context).accentColor,
+                                        labelColor: Colors.white,
+                                        unselectedLabelColor:
+                                            Theme.of(context).accentColor,
                                         indicator: ShapeDecoration(
                                           color: Theme.of(context).accentColor,
                                           shape: BeveledRectangleBorder(
@@ -1123,13 +1154,17 @@ class _DriverHomeState extends State<DriverHome> {
                                           Tab(
                                             child: Align(
                                               alignment: Alignment.center,
-                                              child: Text("RIDE"),
+                                              child: Text(
+                                                  AppLocalizations.of(context)
+                                                      .localisedText['ride']),
                                             ),
                                           ),
                                           Tab(
                                             child: Align(
                                               alignment: Alignment.center,
-                                              child: Text("GOODS"),
+                                              child: Text(
+                                                  AppLocalizations.of(context)
+                                                      .localisedText['goods']),
                                             ),
                                           ),
                                         ]),
@@ -1161,7 +1196,7 @@ class _DriverHomeState extends State<DriverHome> {
         ),
         elevation: 2,
         titleSpacing: 0,
-        title: Text(widget.name),
+        title: Text(AppLocalizations.of(context).localisedText['drive']),
       ),
       body: GestureDetector(
         onTap: () {

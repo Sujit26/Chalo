@@ -9,6 +9,7 @@ import 'package:shared_transport/history_pages/history_card.dart';
 import 'package:shared_transport/history_pages/notification_page.dart';
 import 'package:shared_transport/history_pages/trip_summary_driver.dart';
 import 'package:shared_transport/history_pages/trip_summary_rider.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -20,8 +21,6 @@ import 'package:shared_transport/widgets/empty_state.dart';
 ///
 
 class MyTripsPage extends StatefulWidget {
-  final String name = 'My Trips';
-
   @override
   _MyTripsPageState createState() => _MyTripsPageState();
 }
@@ -32,7 +31,6 @@ class _MyTripsPageState extends State<MyTripsPage>
   TabController _tabController;
   // to store all the histories
   List<HistoryModel> completedList;
-  List<HistoryModel> cancelledList;
   List<HistoryModel> upcomingList;
   // history Views
   ListView upcomingResultListView;
@@ -40,7 +38,6 @@ class _MyTripsPageState extends State<MyTripsPage>
   // should rebuild the view
   var _upcomingRefreshRequired = true;
   var _completedRefreshRequired = false;
-  var _cancelledRefreshRequired = true;
   // Filters
   var _upcomingType = ['Riding', 'Driving'];
   // Notification
@@ -51,15 +48,11 @@ class _MyTripsPageState extends State<MyTripsPage>
   void initState() {
     super.initState();
     _makeGetRequest('upcoming');
-    _tabController = new TabController(initialIndex: 1, length: 3, vsync: this);
+    _tabController = new TabController(initialIndex: 1, length: 2, vsync: this);
     _tabController.addListener(() {
       if (_tabController.index == 0 && completedList == null) {
         _makeGetRequest('completed');
         _isLoading = true;
-      }
-      if (_tabController.index == 2 && cancelledList == null) {
-        cancelledList = [];
-        _makeGetRequest('cancelled');
       }
     });
   }
@@ -190,7 +183,8 @@ class _MyTripsPageState extends State<MyTripsPage>
                           ? User(
                               name: data['rideInfo']['driver']['name'],
                               email: data['rideInfo']['driver']['email'],
-                              rating: data['rideInfo']['driver']['rating'],
+                              rating:
+                                  data['rideInfo']['driver']['rating'] * 1.0,
                               pic: data['rideInfo']['driver']['pic'],
                               nod: data['rideInfo']['driver']['nod'],
                               phone: data['rideInfo']['driver']['phone'],
@@ -198,7 +192,8 @@ class _MyTripsPageState extends State<MyTripsPage>
                           : User(
                               name: data['rideInfo']['driver']['name'],
                               email: data['rideInfo']['driver']['email'],
-                              rating: data['rideInfo']['driver']['rating'],
+                              rating:
+                                  data['rideInfo']['driver']['rating'] * 1.0,
                               pic: data['rideInfo']['driver']['pic'],
                               nod: data['rideInfo']['driver']['nod'],
                             ),
@@ -263,7 +258,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                       driver: User(
                         name: data['rideInfo']['driver']['name'],
                         email: data['rideInfo']['driver']['email'],
-                        rating: data['rideInfo']['driver']['rating'],
+                        rating: data['rideInfo']['driver']['rating'] * 1.0,
                         pic: data['rideInfo']['driver']['pic'],
                         nod: data['rideInfo']['driver']['nod'],
                       ),
@@ -447,7 +442,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                   );
           }).toList();
           _completedRefreshRequired = true;
-        } else if (trip == 'cancelled') {}
+        }
       });
     }
   }
@@ -543,8 +538,9 @@ class _MyTripsPageState extends State<MyTripsPage>
         child: completedList == null || completedList.length <= 0
             ? Center(
                 child: EmptyState(
-                  title: 'Oops',
-                  message: 'No Completed Rides Found',
+                  title: AppLocalizations.of(context).localisedText['oops'],
+                  message: AppLocalizations.of(context)
+                      .localisedText['no_rides_found'],
                 ),
               )
             : completedResults(),
@@ -557,43 +553,15 @@ class _MyTripsPageState extends State<MyTripsPage>
                 child: _isLoading
                     ? CircularProgressIndicator()
                     : EmptyState(
-                        title: 'Oops',
-                        message: 'No Upcoming Rides Found',
+                        title:
+                            AppLocalizations.of(context).localisedText['oops'],
+                        message: AppLocalizations.of(context)
+                            .localisedText['no_rides_found'],
                       ),
               )
             : upcomingResults(),
       ),
     );
-    final cancelledRide = Scaffold(
-      body: Container(
-        child: cancelledList == null || cancelledList.length <= 0
-            ? Center(
-                child: EmptyState(
-                  title: 'Oops',
-                  message: 'No Cancelled Rides Found',
-                ),
-              )
-            : ListView.builder(
-                addAutomaticKeepAlives: true,
-                itemCount: cancelledList.length,
-                itemBuilder: (_, i) => GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            cancelledList[i].action == 'Driving'
-                                ? TripSummaryDriver(ride: cancelledList[i])
-                                : TripSummaryRider(ride: cancelledList[i]),
-                      ),
-                    );
-                  },
-                  child: HistoryCard(history: cancelledList[i]),
-                ),
-              ),
-      ),
-    );
-
     Widget createBody() {
       return DefaultTabController(
         initialIndex: 1,
@@ -607,7 +575,7 @@ class _MyTripsPageState extends State<MyTripsPage>
               ),
             ),
             elevation: 2,
-            title: Text(widget.name),
+            title: Text(AppLocalizations.of(context).localisedText['my_trips']),
             bottom: TabBar(
               indicatorColor: Colors.white,
               labelColor: Colors.white,
@@ -615,9 +583,12 @@ class _MyTripsPageState extends State<MyTripsPage>
               indicator: CircleTabIndicator(color: Colors.white, radius: 3),
               controller: _tabController,
               tabs: <Widget>[
-                Tab(text: 'COMPLETED'),
-                Tab(text: 'UPCOMING'),
-                Tab(text: 'CANCELLED'),
+                Tab(
+                  text: AppLocalizations.of(context).localisedText['completed'],
+                ),
+                Tab(
+                  text: AppLocalizations.of(context).localisedText['upcoming'],
+                ),
               ],
             ),
             actions: <Widget>[
@@ -652,7 +623,8 @@ class _MyTripsPageState extends State<MyTripsPage>
                               title: Padding(
                                 padding: const EdgeInsets.only(left: 12),
                                 child: Text(
-                                  'Riding',
+                                  AppLocalizations.of(context)
+                                      .localisedText['riding'],
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context).accentColor),
@@ -680,7 +652,8 @@ class _MyTripsPageState extends State<MyTripsPage>
                               title: Padding(
                                 padding: const EdgeInsets.only(left: 12),
                                 child: Text(
-                                  'Driving',
+                                  AppLocalizations.of(context)
+                                      .localisedText['driving'],
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context).accentColor),
@@ -697,8 +670,6 @@ class _MyTripsPageState extends State<MyTripsPage>
                         _completedRefreshRequired = true;
                       else if (_tabController.index == 1)
                         _upcomingRefreshRequired = true;
-                      else if (_tabController.index == 2)
-                        _cancelledRefreshRequired = true;
                     });
                   });
                 },
@@ -757,7 +728,6 @@ class _MyTripsPageState extends State<MyTripsPage>
               children: [
                 completedRide,
                 upcomingRide,
-                cancelledRide,
               ],
             ),
           ),

@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/config/keys.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'dart:math' as math;
 
 import 'package:shared_transport/widgets/custom_dialog.dart';
@@ -53,7 +54,8 @@ class _BookingCardState extends State<BookingCard> {
           icon: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              border: Border.all(width: 2, color: Theme.of(context).accentColor),
+              border:
+                  Border.all(width: 2, color: Theme.of(context).accentColor),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -73,7 +75,8 @@ class _BookingCardState extends State<BookingCard> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
+              style:
+                  TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -104,7 +107,8 @@ class _BookingCardState extends State<BookingCard> {
                 },
                 child: Text(
                   'Retry',
-                  style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
+                  style: TextStyle(
+                      color: Theme.of(context).accentColor, fontSize: 20),
                 ),
               ),
               FlatButton(
@@ -200,9 +204,11 @@ class _BookingCardState extends State<BookingCard> {
   showSeats() {
     List<Widget> seats = List();
     for (var i = 0; i < drive.vehicle.seats - drive.slots; i++)
-      seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < drive.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
+      seats.add(Icon(Icons.person_outline,
+          color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -217,7 +223,8 @@ class _BookingCardState extends State<BookingCard> {
             '${drive.vehicle.name} ${drive.vehicle.modelName}',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          Text('${drive.slots} Seats'),
+          Text(
+              '${drive.slots} ${AppLocalizations.of(context).localisedText['seats']}'),
         ],
       ),
     );
@@ -268,18 +275,6 @@ class _BookingCardState extends State<BookingCard> {
             ],
           ),
         ),
-        Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-          decoration: BoxDecoration(
-            border: Border.all(width: .8, color: Theme.of(context).accentColor),
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Text(
-            '${drive.driver.nod} Rides',
-            style: TextStyle(color: Theme.of(context).accentColor),
-          ),
-        )
       ],
     );
 
@@ -557,7 +552,7 @@ class _BookingCardState extends State<BookingCard> {
             shape: CircleBorder(),
           ),
           Text(
-            '$bookSeats Seats',
+            '$bookSeats ${AppLocalizations.of(context).localisedText['seats']}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           MaterialButton(
@@ -619,7 +614,8 @@ class _BookingCardState extends State<BookingCard> {
                     width: 35.0,
                   )
                 : Text(
-                    'CONFIRM REQUEST',
+                    AppLocalizations.of(context)
+                        .localisedText['confirm_request'],
                     style: TextStyle(color: Colors.white),
                   ),
           ),
@@ -638,10 +634,10 @@ class _BookingCardState extends State<BookingCard> {
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           color: Colors.white,
           child: Container(
+            padding: const EdgeInsets.only(top: 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Spacer(),
                 _carName,
                 Spacer(),
                 _driverInfo,

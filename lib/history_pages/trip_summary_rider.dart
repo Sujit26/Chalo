@@ -5,6 +5,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:latlong/latlong.dart';
+import 'package:shared_transport/utils/localizations.dart';
 
 class TripSummaryRider extends StatefulWidget {
   final HistoryModel ride;
@@ -125,9 +126,12 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
+        i++)
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
+      seats.add(Icon(Icons.person_outline,
+          color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -201,8 +205,11 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
       widget.ride.rider.pic,
       Row(
         children: <Widget>[
-          Text('You ', style: TextStyle(color: Theme.of(context).accentColor)),
-          Text('were passenger of the trip',
+          Text(AppLocalizations.of(context).localisedText['you'],
+              style: TextStyle(color: Theme.of(context).accentColor)),
+          Text(
+              AppLocalizations.of(context)
+                  .localisedText['were_passenger_of_the_trip'],
               style: TextStyle(color: Colors.black)),
         ],
       ),
@@ -320,7 +327,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
               ),
             ),
           ),
-          title: Text('Source Location'),
+          title: Text(
+              AppLocalizations.of(context).localisedText['source_location']),
           subtitle: Text(
             '${widget.ride.rideFrom.name.split(',')[0]},${widget.ride.rideFrom.name.split(',')[1]}',
           ),
@@ -345,7 +353,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
               ),
             ),
           ),
-          title: Text('Destination Location'),
+          title: Text(AppLocalizations.of(context)
+              .localisedText['destination_location']),
           subtitle: Text(
             '${widget.ride.rideTo.name.split(',')[0]},${widget.ride.rideTo.name.split(',')[1]}',
           ),
@@ -418,7 +427,10 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: Theme.of(context).accentColor),
+            Polyline(
+                points: line,
+                strokeWidth: 2,
+                color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(circles: circleMarkers),
@@ -455,7 +467,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
             ),
           ),
           title: Text(
-            'Trip Summary',
+            AppLocalizations.of(context).localisedText['trip_summary'],
             style: TextStyle(
                 fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
           ),
@@ -466,8 +478,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                       int.parse(widget.ride.rideInfo.driveDate.split('/')[0]),
                     ).compareTo(DateTime.now()) ==
                     1
-                ? 'Upcoming ride'
-                : 'Completed ride',
+                ? AppLocalizations.of(context).localisedText['upcoming_ride']
+                : AppLocalizations.of(context).localisedText['completed_ride'],
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -479,13 +491,13 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
 
     Widget _tripDestination = ListTile(
       title: Text(
-        'Trip to ${widget.ride.rideTo.name}',
+        '${AppLocalizations.of(context).localisedText['trip_to']} ${widget.ride.rideTo.name}',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
       subtitle: Text(
           '${widget.ride.rideInfo.driveDate.split('/')[0]} ${getMonthOfYear(widget.ride.rideInfo.driveDate)} ${widget.ride.rideInfo.driveDate.split('/')[2]}, ${timeConversion(widget.ride.rideFromTime)}'),
       trailing: Text(
-        '${widget.ride.rideStatus}',
+        '${AppLocalizations.of(context).localisedText[widget.ride.rideStatus.toLowerCase()]}',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: statusColor(widget.ride.rideStatus),
@@ -500,7 +512,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           Expanded(
             child: ListTile(
               title: Text(
-                'Your Rating',
+                AppLocalizations.of(context).localisedText['your_rating'],
               ),
               subtitle: Row(
                 children: <Widget>[
@@ -516,7 +528,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
           VerticalDivider(),
           Expanded(
             child: ListTile(
-              title: Text('Distance Covered'),
+              title: Text(AppLocalizations.of(context)
+                  .localisedText['distance_covered']),
               subtitle: Text(
                 '${dis.toStringAsFixed(2)} Kms',
                 style: TextStyle(
@@ -545,7 +558,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -577,7 +591,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -597,7 +612,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Car Model',
+                      AppLocalizations.of(context).localisedText['car_model'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -617,7 +632,8 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Registration no.',
+                      AppLocalizations.of(context)
+                          .localisedText['registration_number'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -637,7 +653,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Seats',
+                      AppLocalizations.of(context).localisedText['seats'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,

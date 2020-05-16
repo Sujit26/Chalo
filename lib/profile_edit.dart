@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/login/login_page.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -16,8 +17,6 @@ import 'package:shared_transport/verification/profile_verification.dart';
 /// because it is responsible for the UI at the route's destination.
 ///
 class ProfileEditPage extends StatefulWidget {
-  final String name = 'Profile';
-
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
 }
@@ -91,7 +90,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(Icons.exit_to_app, color: Colors.red),
-                  title: Text('Logout', style: TextStyle(color: Colors.red)),
+                  title: Text(
+                    AppLocalizations.of(context).localisedText['logout'],
+                    style: TextStyle(color: Colors.red),
+                  ),
                   onTap: () => {
                     logout(),
                     Navigator.pushAndRemoveUntil(
@@ -119,7 +121,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ),
       elevation: 2,
-      title: Text(widget.name),
+      title: Text(AppLocalizations.of(context).localisedText['profile']),
       actions: <Widget>[
         GestureDetector(
           onTap: () {
@@ -155,7 +157,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.person),
                         border: InputBorder.none,
-                        labelText: 'Name',
+                        labelText:
+                            AppLocalizations.of(context).localisedText['name'],
                         errorText: _validName(),
                       ),
                       keyboardType: TextInputType.text,
@@ -171,7 +174,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.email),
                         border: InputBorder.none,
-                        labelText: 'Email',
+                        labelText:
+                            AppLocalizations.of(context).localisedText['email'],
                         errorText: _validEmail(),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -186,7 +190,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     child: InputDecorator(
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        labelText: 'Gender',
+                        labelText: AppLocalizations.of(context)
+                            .localisedText['gender'],
                         errorText: _validGender(),
                       ),
                       isEmpty: _gender == null,
@@ -210,7 +215,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.phone),
                         border: InputBorder.none,
-                        labelText: 'Phone',
+                        labelText:
+                            AppLocalizations.of(context).localisedText['phone'],
                         errorText: _validPhone(),
                       ),
                       keyboardType: TextInputType.phone,
@@ -232,12 +238,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       },
                       child: TextField(
                         decoration: InputDecoration(
-                          suffixIcon:
-                              Icon(Icons.verified_user, color: Theme.of(context).accentColor),
+                          suffixIcon: Icon(Icons.verified_user,
+                              color: Theme.of(context).accentColor),
                           border: InputBorder.none,
-                          labelText: 'Profile Verification',
+                          labelText: AppLocalizations.of(context)
+                              .localisedText['profile_verification'],
                           labelStyle: TextStyle(
-                              color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
+                              color: Theme.of(context).accentColor,
+                              fontWeight: FontWeight.bold),
                           enabled: false,
                           // errorText: _showValidationError ? 'Invalid number entered' : null,
                         ),
@@ -298,7 +306,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       : Container(
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           child: Text(
-                            'SAVE',
+                            AppLocalizations.of(context).localisedText['save'],
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),

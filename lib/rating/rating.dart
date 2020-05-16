@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 import 'package:shared_transport/rating/rating_form.dart';
 
@@ -17,8 +18,6 @@ import 'package:shared_transport/rating/rating_form.dart';
 ///
 
 class RatingPage extends StatefulWidget {
-  final String name = 'Rating';
-
   @override
   _RatingPageState createState() => _RatingPageState();
 }
@@ -98,7 +97,7 @@ class _RatingPageState extends State<RatingPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(widget.name),
+      title: Text(AppLocalizations.of(context).localisedText['rating']),
     );
 
     Widget _ratingBar(int stars, double percentage) {
@@ -199,9 +198,8 @@ class _RatingPageState extends State<RatingPage> {
                                       child: Row(
                                         children: <Widget>[
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 8),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8),
                                             child: Icon(
                                               Icons.person,
                                               size: 15,
@@ -236,8 +234,10 @@ class _RatingPageState extends State<RatingPage> {
                         ? Expanded(
                             child: Center(
                               child: EmptyState(
-                                title: 'Oops',
-                                message: 'No Ratings yet',
+                                title: AppLocalizations.of(context)
+                                    .localisedText['oops'],
+                                message: AppLocalizations.of(context)
+                                    .localisedText['no_ratings_yet'],
                               ),
                             ),
                           )

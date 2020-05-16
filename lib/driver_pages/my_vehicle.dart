@@ -7,6 +7,7 @@ import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/add_vehicle.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
 import 'package:shared_transport/driver_pages/vehicle_form.dart';
@@ -20,8 +21,6 @@ import 'package:shared_transport/driver_pages/vehicle_form.dart';
 ///
 
 class VehiclePage extends StatefulWidget {
-  final String name = 'My Vehicles';
-
   @override
   _VehiclePageState createState() => _VehiclePageState();
 }
@@ -30,7 +29,6 @@ class _VehiclePageState extends State<VehiclePage> {
   List<VehicleCard> vehicles = [];
   var _isLoading = true;
   var _totalVehicles = 0;
-  var _totalTrips = 0;
 
   @override
   void initState() {
@@ -66,7 +64,6 @@ class _VehiclePageState extends State<VehiclePage> {
           );
           _isLoading = false;
           _totalVehicles = jsonData['vehicles'].length;
-          _totalTrips = 0;
         });
       } else {
         showDialog(
@@ -132,13 +129,8 @@ class _VehiclePageState extends State<VehiclePage> {
             children: <Widget>[
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 10),
-                height: 50,
+                height: 30,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(width: 1, color: Colors.black12),
-                  ),
-                ),
                 child: Center(
                   child: Container(
                     height: 4,
@@ -153,10 +145,11 @@ class _VehiclePageState extends State<VehiclePage> {
                 ),
               ),
               Flexible(
-                  child: AddVehicleBody(
-                vehicle: data,
-                edit: false,
-              )),
+                child: AddVehicleBody(
+                  vehicle: data,
+                  edit: false,
+                ),
+              ),
             ],
           ),
         );
@@ -178,15 +171,13 @@ class _VehiclePageState extends State<VehiclePage> {
         ),
       ),
       elevation: 2,
-      title: Text(widget.name),
+      title: Text(AppLocalizations.of(context).localisedText['my_vehicles']),
       actions: <Widget>[
         _isLoading
             ? Container()
             : FlatButton(
-                child: Text('ADD'),
-                onPressed: () {
-                  _showAddForm();
-                },
+                child: Text(AppLocalizations.of(context).localisedText['add']),
+                onPressed: () => _showAddForm(),
                 textColor: Colors.white,
               ),
       ],
@@ -209,62 +200,27 @@ class _VehiclePageState extends State<VehiclePage> {
                     children: <Widget>[
                       Container(
                         color: Colors.white,
+                        width: MediaQuery.of(context).size.width,
                         padding: const EdgeInsets.all(8),
-                        child: Row(
+                        child: Column(
                           children: <Widget>[
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      _totalTrips.toString(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 5),
-                                    child: Text(
-                                      'Total Trips',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  ),
-                                ],
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                _totalVehicles.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 40,
+                                ),
                               ),
                             ),
                             Container(
-                              color: Colors.black26,
-                              height: 70,
-                              width: 2,
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      _totalVehicles.toString(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 5),
-                                    child: Text(
-                                      'Total Vehicles',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  ),
-                                ],
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 5),
+                              child: Text(
+                                AppLocalizations.of(context)
+                                    .localisedText['total_vehicles'],
+                                style: TextStyle(fontSize: 15),
                               ),
                             ),
                           ],
@@ -274,9 +230,10 @@ class _VehiclePageState extends State<VehiclePage> {
                           ? Expanded(
                               child: Center(
                                 child: EmptyState(
-                                  title: 'Oops',
-                                  message:
-                                      'No vehicles added yet\nTap "+" button to add a vehicle',
+                                  title: AppLocalizations.of(context)
+                                      .localisedText['oops'],
+                                  message: AppLocalizations.of(context)
+                                      .localisedText['no_vehicle_found'],
                                 ),
                               ),
                             )

@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -210,7 +211,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Text(
-        approveText,
+        AppLocalizations.of(context).localisedText[approveText.toLowerCase()],
         style: TextStyle(
           fontSize: 18,
           color: approveColor,
@@ -428,10 +429,12 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
       elevation: 2,
       titleSpacing: 0,
       title: Text(widget.name == 'dl'
-          ? 'Driving Licence'
+          ? AppLocalizations.of(context).localisedText['driving_licence']
           : widget.name == 'sd'
-              ? 'Secondary Document'
-              : widget.name == 'lp' ? 'Live Photo' : ''),
+              ? AppLocalizations.of(context).localisedText['second_document']
+              : widget.name == 'lp'
+                  ? AppLocalizations.of(context).localisedText['live_photo']
+                  : ''),
     );
 
     Widget getGuidlines() {
@@ -441,33 +444,28 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Text(
-                    '- Name, Date of Birth, Document Number should be clearly visible',
-                  ),
+                  child: Text(AppLocalizations.of(context)
+                      .localisedText['sd_guidlines_1']),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Text(
-                    '- Complete address (including house number, street, building, name, locality etc) should be clearly visible',
-                  ),
+                  child: Text(AppLocalizations.of(context)
+                      .localisedText['sd_guidlines_2']),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Text(
-                    '- Both FRONT and BACK of the document must be uploaded',
-                  ),
+                  child: Text(AppLocalizations.of(context)
+                      .localisedText['sd_guidlines_3']),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Text(
-                    '- Blurry image of licence will not be accepted',
-                  ),
+                  child: Text(AppLocalizations.of(context)
+                      .localisedText['sd_guidlines_4']),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Text(
-                    '- Document already registered with us will not be accepted',
-                  ),
+                  child: Text(AppLocalizations.of(context)
+                      .localisedText['sd_guidlines_5']),
                 ),
               ],
             )
@@ -477,33 +475,28 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: Text(
-                        '- Name, Date of Birth, Driver Licence Number, Expiry Date and Vehicle class should be clearly visible',
-                      ),
+                      child: Text(AppLocalizations.of(context)
+                          .localisedText['dl_guidlines_1']),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: Text(
-                        '- Both FRONT and BACK of the licence must be uploaded',
-                      ),
+                      child: Text(AppLocalizations.of(context)
+                          .localisedText['dl_guidlines_2']),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: Text(
-                        '- Colour photocopy, laminated version or blurry image of licence will not be accepted',
-                      ),
+                      child: Text(AppLocalizations.of(context)
+                          .localisedText['dl_guidlines_3']),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: Text(
-                        '- Licence alreay registered with us will not be accepted',
-                      ),
+                      child: Text(AppLocalizations.of(context)
+                          .localisedText['dl_guidlines_4']),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: Text(
-                        '- Any discrepancy in information will cause booking cancellation',
-                      ),
+                      child: Text(AppLocalizations.of(context)
+                          .localisedText['dl_guidlines_5']),
                     ),
                   ],
                 )
@@ -513,33 +506,28 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                          child: Text(
-                            '- A live photo of your face needs to be taken',
-                          ),
+                          child: Text(AppLocalizations.of(context)
+                              .localisedText['lp_guidlines_1']),
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                          child: Text(
-                            '- Photo should be taken in full-face view directly facing the camera',
-                          ),
+                          child: Text(AppLocalizations.of(context)
+                              .localisedText['lp_guidlines_2']),
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                          child: Text(
-                            '- Keep a neutral facial expression and both eyes open',
-                          ),
+                          child: Text(AppLocalizations.of(context)
+                              .localisedText['lp_guidlines_3']),
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                          child: Text(
-                            '- Do not wear a hat, head covering, sunglasses, headphones, earphones or similar items',
-                          ),
+                          child: Text(AppLocalizations.of(context)
+                              .localisedText['lp_guidlines_4']),
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 60),
-                          child: Text(
-                            '- Only YOUR face should be in the photo',
-                          ),
+                          child: Text(AppLocalizations.of(context)
+                              .localisedText['lp_guidlines_5']),
                         ),
                       ],
                     )
@@ -574,7 +562,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                       _selectedPic,
                       _showAllPics(),
                       Text(
-                        'GUIDLINES',
+                        AppLocalizations.of(context).localisedText['guidlines'],
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 22),
                         textAlign: TextAlign.center,
@@ -663,7 +651,7 @@ class _DocsUploadPageState extends State<DocsUploadPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           child: Text(
-                            'Save',
+                            AppLocalizations.of(context).localisedText['save'],
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),

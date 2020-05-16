@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/ride_search/drive_card.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_dialog.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
@@ -19,7 +20,6 @@ import 'dart:math' as math;
 /// because it is responsible for the UI at the route's destination.
 ///
 class SearchResultPage extends StatefulWidget {
-  final String name = 'Search Results';
   final search;
 
   SearchResultPage({@required this.search});
@@ -128,7 +128,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
             driver: User(
                 name: ride['driver']['name'],
                 email: ride['driver']['email'],
-                rating: ride['driver']['rating'],
+                rating: ride['driver']['rating'] * 1.0,
                 pic: ride['driver']['pic'],
                 nod: ride['driver']['nod']),
           );
@@ -162,7 +162,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
             },
             child: Text(
               'OK',
-              style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
+              style:
+                  TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
             ),
           ),
         ),
@@ -232,10 +233,12 @@ class _SearchResultPageState extends State<SearchResultPage> {
         title: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Text(
-            option,
+            AppLocalizations.of(context).localisedText[option.toLowerCase()],
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: option == _sortOptionSelected ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
+              color: option == _sortOptionSelected
+                  ? Theme.of(context).accentColor
+                  : Theme.of(context).primaryColor,
             ),
           ),
         ),
@@ -265,15 +268,19 @@ class _SearchResultPageState extends State<SearchResultPage> {
               child: Material(
                 elevation: 3,
                 borderRadius: BorderRadius.circular(3),
-                shadowColor: _isSelected ? Theme.of(context).accentColor : Colors.white,
-                color: _isSelected ? Theme.of(context).accentColor : Colors.white,
+                shadowColor:
+                    _isSelected ? Theme.of(context).accentColor : Colors.white,
+                color:
+                    _isSelected ? Theme.of(context).accentColor : Colors.white,
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                   child: Text(
                     val,
                     style: TextStyle(
-                        color: _isSelected ? Colors.white : Theme.of(context).accentColor),
+                        color: _isSelected
+                            ? Colors.white
+                            : Theme.of(context).accentColor),
                   ),
                 ),
               ),
@@ -318,7 +325,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            'SORT BY',
+                            AppLocalizations.of(context)
+                                .localisedText['sort_by'],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).primaryColor,
@@ -385,7 +393,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            'FILTER BY',
+                            AppLocalizations.of(context)
+                                .localisedText['filter_by'],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).primaryColor,
@@ -405,7 +414,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     title: Padding(
                       padding: const EdgeInsets.only(left: 12),
                       child: Text(
-                        'Seats Available',
+                        AppLocalizations.of(context)
+                            .localisedText['seats_available'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
@@ -421,7 +431,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                           Expanded(
                             child: DropdownButton<int>(
                               hint: Text(
-                                'Select',
+                                AppLocalizations.of(context)
+                                    .localisedText['select'],
                                 style: TextStyle(
                                   color: Theme.of(context).accentColor,
                                   fontWeight: FontWeight.bold,
@@ -433,7 +444,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                                 return DropdownMenuItem<int>(
                                   value: val,
                                   child: Text(
-                                    '${val.toString()} Seats',
+                                    '${val.toString()} ${AppLocalizations.of(context).localisedText['seats']}',
                                     style: TextStyle(
                                         color: Theme.of(context).accentColor,
                                         fontWeight: FontWeight.bold),
@@ -469,7 +480,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     title: Padding(
                       padding: const EdgeInsets.only(left: 12),
                       child: Text(
-                        'Min. Rating',
+                        AppLocalizations.of(context)
+                            .localisedText['min_rating'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
@@ -567,7 +579,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     title: Padding(
                       padding: const EdgeInsets.only(left: 12),
                       child: Text(
-                        'Car Type',
+                        AppLocalizations.of(context)
+                            .localisedText['vehicle_type'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
@@ -636,7 +649,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(widget.name),
+      title: Text(AppLocalizations.of(context).localisedText['search_result']),
     );
 
     Widget floatingButton = _isVisible
@@ -668,7 +681,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         ),
                         Spacer(),
                         Text(
-                          'Sort By',
+                          AppLocalizations.of(context).localisedText['sort_by'],
                           style: TextStyle(color: Colors.white),
                         ),
                         Spacer(),
@@ -694,7 +707,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         ),
                         Spacer(),
                         Text(
-                          'Fliter By',
+                          AppLocalizations.of(context)
+                              .localisedText['filter_by'],
                           style: TextStyle(color: Colors.white),
                         ),
                         Spacer(),
@@ -731,6 +745,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
         }).toList();
         setState(() {
           resultListView = ListView(
+            padding: const EdgeInsets.symmetric(vertical: 10),
             physics: const AlwaysScrollableScrollPhysics(),
             controller: _hideButtonController,
             addAutomaticKeepAlives: true,
@@ -746,6 +761,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
       return Scaffold(
         appBar: appBar,
         body: Container(
+          color: Theme.of(context).backgroundColor,
           child: Column(
             children: <Widget>[
               Padding(
@@ -784,7 +800,8 @@ class _SearchResultPageState extends State<SearchResultPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(1.0),
                                     child: CircleAvatar(
-                                      backgroundColor: Theme.of(context).accentColor,
+                                      backgroundColor:
+                                          Theme.of(context).accentColor,
                                       radius: 17,
                                       child: Icon(
                                         Icons.arrow_forward,
@@ -862,9 +879,10 @@ class _SearchResultPageState extends State<SearchResultPage> {
                       ? Expanded(
                           child: Center(
                             child: EmptyState(
-                              title: 'Oops',
-                              message:
-                                  'No rides found\nPlease update the search',
+                              title: AppLocalizations.of(context)
+                                  .localisedText['oops'],
+                              message: AppLocalizations.of(context)
+                                  .localisedText['no_rides_found'],
                             ),
                           ),
                         )

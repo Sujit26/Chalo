@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:location/location.dart';
 import 'package:shared_transport/ride_search/search_result.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/sidebar.dart';
 import 'package:http/http.dart';
 
@@ -16,8 +18,6 @@ import 'package:http/http.dart';
 /// because it is responsible for the UI at the route's destination.
 ///
 class SearchPage extends StatefulWidget {
-  final String name = 'Search';
-
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -97,11 +97,23 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     Future<Null> _selectDate(BuildContext context) async {
-      final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
-        lastDate: DateTime(2101),
+      final DateTime picked = await DatePicker.showDatePicker(
+        context,
+        theme: DatePickerTheme(
+          containerHeight: 200.0,
+          doneStyle: DatePickerTheme().cancelStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).accentColor,
+              ),
+          cancelStyle: DatePickerTheme()
+              .cancelStyle
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        showTitleActions: true,
+        minTime: DateTime.now(),
+        maxTime: DateTime(2100, 12, 31),
+        currentTime: selectedDate,
+        locale: LocaleType.en,
       );
       if (picked != null)
         setState(() {
@@ -134,7 +146,8 @@ class _SearchPageState extends State<SearchPage> {
                           OutlineInputBorder(borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
-                      hintText: 'From',
+                      hintText:
+                          AppLocalizations.of(context).localisedText['from'],
                     ),
                     keyboardType: TextInputType.text,
                     key: _fromKey,
@@ -187,7 +200,8 @@ class _SearchPageState extends State<SearchPage> {
                           OutlineInputBorder(borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
-                      hintText: 'To',
+                      hintText:
+                          AppLocalizations.of(context).localisedText['to'],
                     ),
                     keyboardType: TextInputType.text,
                     key: _toKey,
@@ -250,7 +264,8 @@ class _SearchPageState extends State<SearchPage> {
                         OutlineInputBorder(borderSide: BorderSide.none),
                     focusedBorder:
                         OutlineInputBorder(borderSide: BorderSide.none),
-                    hintText: 'Date',
+                    hintText:
+                        AppLocalizations.of(context).localisedText['date'],
                   ),
                   keyboardType: TextInputType.datetime,
                   onTap: () => _selectDate(context),
@@ -300,7 +315,8 @@ class _SearchPageState extends State<SearchPage> {
                             alignment: Alignment.center,
                             child: Center(
                                 child: Text(
-                              "RIDE",
+                              AppLocalizations.of(context)
+                                  .localisedText["ride"],
                               style: TextStyle(
                                 color: type == 'ride'
                                     ? Colors.white
@@ -328,7 +344,8 @@ class _SearchPageState extends State<SearchPage> {
                             alignment: Alignment.center,
                             child: Center(
                                 child: Text(
-                              "GOODS",
+                              AppLocalizations.of(context)
+                                  .localisedText["goods"],
                               style: TextStyle(
                                 color: type == 'goods'
                                     ? Colors.white
@@ -373,7 +390,7 @@ class _SearchPageState extends State<SearchPage> {
                       builder: (build) => SearchResultPage(search: search)));
             },
             child: Text(
-              'Search',
+              AppLocalizations.of(context).localisedText['search'],
               style: TextStyle(fontSize: 20.0),
             ),
           ),
@@ -402,7 +419,7 @@ class _SearchPageState extends State<SearchPage> {
                 if (_scaffoldKey.currentState.isDrawerOpen) _clearPage();
               },
             ),
-            title: Text(widget.name),
+            title: Text(AppLocalizations.of(context).localisedText['search']),
           ),
           body: ride,
         ),

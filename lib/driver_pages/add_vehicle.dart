@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/driver_pages/my_vehicle.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 
 class AddVehicleBody extends StatefulWidget {
   final Vehicle vehicle;
@@ -106,7 +107,8 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                 decoration: InputDecoration(
                   suffixIcon: Icon(Icons.directions_car),
                   border: InputBorder.none,
-                  labelText: 'Vehicle Company name',
+                  labelText: AppLocalizations.of(context)
+                      .localisedText['vehicle_company_name'],
                   errorText: !_showErrors ? null : _validCompanyName(),
                 ),
                 keyboardType: TextInputType.text,
@@ -125,7 +127,8 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                 decoration: InputDecoration(
                   suffixIcon: Icon(Icons.directions_car),
                   border: InputBorder.none,
-                  labelText: 'Vehicle Model name',
+                  labelText: AppLocalizations.of(context)
+                      .localisedText['vehicle_model_name'],
                   errorText: !_showErrors ? null : _validModelName(),
                 ),
                 keyboardType: TextInputType.text,
@@ -144,7 +147,8 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                 decoration: InputDecoration(
                   suffixIcon: Icon(Icons.directions_car),
                   border: InputBorder.none,
-                  labelText: 'Vehicle Registration Number',
+                  labelText: AppLocalizations.of(context)
+                      .localisedText['vehicle_registration_number'],
                   errorText: !_showErrors ? null : _validVehicleNumber(),
                 ),
                 keyboardType: TextInputType.text,
@@ -164,7 +168,8 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                     padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: 'Seats',
+                        labelText: AppLocalizations.of(context)
+                            .localisedText['vehicle_seats'],
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.white,
@@ -209,7 +214,8 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                     padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: 'Type',
+                        labelText: AppLocalizations.of(context)
+                            .localisedText['vehicle_type'],
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.white,
@@ -265,7 +271,9 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                             strokeWidth: 2,
                           ),
                         )
-                      : Text(widget.edit ? 'SAVE' : 'ADD'),
+                      : Text(widget.edit
+                          ? AppLocalizations.of(context).localisedText['save']
+                          : AppLocalizations.of(context).localisedText['add']),
                   onPressed: _isAdding || _isDeleting
                       ? () {}
                       : () {
@@ -300,7 +308,8 @@ class _AddVehicleBodyState extends State<AddVehicleBody> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : Text('DELETE'),
+                            : Text(AppLocalizations.of(context)
+                                .localisedText['delete']),
                         onPressed: _isDeleting || _isAdding
                             ? () {}
                             : () {

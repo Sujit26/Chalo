@@ -10,6 +10,7 @@ import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/profile_edit.dart';
 import 'package:shared_transport/rating/rating.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/verification/profile_verification.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -20,8 +21,6 @@ import 'package:shared_transport/verification/profile_verification.dart';
 /// because it is responsible for the UI at the route's destination.
 ///
 class ProfilePage extends StatefulWidget {
-  final String name = 'Profile';
-
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -41,6 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
   var _rating4 = 0.0;
   var _rating5 = 0.0;
   var _total = 0;
+  String language = 'English';
 
   @override
   void initState() {
@@ -58,6 +58,10 @@ class _ProfilePageState extends State<ProfilePage> {
         prefs.getInt("rating3") +
         prefs.getInt("rating4") +
         prefs.getInt("rating5");
+
+    AppLocalizations.of(context)
+        .getLanguage()
+        .then((onValue) => setState(() => language = onValue));
 
     setState(() {
       _photoUrl = prefs.getString('photoUrl') == null
@@ -211,7 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: <Widget>[
             ListTile(
                 title: Text(
-                  'Vehicles',
+                  AppLocalizations.of(context).localisedText['vehicles'],
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -254,7 +258,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: <Widget>[
               ListTile(
                 title: Text(
-                  'Rating',
+                  AppLocalizations.of(context).localisedText['rating'],
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -371,20 +375,74 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: Colors.black,
                 ),
                 children: <TextSpan>[
-                  TextSpan(text: 'Your profile is '),
+                  TextSpan(
+                      text: AppLocalizations.of(context)
+                          .localisedText['your_profile_is']),
                   TextSpan(
                     text: '$_approveStatus%',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  TextSpan(text: ' complete'),
+                  TextSpan(
+                      text: AppLocalizations.of(context)
+                          .localisedText['complete']),
                 ],
               ),
             ),
             trailing: Text(
-              'Finish',
+              AppLocalizations.of(context).localisedText['finish'],
               style: TextStyle(
                   color: Theme.of(context).accentColor,
                   fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _languageBox() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, left: 30, right: 30),
+      child: MaterialButton(
+        onPressed: () {},
+        elevation: 0,
+        padding: const EdgeInsets.all(0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        clipBehavior: Clip.antiAlias,
+        color: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ListTile(
+            onTap: () => AppLocalizations.of(context)
+                .changeLocale()
+                .then((onValue) => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => LoginPage()),
+                      ModalRoute.withName(''),
+                    )),
+            title: Text(
+              AppLocalizations.of(context).localisedText['language'],
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: <Widget>[
+                Text(
+                  AppLocalizations.of(context)
+                      .localisedText[language.toLowerCase()],
+                  style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.bold),
+                ),
+                Icon(Icons.navigate_next),
+              ],
             ),
           ),
         ),
@@ -474,7 +532,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 40),
-                                  child: Text('EDIT'),
+                                  child: Text(AppLocalizations.of(context)
+                                      .localisedText['edit']),
                                 )
                               ],
                             ),
@@ -487,9 +546,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Icons.exit_to_app,
                                 color: Theme.of(context).accentColor,
                               ),
-                              onPressed: () {
-                                _settingModalBottomSheet(context);
-                              },
+                              onPressed: () =>
+                                  _settingModalBottomSheet(context),
                             ),
                           ),
                         ],
@@ -500,6 +558,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 _approveStatus != '100' ? _verificationBox() : Container(),
                 _ratingBox(),
                 _approveStatus == '100' ? _vehicleBox() : Container(),
+                _languageBox(),
               ],
             ),
           ],
@@ -526,7 +585,9 @@ class _ProfilePageState extends State<ProfilePage> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(Icons.exit_to_app, color: Colors.red),
-                  title: Text('Logout', style: TextStyle(color: Colors.red)),
+                  title: Text(
+                      AppLocalizations.of(context).localisedText['logout'],
+                      style: TextStyle(color: Colors.red)),
                   onTap: () => {
                     logout(),
                     Navigator.pushAndRemoveUntil(

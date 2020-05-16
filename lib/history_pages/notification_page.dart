@@ -6,10 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/history_pages/ride_request.dart';
+import 'package:shared_transport/utils/localizations.dart';
 
 class NotificationPage extends StatefulWidget {
   final List<HistoryModel> notifications;
-  final name = 'Notifications';
 
   NotificationPage({Key key, @required this.notifications}) : super(key: key);
   @override
@@ -29,7 +29,7 @@ class _NotificationPageState extends State<NotificationPage> {
       'data': res,
     };
     final response = await post(
-      Keys.serverURL+ 'driver/response',
+      Keys.serverURL + 'driver/response',
       headers: {"Content-type": "application/json"},
       body: jsonEncode(data),
     );
@@ -256,7 +256,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         Spacer(),
                         showSeats(req.slots),
                         Text(
-                          ' Seats',
+                          ' ${AppLocalizations.of(context).localisedText['seats']}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -267,7 +267,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   ),
                   FlatButton(
                     child: Text(
-                      'Accept',
+                      AppLocalizations.of(context).localisedText['accept'],
                       style: TextStyle(color: Colors.green),
                     ),
                     onPressed: () {
@@ -281,7 +281,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   ),
                   FlatButton(
                     child: Text(
-                      'Reject',
+                      AppLocalizations.of(context).localisedText['reject'],
                       style: TextStyle(color: Colors.red),
                     ),
                     onPressed: () {
@@ -327,10 +327,7 @@ class _NotificationPageState extends State<NotificationPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(
-        widget.name,
-        style: TextStyle(fontSize: 25.0),
-      ),
+      title: Text(AppLocalizations.of(context).localisedText['notification']),
     );
 
     Widget createBody() {

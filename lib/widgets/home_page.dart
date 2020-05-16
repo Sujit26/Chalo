@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/utils/localizations.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -8,8 +9,6 @@ import 'package:flutter/material.dart';
 /// because it is responsible for the UI at the route's destination.
 ///
 class HomePage extends StatefulWidget {
-  final String name = 'Home';
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -32,7 +31,10 @@ class _HomePageState extends State<HomePage> {
             ),
             elevation: 2,
             titleSpacing: 0,
-            title: Text(widget.name),
+            title: Text(AppLocalizations.of(context).localisedText['home']),
+          ),
+          body: Center(
+            child: Text(AppLocalizations.of(context).localisedText['Message']),
           ),
         ),
       );

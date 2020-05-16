@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
 import 'package:shared_transport/history_pages/drive_details.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
 
 class TripSummaryDriver extends StatefulWidget {
@@ -115,9 +116,12 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.total - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
+        i++)
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
+      seats.add(Icon(Icons.person_outline,
+          color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -128,9 +132,12 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     List<Widget> seats = List();
     for (var i = 0;
         i < widget.ride.rideInfo.vehicle.seats - widget.ride.rideInfo.slots;
-        i++) seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
+        i++)
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     for (var i = 0; i < widget.ride.rideInfo.slots; i++)
-      seats.add(Icon(Icons.person_outline, color: Theme.of(context).accentColor, size: 18));
+      seats.add(Icon(Icons.person_outline,
+          color: Theme.of(context).accentColor, size: 18));
 
     return Row(
       children: seats,
@@ -227,8 +234,11 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
       widget.ride.rideInfo.driver.pic,
       Row(
         children: <Widget>[
-          Text('You ', style: TextStyle(color: Theme.of(context).accentColor)),
-          Text('were driver of the trip',
+          Text(AppLocalizations.of(context).localisedText['you'],
+              style: TextStyle(color: Theme.of(context).accentColor)),
+          Text(
+              AppLocalizations.of(context)
+                  .localisedText['were_driver_of_the_trip'],
               style: TextStyle(color: Colors.black)),
         ],
       ),
@@ -257,7 +267,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           '${widget.ride.rideInfo.from.lon},${widget.ride.rideInfo.from.lat};';
       tileData.add({
         'info': 'src',
-        'title': 'Source Location',
+        'title': AppLocalizations.of(context).localisedText['source_location'],
         'subtitle':
             '${widget.ride.rideInfo.from.name.split(',')[0]},${widget.ride.rideInfo.from.name.split(',')[1]}',
         'trailing': widget.ride.rideInfo.fromTime,
@@ -294,7 +304,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           '${widget.ride.rideInfo.to.lon},${widget.ride.rideInfo.to.lat}';
       tileData.add({
         'info': 'des',
-        'title': 'Destination Location',
+        'title':
+            AppLocalizations.of(context).localisedText['destination_location'],
         'subtitle':
             '${widget.ride.rideInfo.to.name.split(',')[0]},${widget.ride.rideInfo.to.name.split(',')[1]}',
         'trailing': widget.ride.rideInfo.fromTime,
@@ -519,7 +530,10 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
         ),
         PolylineLayerOptions(
           polylines: [
-            Polyline(points: line, strokeWidth: 2, color: Theme.of(context).accentColor),
+            Polyline(
+                points: line,
+                strokeWidth: 2,
+                color: Theme.of(context).accentColor),
           ],
         ),
         CircleLayerOptions(circles: circleMarkers),
@@ -556,7 +570,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
             ),
           ),
           title: Text(
-            'Trip Summary',
+            AppLocalizations.of(context).localisedText['trip_summary'],
             style: TextStyle(
                 fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
           ),
@@ -567,8 +581,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                       int.parse(widget.ride.rideInfo.driveDate.split('/')[0]),
                     ).compareTo(DateTime.now()) ==
                     1
-                ? 'Upcoming drive'
-                : 'Completed drive',
+                ? AppLocalizations.of(context).localisedText['upcoming_drive']
+                : AppLocalizations.of(context).localisedText['Completed_drive'],
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -581,7 +595,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     Widget _tripDestination = ListTile(
       isThreeLine: true,
       title: Text(
-        'Trip to ${widget.ride.rideInfo.to.name}',
+        '${AppLocalizations.of(context).localisedText['trip_to']} ${widget.ride.rideInfo.to.name}',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
       subtitle: Column(
@@ -595,7 +609,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
               children: <Widget>[
                 showSeats(),
                 Text(
-                    '  ${widget.ride.rideInfo.total - widget.ride.rideInfo.slots} Slots Filled'),
+                    '  ${widget.ride.rideInfo.total - widget.ride.rideInfo.slots} ${AppLocalizations.of(context).localisedText['slots_filled']}'),
               ],
             ),
           ),
@@ -609,7 +623,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
               1
           ? OutlineButton(
               child: Text(
-                'Start Trip',
+                AppLocalizations.of(context).localisedText['start_trip'],
                 style: TextStyle(color: Theme.of(context).accentColor),
               ),
               onPressed: () {
@@ -638,7 +652,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           Expanded(
             child: ListTile(
               title: Text(
-                'Your Rating',
+                AppLocalizations.of(context).localisedText['your_rating'],
               ),
               subtitle: Row(
                 children: <Widget>[
@@ -654,7 +668,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
           VerticalDivider(),
           Expanded(
             child: ListTile(
-              title: Text('Distance Covered'),
+              title: Text(AppLocalizations.of(context)
+                  .localisedText['distance_covered']),
               subtitle: Text(
                 '${dis.toStringAsFixed(2)} Kms',
                 style: TextStyle(
@@ -683,7 +698,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -715,7 +731,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   height: 45,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(width: 2, color: Theme.of(context).accentColor),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
                   ),
                   child: Icon(
                     Icons.fiber_manual_record,
@@ -735,7 +752,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Car Model',
+                      AppLocalizations.of(context).localisedText['car_model'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -755,7 +772,8 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Registration no.',
+                      AppLocalizations.of(context)
+                          .localisedText['registration_number'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,
@@ -775,7 +793,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      'Seats',
+                      AppLocalizations.of(context).localisedText['total_seats'],
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black38,

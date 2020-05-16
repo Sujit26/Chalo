@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/utils/localizations.dart';
 
 /// Converter screen where users can input amounts to convert.
 ///
@@ -12,8 +13,6 @@ Color hexToColor(String code) {
 }
 
 class HelpAndSupportPage extends StatefulWidget {
-  final String name = 'Help and Support';
-
   @override
   _HelpAndSupportPageState createState() => _HelpAndSupportPageState();
 }
@@ -30,7 +29,8 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage> {
       ),
       elevation: 2,
       titleSpacing: 0,
-      title: Text(widget.name),
+      title:
+          Text(AppLocalizations.of(context).localisedText['help_and_support']),
     );
 
     Widget createBody() {

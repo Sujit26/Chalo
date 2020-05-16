@@ -5,6 +5,8 @@ import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/history_pages/profile_card.dart';
 import 'dart:math' as math;
 
+import 'package:shared_transport/utils/localizations.dart';
+
 class HistoryCard extends StatelessWidget {
   final HistoryModel history;
 
@@ -471,8 +473,10 @@ class HistoryCard extends StatelessWidget {
                           OutlineButton(
                             child: Text(
                               history.action == 'Riding'
-                                  ? history.rideStatus
-                                  : 'Start Trip',
+                                  ? AppLocalizations.of(context).localisedText[
+                                      history.rideStatus.toLowerCase()]
+                                  : AppLocalizations.of(context)
+                                      .localisedText['start_trip'],
                               style: TextStyle(
                                   color: Theme.of(context).accentColor),
                             ),
