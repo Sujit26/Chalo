@@ -1,11 +1,11 @@
 import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_transport/chat_facitility/main.dart';
 import 'package:shared_transport/driver_pages/driver_home.dart';
 import 'package:shared_transport/history_pages/my_trips.dart';
 import 'package:shared_transport/profile.dart';
 import 'package:shared_transport/rider_home.dart';
 import 'package:shared_transport/utils/localizations.dart';
-import 'package:shared_transport/widgets/home_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child = SearchPage();
         break;
       case 3:
-        child = HomePage();
+        child = MyChatPage();
         break;
       case 4:
         child = ProfilePage();
@@ -66,8 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: AppLocalizations.of(context).localisedText['search'],
           ),
           FFNavigationBarItem(
-            iconData: Icons.history,
-            label: AppLocalizations.of(context).localisedText['history'],
+            iconData: Icons.chat,
+            label: AppLocalizations.of(context).localisedText['chat'],
           ),
           FFNavigationBarItem(
             iconData: Icons.person,

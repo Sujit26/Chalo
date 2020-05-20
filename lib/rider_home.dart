@@ -412,6 +412,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             elevation: 2,
             titleSpacing: 0,
+            centerTitle: true,
             leading: IconButton(
               icon: Icon(Icons.menu),
               onPressed: () {

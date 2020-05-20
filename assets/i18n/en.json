@@ -92,7 +92,7 @@
     "delete": "Delete",
     "total_seats": "Total seats",
 
-    "your_trip": "Your Trip",
+    "your_trips": "Your Trip",
     "distance": "Distance",
     "duration": "Duration",
     "additional": "Additional",
@@ -141,5 +141,7 @@
     "reject": "Reject",
     "ride_request": "Ride request",
     "pick_up": "Pick up",
-    "drop_off": "Drop off"
+    "drop_off": "Drop off",
+
+    "chat": "Chat"
 }

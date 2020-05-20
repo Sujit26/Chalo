@@ -7,8 +7,8 @@ class User {
   double rating;
   String pic;
   String phone;
-  int nod;
   // Extra
+  int nod;
   LocationLatLng from;
   LocationLatLng to;
   int slots;

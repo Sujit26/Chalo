@@ -1196,6 +1196,7 @@ class _DriverHomeState extends State<DriverHome> {
         ),
         elevation: 2,
         titleSpacing: 0,
+        centerTitle: true,
         title: Text(AppLocalizations.of(context).localisedText['drive']),
       ),
       body: GestureDetector(
