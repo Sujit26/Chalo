@@ -23,6 +23,8 @@ class _BookingCardState extends State<BookingCard> {
   var _isSaving = false;
   RideModel drive;
 
+  int slots;
+
   @override
   void initState() {
     super.initState();
@@ -216,18 +218,20 @@ class _BookingCardState extends State<BookingCard> {
   }
 
   Widget build(BuildContext context) {
-    Widget _carName = Center(
-      child: Column(
-        children: <Widget>[
-          Text(
-            '${drive.vehicle.name} ${drive.vehicle.modelName}',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          Text(
-              '${drive.slots} ${AppLocalizations.of(context).localisedText['seats']}'),
-        ],
-      ),
-    );
+    Widget _carName = drive.type == "ride"
+        ? Center(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  '${drive.vehicle.name} ${drive.vehicle.modelName}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                Text(
+                    '${drive.slots} ${AppLocalizations.of(context).localisedText['seats']}'),
+              ],
+            ),
+          )
+        : Center(child: Text('${drive.slots * 100} Kg'));
 
     Widget _driverInfo = Row(
       children: <Widget>[
@@ -278,50 +282,52 @@ class _BookingCardState extends State<BookingCard> {
       ],
     );
 
-    Widget _carInfo = Row(
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    Widget _carInfo = drive.type == "ride"
+        ? Row(
             children: <Widget>[
-              Text(
-                drive.vehicle.number,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black38,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      drive.vehicle.number,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black38,
+                      ),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Flexible(
+                          child: Text(
+                            drive.vehicle.name,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: Text(
+                            ' ${drive.vehicle.modelName}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    showSeats(),
+                  ],
                 ),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Flexible(
-                    child: Text(
-                      drive.vehicle.name,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      ' ${drive.vehicle.modelName}',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
+              Expanded(
+                child: showCarPic(),
               ),
-              showSeats(),
             ],
-          ),
-        ),
-        Expanded(
-          child: showCarPic(),
-        ),
-      ],
-    );
+          )
+        : Container();
 
     Widget _routeInfo = Row(
       mainAxisSize: MainAxisSize.min,
@@ -516,74 +522,99 @@ class _BookingCardState extends State<BookingCard> {
       ],
     );
 
-    Widget _seats = Container(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).accentColor.withAlpha(150)),
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          MaterialButton(
-            onPressed: () {
-              setState(() {
-                if (bookSeats < drive.slots)
-                  bookSeats++;
-                else {
-                  final scaffold = Scaffold.of(context);
-                  scaffold.showSnackBar(
-                    SnackBar(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      content: const Text(
-                        'Maximum seats selected.',
-                      ),
-                      duration: Duration(milliseconds: 500),
-                    ),
-                  );
-                }
-              });
-            },
-            color: Theme.of(context).accentColor,
-            textColor: Colors.white,
-            child: Icon(
-              Icons.add,
+    Widget _seats = drive.type == "ride"
+        ? Container(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color: Theme.of(context).accentColor.withAlpha(150)),
+              borderRadius: BorderRadius.circular(3),
             ),
-            shape: CircleBorder(),
-          ),
-          Text(
-            '$bookSeats ${AppLocalizations.of(context).localisedText['seats']}',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          MaterialButton(
-            onPressed: () {
-              setState(() {
-                if (bookSeats > 1)
-                  bookSeats--;
-                else {
-                  final scaffold = Scaffold.of(context);
-                  scaffold.showSnackBar(
-                    SnackBar(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      content: const Text(
-                        'Minmum seats selected.',
-                      ),
-                      duration: Duration(milliseconds: 500),
-                    ),
-                  );
-                }
-              });
-            },
-            color: Theme.of(context).accentColor,
-            textColor: Colors.white,
-            child: Icon(
-              Icons.remove,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                MaterialButton(
+                  onPressed: () {
+                    setState(() {
+                      if (bookSeats < drive.slots)
+                        bookSeats++;
+                      else {
+                        final scaffold = Scaffold.of(context);
+                        scaffold.showSnackBar(
+                          SnackBar(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            content: const Text(
+                              'Maximum seats selected.',
+                            ),
+                            duration: Duration(milliseconds: 500),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  color: Theme.of(context).accentColor,
+                  textColor: Colors.white,
+                  child: Icon(
+                    Icons.add,
+                  ),
+                  shape: CircleBorder(),
+                ),
+                Text(
+                  '$bookSeats ${AppLocalizations.of(context).localisedText['seats']}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    setState(() {
+                      if (bookSeats > 1)
+                        bookSeats--;
+                      else {
+                        final scaffold = Scaffold.of(context);
+                        scaffold.showSnackBar(
+                          SnackBar(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            content: const Text(
+                              'Minmum seats selected.',
+                            ),
+                            duration: Duration(milliseconds: 500),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  color: Theme.of(context).accentColor,
+                  textColor: Colors.white,
+                  child: Icon(
+                    Icons.remove,
+                  ),
+                  shape: CircleBorder(),
+                ),
+              ],
             ),
-            shape: CircleBorder(),
-          ),
-        ],
-      ),
-    );
+          )
+        : Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color: Theme.of(context).accentColor.withAlpha(150)),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                suffixText: "x 100 Kg",
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                hintText: 'Slots To Book',
+              ),
+              keyboardType: TextInputType.text,
+              onChanged: (val) {
+                setState(() {
+                  slots = int.parse(val);
+                });
+              },
+            ),
+          );
 
     Widget _submitButton = Row(
       children: <Widget>[

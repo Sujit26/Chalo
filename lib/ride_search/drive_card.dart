@@ -130,13 +130,17 @@ class DriveCard extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
-                            Text(
-                              '${ride['ride'].vehicle.name} ${ride['ride'].vehicle.modelName}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text(
-                                '${ride['ride'].slots} Seats | ${ride['ride'].vehicle.type}'),
+                            ride['ride'].type == 'ride'
+                                ? Text(
+                                    '${ride['ride'].vehicle.name} ${ride['ride'].vehicle.modelName}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
+                                  )
+                                : Container(),
+                            Text(ride['ride'].type == 'ride'
+                                ? '${ride['ride'].slots} Seats | ${ride['ride'].vehicle.type}'
+                                : '${ride['ride'].slots * 100} Kg Available'),
                           ],
                         ),
                       ],

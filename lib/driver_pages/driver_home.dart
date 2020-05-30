@@ -926,30 +926,27 @@ class _DriverHomeState extends State<DriverHome> {
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: <Widget>[
-                    DropdownButtonFormField<int>(
-                      decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)
-                            .localisedText['slots_available'],
-                        enabledBorder:
-                            OutlineInputBorder(borderSide: BorderSide.none),
-                        focusedBorder:
-                            OutlineInputBorder(borderSide: BorderSide.none),
+                    Container(
+                      height: 50,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          suffixText: "x 100 Kg",
+                          enabledBorder:
+                              OutlineInputBorder(borderSide: BorderSide.none),
+                          focusedBorder:
+                              OutlineInputBorder(borderSide: BorderSide.none),
+                          hintText: AppLocalizations.of(context)
+                              .localisedText['slots_available'],
+                          isDense: true,
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (text) {
+                          setState(() {
+                            _goodsSlotsAvailable = int.parse(text);
+                          });
+                        },
                       ),
-                      isExpanded: true,
-                      isDense: true,
-                      value: _goodsSlotsAvailable,
-                      onChanged: (val) {
-                        setState(() {
-                          _goodsSlotsAvailable = val;
-                        });
-                      },
-                      items: goodsSlots.map((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text(value.toString()),
-                        );
-                      }).toList(),
-                    ),
+                    ), // From Panel
                     _goodsValidationError && _validSlots('goods') != null
                         ? Container(
                             alignment: Alignment.centerLeft,

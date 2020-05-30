@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
             Positioned(
                 child: Align(
               alignment: FractionalOffset.center,
-              child: Image.asset('assets/images/logo.png'),
+              child: Image.asset('assets/images/logo_long.png'),
             )),
             Positioned(
                 child: Align(

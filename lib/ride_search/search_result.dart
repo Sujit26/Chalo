@@ -115,14 +115,24 @@ class _SearchResultPageState extends State<SearchResultPage> {
             driveDate: ride['driveDate'],
             fromTime: ride['fromTime'],
             toTime: ride['toTime'],
-            vehicle: Vehicle(
-                name: ride['vehicle']['name'],
-                modelName: ride['vehicle']['modelName'],
-                seats: ride['vehicle']['seats'],
-                number: ride['vehicle']['number'],
-                pic: ride['vehicle']['pic'],
-                type: ride['vehicle']['type'],
-                index: ride['vehicle']['index']),
+            vehicle: widget.search['type'] == "ride"
+                ? Vehicle(
+                    name: ride['vehicle']['name'],
+                    modelName: ride['vehicle']['modelName'],
+                    seats: ride['vehicle']['seats'],
+                    number: ride['vehicle']['number'],
+                    pic: ride['vehicle']['pic'],
+                    type: ride['vehicle']['type'],
+                    index: ride['vehicle']['index'])
+                : Vehicle(
+                    name: null,
+                    modelName: null,
+                    seats: null,
+                    number: null,
+                    pic: null,
+                    type: null,
+                    index: null,
+                  ),
             slots: ride['slots'],
             dId: ride['dId'],
             driver: User(
@@ -414,8 +424,11 @@ class _SearchResultPageState extends State<SearchResultPage> {
                     title: Padding(
                       padding: const EdgeInsets.only(left: 12),
                       child: Text(
-                        AppLocalizations.of(context)
-                            .localisedText['seats_available'],
+                        widget.search.runtimeType == "ride"
+                            ? AppLocalizations.of(context)
+                                .localisedText['seats_available']
+                            : AppLocalizations.of(context)
+                                .localisedText['slots_available'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
@@ -428,38 +441,66 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Expanded(
-                            child: DropdownButton<int>(
-                              hint: Text(
-                                AppLocalizations.of(context)
-                                    .localisedText['select'],
-                                style: TextStyle(
-                                  color: Theme.of(context).accentColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              underline: Container(),
-                              iconEnabledColor: Theme.of(context).accentColor,
-                              items: [1, 2, 3, 4, 5].map((int val) {
-                                return DropdownMenuItem<int>(
-                                  value: val,
-                                  child: Text(
-                                    '${val.toString()} ${AppLocalizations.of(context).localisedText['seats']}',
-                                    style: TextStyle(
+                          widget.search['type'] == "ride"
+                              ? Expanded(
+                                  child: DropdownButton<int>(
+                                    hint: Text(
+                                      AppLocalizations.of(context)
+                                          .localisedText['select'],
+                                      style: TextStyle(
                                         color: Theme.of(context).accentColor,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    underline: Container(),
+                                    iconEnabledColor:
+                                        Theme.of(context).accentColor,
+                                    items: [1, 2, 3, 4, 5].map((int val) {
+                                      return DropdownMenuItem<int>(
+                                        value: val,
+                                        child: Text(
+                                          '${val.toString()} ${AppLocalizations.of(context).localisedText['seats']}',
+                                          style: TextStyle(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    isExpanded: true,
+                                    value: _filterSeatsSelected,
+                                    onChanged: (val) {
+                                      sheetState(() {
+                                        _filterSeatsSelected = val;
+                                      });
+                                    },
                                   ),
-                                );
-                              }).toList(),
-                              isExpanded: true,
-                              value: _filterSeatsSelected,
-                              onChanged: (val) {
-                                sheetState(() {
-                                  _filterSeatsSelected = val;
-                                });
-                              },
-                            ),
-                          ),
+                                )
+                              : Container(
+//                            color: Colors.amber,
+                                  width: 80,
+                                  height: 30,
+                                  child: TextField(
+                                    decoration: InputDecoration(
+//                                suffixText: "x 100 Kg",
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide.none),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide.none),
+                                      hintText: 'Slots ?',
+                                    ),
+                                    keyboardType: TextInputType.text,
+                                    onSubmitted: (val) {
+                                      setState(() {
+                                        _filterSeatsSelected = val;
+//                            _goodsSlotsAvailable = int.parse(val);
+//                                print((_goodsSlotsAvailable));
+                                      });
+                                    },
+//                              submitOnSuggestionTap: true,
+//                              clearOnSubmit: false,
+                                  ),
+                                ),
                           IconButton(
                             icon: Transform(
                               alignment: Alignment.center,
@@ -738,8 +779,10 @@ class _SearchResultPageState extends State<SearchResultPage> {
 
           drive = ride.driver.rating >= _filterMinRating ? drive : Container();
 
-          drive =
-              _filterCarTypes.contains(ride.vehicle.type) ? drive : Container();
+          if (widget.search['type'] == "ride")
+            drive = _filterCarTypes.contains(ride.vehicle.type)
+                ? drive
+                : Container();
 
           return drive;
         }).toList();

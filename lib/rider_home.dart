@@ -22,8 +22,6 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-const kGoogleApiKey = "AIzaSyBRhGd5iTPn7gs0OjQ3CXjwiXVZaLDuInk";
-
 class _SearchPageState extends State<SearchPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   // Location Suggestions
