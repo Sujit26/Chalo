@@ -73,6 +73,7 @@
     "approved": "APPROVED",
     "pending": "PENDING",
     "rejected": "REJECTED",
+    "upload": "UPLOAD",
 
     "notification": "Notifications",
     "your_profile_is": "Your Profile is ",

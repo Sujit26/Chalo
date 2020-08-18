@@ -396,7 +396,7 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   }
 
   _makePostRequest(data) async {
-    final response = await post(Keys.serverURL+ 'otp/',
+    final response = await post(Keys.serverURL + 'otp/',
         headers: {"Content-type": "application/json"}, body: jsonEncode(data));
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);

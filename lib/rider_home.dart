@@ -7,7 +7,6 @@ import 'package:shared_transport/models/models.dart';
 import 'package:location/location.dart';
 import 'package:shared_transport/ride_search/search_result.dart';
 import 'package:shared_transport/utils/localizations.dart';
-import 'package:shared_transport/widgets/sidebar.dart';
 import 'package:http/http.dart';
 
 /// Converter screen where users can input amounts to convert.
@@ -400,7 +399,6 @@ class _SearchPageState extends State<SearchPage> {
       return Container(
         child: Scaffold(
           key: _scaffoldKey,
-          drawer: NavDrawer(),
           appBar: AppBar(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -411,13 +409,6 @@ class _SearchPageState extends State<SearchPage> {
             elevation: 2,
             titleSpacing: 0,
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {
-                _scaffoldKey.currentState.openDrawer();
-                if (_scaffoldKey.currentState.isDrawerOpen) _clearPage();
-              },
-            ),
             title: Text(AppLocalizations.of(context).localisedText['search']),
           ),
           body: ride,

@@ -353,7 +353,7 @@ class _MyTripsPageState extends State<MyTripsPage>
                       driver: User(
                         name: data['rideInfo']['driver']['name'],
                         email: data['rideInfo']['driver']['email'],
-                        rating: data['rideInfo']['driver']['rating'],
+                        rating: data['rideInfo']['driver']['rating'] * 1.0,
                         pic: data['rideInfo']['driver']['pic'],
                         nod: data['rideInfo']['driver']['nod'],
                       ),
