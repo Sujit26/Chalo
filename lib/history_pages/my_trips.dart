@@ -319,6 +319,7 @@ class _MyTripsPageState extends State<MyTripsPage>
             return formatted;
           }).toList();
           _upcomingRefreshRequired = true;
+          _isLoading = false;
         } else if (trip == 'completed') {
           completedList = jsonData['rides'].map<HistoryModel>((data) {
             return data['action'] == 'Riding'
