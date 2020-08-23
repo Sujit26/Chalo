@@ -8,6 +8,7 @@ import 'package:shared_transport/history_pages/drive_details.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TripSummaryDriver extends StatefulWidget {
   final HistoryModel ride;
@@ -212,7 +213,10 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
               children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.call),
-                  onPressed: () {},
+                  onPressed: () {
+                    var link = 'tel:$phone';
+                    launch(link);
+                  },
                   color: Theme.of(context).accentColor,
                 ),
                 IconButton(

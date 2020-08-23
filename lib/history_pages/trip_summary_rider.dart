@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:latlong/latlong.dart';
 import 'package:shared_transport/utils/localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TripSummaryRider extends StatefulWidget {
   final HistoryModel ride;
@@ -183,7 +184,10 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
               children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.call),
-                  onPressed: () {},
+                  onPressed: () {
+                    var link = 'tel:$phone';
+                    launch(link);
+                  },
                   color: Theme.of(context).accentColor,
                 ),
                 IconButton(

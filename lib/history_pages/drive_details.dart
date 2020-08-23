@@ -6,10 +6,14 @@ import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_transport/chat_facitility/chat.dart';
+import 'package:shared_transport/chat_facitility/chat_bloc.dart';
+import 'package:shared_transport/chat_facitility/chat_model.dart';
 import 'package:shared_transport/config/keys.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/utils/localizations.dart';
 import 'package:shared_transport/widgets/custom_tooltip.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -933,7 +937,7 @@ class _DriveDetailsState extends State<DriveDetails> {
       ),
     );
 
-    Widget _userInfo(image, name, {rating, phone}) {
+    Widget _userInfo(image, name, {rating, phone, user}) {
       return ListTile(
         leading: Material(
           shape: CircleBorder(),
@@ -973,12 +977,26 @@ class _DriveDetailsState extends State<DriveDetails> {
                 children: <Widget>[
                   IconButton(
                     icon: Icon(Icons.call),
-                    onPressed: () {},
+                    onPressed: () {
+                      var link = 'tel:$phone';
+                      launch(link);
+                    },
                     color: Theme.of(context).accentColor,
                   ),
                   IconButton(
                     icon: Icon(Icons.message),
-                    onPressed: () {},
+                    onPressed: () {
+                      ChatBloc _chatBloc = ChatBloc();
+                      ChatModel _chatModel =
+                          ChatModel(user, '', true, DateTime.now());
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => Chat(
+                                    chat: _chatModel,
+                                    chatBloc: _chatBloc,
+                                  )));
+                    },
                     color: Theme.of(context).primaryColor,
                   ),
                 ],
@@ -993,7 +1011,7 @@ class _DriveDetailsState extends State<DriveDetails> {
         widget.ride.acceptedRiders.forEach((rider) {
           users.add(_userInfo(rider.pic,
               Text('${rider.name}', style: TextStyle(color: Colors.black)),
-              rating: rider.rating, phone: rider.phone));
+              rating: rider.rating, phone: rider.phone, user: rider));
           users.add(Divider());
         });
         return Wrap(
@@ -1008,6 +1026,7 @@ class _DriveDetailsState extends State<DriveDetails> {
                   style: TextStyle(color: Colors.black)),
               rating: widget.ride.rideInfo.driver.rating,
               phone: widget.ride.rideInfo.driver.phone,
+              user: widget.ride.rideInfo.driver,
             ),
             Divider(),
           ],

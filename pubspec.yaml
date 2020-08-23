@@ -30,6 +30,7 @@ dependencies:
   ff_navigation_bar: ^0.1.5
   web_socket_channel: ^1.1.0
   # map
+  url_launcher: ^5.5.0
   flutter_map: ^0.9.0
   location: ^3.0.2
   latlong: ^0.6.1

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_transport/models/models.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileCard extends StatefulWidget {
   final User user;
@@ -33,7 +34,8 @@ class _ProfileCardState extends State<ProfileCard> {
   showSeats(slots) {
     List<Widget> seats = List();
     for (var i = 0; i < slots; i++)
-      seats.add(Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
+      seats.add(
+          Icon(Icons.person, color: Theme.of(context).accentColor, size: 18));
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: seats,
@@ -111,7 +113,10 @@ class _ProfileCardState extends State<ProfileCard> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
                               MaterialButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  var link = 'tel:${widget.user.phone}';
+                                  launch(link);
+                                },
                                 padding: const EdgeInsets.all(16),
                                 shape: CircleBorder(),
                                 elevation: 3,

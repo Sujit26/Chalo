@@ -10,6 +10,7 @@ import 'package:shared_transport/chat_facitility/chat_model.dart';
 import 'package:shared_transport/chat_facitility/msg_bloc.dart';
 import 'package:shared_transport/models/ride_model.dart';
 import 'package:shared_transport/widgets/empty_state.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //var index = 0;
 class Chat extends StatefulWidget {
@@ -276,7 +277,10 @@ class _ChatState extends State<Chat> {
           child: IconButton(
             color: Colors.white,
             icon: Icon(Icons.call),
-            onPressed: () {},
+            onPressed: () {
+              var link = 'tel:${widget.chat.sender.phone}';
+              launch(link);
+            },
           ),
         ),
       ],
