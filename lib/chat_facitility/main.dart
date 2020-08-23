@@ -106,12 +106,6 @@ class _MyChatPage extends State<MyChatPage> {
         titleSpacing: 0,
         centerTitle: true,
         title: Text(AppLocalizations.of(context).localisedText['chat']),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search),
-          ),
-        ],
       ),
       body: StreamBuilder<List<ChatModel>>(
         stream: chatBloc.chatOut,

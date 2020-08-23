@@ -5,8 +5,6 @@ import 'package:shared_transport/login/login_page.dart';
 import 'package:shared_transport/theme/theme_builder.dart';
 import 'package:shared_transport/utils/localizations.dart';
 
-// TODO: open ios/Runner.xcworkspace to open xcode
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
