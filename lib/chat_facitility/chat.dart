@@ -68,6 +68,7 @@ class _ChatState extends State<Chat> {
   }
 
   sendMessage() {
+    
     if (textEditingController.text.trim() == '') return;
     var newMsg = Message(
       sender: User(name: name, email: email, rating: rating, pic: pic),

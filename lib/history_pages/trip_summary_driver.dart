@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
 import 'package:latlong/latlong.dart';
+import 'package:shared_transport/chat_facitility/chat.dart';
+import 'package:shared_transport/chat_facitility/chat_bloc.dart';
+import 'package:shared_transport/chat_facitility/chat_model.dart';
 import 'package:shared_transport/history_pages/drive_details.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:shared_transport/utils/localizations.dart';
@@ -168,7 +171,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     );
   }
 
-  Widget _userInfo(action, image, name, {rating, phone}) {
+  Widget _userInfo(action, image, name, {rating, phone, user}) {
     return ListTile(
       leading: Material(
         shape: CircleBorder(),
@@ -221,7 +224,18 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
                 ),
                 IconButton(
                   icon: Icon(Icons.message),
-                  onPressed: () {},
+                  onPressed: () {
+                    ChatBloc _chatBloc = ChatBloc();
+                    ChatModel _chatModel =
+                        ChatModel(user, '', true, DateTime.now());
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => Chat(
+                                  chat: _chatModel,
+                                  chatBloc: _chatBloc,
+                                )));
+                  },
                   color: Theme.of(context).primaryColor,
                 ),
               ],
@@ -251,7 +265,7 @@ class _TripSummaryDriverState extends State<TripSummaryDriver> {
     widget.ride.acceptedRiders.forEach((rider) {
       users.add(_userInfo('Rider', rider.pic,
           Text('${rider.name}', style: TextStyle(color: Colors.black)),
-          rating: rider.rating, phone: rider.phone));
+          rating: rider.rating, phone: rider.phone, user: rider));
       users.add(Divider());
     });
 

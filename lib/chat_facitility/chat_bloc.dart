@@ -66,8 +66,12 @@ class ChatBloc {
       'email': prefs.getString('email'),
       'token': prefs.getString('token'),
     };
-    _channel = IOWebSocketChannel.connect(
-        Keys.chatSocket + '?data=${jsonEncode(data)}');
+    try {
+      _channel = IOWebSocketChannel.connect(
+          Keys.chatSocket + '?data=${jsonEncode(data)}');
+    } catch (e) {
+      print(e);
+    }
     _channel.stream.listen((onData) {
       onData = jsonDecode(onData);
       print('Socket Says: ' + onData.toString());

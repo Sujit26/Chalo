@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:http/http.dart';
+import 'package:shared_transport/chat_facitility/chat.dart';
+import 'package:shared_transport/chat_facitility/chat_bloc.dart';
+import 'package:shared_transport/chat_facitility/chat_model.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:latlong/latlong.dart';
 import 'package:shared_transport/utils/localizations.dart';
@@ -139,7 +142,7 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     );
   }
 
-  Widget _userInfo(action, image, name, {rating, phone}) {
+  Widget _userInfo(action, image, name, {rating, phone, user}) {
     return ListTile(
       leading: Material(
         shape: CircleBorder(),
@@ -192,7 +195,18 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
                 ),
                 IconButton(
                   icon: Icon(Icons.message),
-                  onPressed: () {},
+                  onPressed: () {
+                    ChatBloc _chatBloc = ChatBloc();
+                    ChatModel _chatModel =
+                        ChatModel(user, '', true, DateTime.now());
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => Chat(
+                                  chat: _chatModel,
+                                  chatBloc: _chatBloc,
+                                )));
+                  },
                   color: Theme.of(context).primaryColor,
                 ),
               ],
@@ -221,12 +235,14 @@ class _TripSummaryRiderState extends State<TripSummaryRider> {
     users.add(Divider());
 
     users.add(_userInfo(
-        'Driver',
-        widget.ride.rideInfo.driver.pic,
-        Text('${widget.ride.rideInfo.driver.name}',
-            style: TextStyle(color: Colors.black)),
-        rating: widget.ride.rideInfo.driver.rating,
-        phone: widget.ride.rideInfo.driver.phone));
+      'Driver',
+      widget.ride.rideInfo.driver.pic,
+      Text('${widget.ride.rideInfo.driver.name}',
+          style: TextStyle(color: Colors.black)),
+      rating: widget.ride.rideInfo.driver.rating,
+      phone: widget.ride.rideInfo.driver.phone,
+      user: widget.ride.rideInfo.driver,
+    ));
     users.add(Divider());
 
     return Wrap(

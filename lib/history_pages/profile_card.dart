@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_transport/chat_facitility/chat.dart';
+import 'package:shared_transport/chat_facitility/chat_bloc.dart';
+import 'package:shared_transport/chat_facitility/chat_model.dart';
 import 'package:shared_transport/models/models.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -128,7 +131,18 @@ class _ProfileCardState extends State<ProfileCard> {
                                 ),
                               ),
                               MaterialButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  ChatBloc _chatBloc = ChatBloc();
+                                  ChatModel _chatModel = ChatModel(
+                                      widget.user, '', true, DateTime.now());
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => Chat(
+                                                chat: _chatModel,
+                                                chatBloc: _chatBloc,
+                                              )));
+                                },
                                 padding: const EdgeInsets.all(16),
                                 shape: CircleBorder(),
                                 elevation: 3,

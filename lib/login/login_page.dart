@@ -186,43 +186,6 @@ class _LoginPageState extends State<LoginPage> {
                       children: <Widget>[
                         Padding(
                           padding:
-                              const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: fbColor,
-                                  borderRadius: BorderRadius.all(
-                                      const Radius.circular(40.0))),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          8.0, 0.0, 28.0, 0.0),
-                                      child: FaIcon(
-                                        FontAwesomeIcons.facebookF,
-                                        size: 18.0,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Continue with facebook',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding:
                               const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                           child: InkWell(
                             onTap: () {
