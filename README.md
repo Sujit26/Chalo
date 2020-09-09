@@ -18,8 +18,11 @@ samples, guidance on mobile development, and a full API reference.
 ## Todo
 * ...
 
-### Done this version
-* ...
+## Done this version
+* ChatBox
+* Live tracking
+* Profile Verification
+* History management
 
 ## Building
 ### Apk
